@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # 运行应用
-CMD ["npm", "rum", "dev"]
+CMD ["npm", "run", "dev"]
