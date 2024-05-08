@@ -1,5 +1,9 @@
+"use client";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
+
+import { PATH_LOGIN } from "@/constants/paths";
 
 const Container = styled.div`
   .title {
@@ -7,10 +11,10 @@ const Container = styled.div`
   }
 `;
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
-const FormForgotPassword = (props) => {
-  const { goToLogin } = props;
+const Page = () => {
+  const router = useRouter();
   const form = Form.useForm();
 
   return (
@@ -60,7 +64,7 @@ const FormForgotPassword = (props) => {
               確認
             </Button>
 
-            <Button size="large" onClick={goToLogin}>
+            <Button size="large" onClick={() => router.push(PATH_LOGIN)}>
               取消
             </Button>
           </Flex>
@@ -70,4 +74,4 @@ const FormForgotPassword = (props) => {
   );
 };
 
-export default FormForgotPassword;
+export default Page;
