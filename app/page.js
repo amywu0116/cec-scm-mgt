@@ -1,95 +1,128 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import React from "react";
+import { redirect } from "next/navigation";
+import {
+  AppstoreOutlined,
+  BarChartOutlined,
+  CloudOutlined,
+  ShopOutlined,
+  TeamOutlined,
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
+import { Button, Layout, Menu, theme } from "antd";
 
-export default function Home() {
+const { Header, Content, Footer, Sider } = Layout;
+
+const items = [
+  UserOutlined,
+  VideoCameraOutlined,
+  UploadOutlined,
+  BarChartOutlined,
+  CloudOutlined,
+  AppstoreOutlined,
+  TeamOutlined,
+  ShopOutlined,
+].map((icon, index) => ({
+  key: String(index + 1),
+  icon: React.createElement(icon),
+  label: `nav ${index + 1}`,
+}));
+
+const Page = () => {
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
+  // if (true) {
+  //   redirect("/login");
+  // }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <Layout hasSider>
+      <Sider
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}
+      >
+        <div className="demo-logo-vertical" />
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={["4"]}
+          items={items}
         />
-      </div>
+      </Sider>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+      <Layout
+        style={{
+          marginLeft: 200,
+        }}
+      >
+        <Header
+          style={{
+            padding: "0 50px",
+            position: "fixed",
+            top: 0,
+            zIndex: 1,
+            width: "90vw",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+          <Button style={{ marginLeft: "auto" }} type="primary">
+            登出
+          </Button>
+        </Header>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Content
+          style={{
+            margin: "64px 16px 0",
+            overflow: "initial",
+          }}
         >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+          <div
+            style={{
+              padding: 24,
+              textAlign: "center",
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            <p>long content</p>
+            {
+              // indicates very long content
+              Array.from(
+                {
+                  length: 100,
+                },
+                (_, index) => (
+                  <React.Fragment key={index}>
+                    {index % 20 === 0 && index ? "more" : "..."}
+                    <br />
+                  </React.Fragment>
+                )
+              )
+            }
+          </div>
+        </Content>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Footer
+          style={{
+            textAlign: "center",
+          }}
         >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        </Footer>
+      </Layout>
+    </Layout>
   );
-}
+};
+
+export default Page;
