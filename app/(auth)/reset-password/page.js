@@ -1,7 +1,11 @@
 "use client";
+import { useState } from "react";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
+
+import api from "@/api";
+import { PATH_LOGIN } from "@/constants/paths";
 
 const Container = styled.div`
   .title {
@@ -9,28 +13,40 @@ const Container = styled.div`
   }
 `;
 
-const { Text, Title } = Typography;
-
 const Page = () => {
   const form = Form.useForm();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleFinish = (values) => {
+    if (values.password !== values.passwordConfirm) {
+      setErrorMsg("密碼輸入不相同");
+      return;
+    }
+
+    api
+      .post("/auth/resetPassword", { token, newPassword: values.password })
+      .then(() => router.push(PATH_LOGIN))
+      .catch((err) => setErrorMsg(err.message));
+  };
+
   return (
     <Container>
-      <Title className="title" level={1}>
+      <Typography.Title className="title" level={1}>
         密碼設定
-      </Title>
+      </Typography.Title>
 
       <Form
         form={form[0]}
-        initialValues={{}}
         layout="vertical"
         preserve={false}
-        onFinish={() => {}}
+        onFinish={handleFinish}
       >
         <Form.Item
-          name="password1"
+          name="password"
           rules={[
             {
               required: true,
@@ -42,7 +58,7 @@ const Page = () => {
         </Form.Item>
 
         <Form.Item
-          name="password2"
+          name="passwordConfirm"
           rules={[
             {
               required: true,
@@ -52,6 +68,12 @@ const Page = () => {
         >
           <Input.Password size="large" placeholder="請重複輸入新密碼" />
         </Form.Item>
+
+        {errorMsg && (
+          <Form.Item>
+            <Typography.Text type="danger">{errorMsg}</Typography.Text>
+          </Form.Item>
+        )}
 
         <Form.Item style={{ margin: 0 }}>
           <Flex justify="space-between">

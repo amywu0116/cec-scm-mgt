@@ -29,8 +29,9 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = (values) => {
+  const handleFinish = (values) => {
     console.log("values", values);
+    setLoading(true);
     api
       .post("/auth/signin", {
         vendorCode: values.vendorCode,
@@ -43,8 +44,12 @@ const Page = () => {
         router.push("/");
       })
       .catch((err) => setErrorMsg(err.message))
-      .finally(() => {});
+      .finally(() => setLoading(false));
   };
+
+  // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
+  //   redirect("/");
+  // }
 
   return (
     <Container>
@@ -64,7 +69,7 @@ const Page = () => {
           password: "100200",
         }}
         layout="vertical"
-        onFinish={handleLogin}
+        onFinish={handleFinish}
       >
         <Form.Item name="vendorCode" rules={rules}>
           <Input
@@ -95,7 +100,11 @@ const Page = () => {
           />
         </Form.Item>
 
-        <Typography.Text type="danger">{errorMsg}</Typography.Text>
+        {errorMsg && (
+          <Form.Item>
+            <Typography.Text type="danger">{errorMsg}</Typography.Text>
+          </Form.Item>
+        )}
 
         <Form.Item style={{ margin: 0 }}>
           <Flex justify="space-between">

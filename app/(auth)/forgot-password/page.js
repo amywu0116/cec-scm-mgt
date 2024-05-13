@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
@@ -14,34 +14,37 @@ const Container = styled.div`
   }
 `;
 
-const { Title } = Typography;
-
 const Page = () => {
   const router = useRouter();
   const form = Form.useForm();
   const recaptchaRef = useRef();
 
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleFinish = (values) => {
     console.log("values", values);
+    setLoading(true);
     api
-      .post("/auth/forgotPassowrd", {
+      .post("/auth/forgotPassword", {
         vendor_code: values.vendorCode,
         account: values.account,
         recaptchaResponse: recaptchaRef.current.getValue(),
       })
-      .then((res) => {})
-      .catch((err) => console.log(err));
+      .then(() => router.push(PATH_LOGIN))
+      .catch((err) => setErrorMsg(err.message))
+      .finally(() => setLoading(false));
   };
 
   return (
     <Container>
-      <Title className="title" level={1}>
+      <Typography.Title className="title" level={1}>
         忘記密碼？
-      </Title>
+      </Typography.Title>
 
-      <Title className="title" level={4}>
+      <Typography.Title className="title" level={4}>
         輸入廠商代號與帳號以變更密碼
-      </Title>
+      </Typography.Title>
 
       <Form
         form={form[0]}
@@ -81,9 +84,20 @@ const Page = () => {
           />
         </Form.Item>
 
+        {errorMsg && (
+          <Form.Item>
+            <Typography.Text type="danger">{errorMsg}</Typography.Text>
+          </Form.Item>
+        )}
+
         <Form.Item style={{ margin: 0 }}>
           <Flex justify="space-between">
-            <Button size="large" type="primary" htmlType="submit">
+            <Button
+              size="large"
+              type="primary"
+              loading={loading}
+              htmlType="submit"
+            >
               確認
             </Button>
 
