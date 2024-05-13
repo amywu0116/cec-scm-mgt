@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
@@ -12,8 +13,6 @@ const Container = styled.div`
     text-align: center;
   }
 `;
-
-const { Text, Title } = Typography;
 
 const rules = [
   {
@@ -25,38 +24,37 @@ const rules = [
 const Page = () => {
   const router = useRouter();
   const form = Form.useForm();
+  const recaptchaRef = useRef();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleLogin = (values) => {
+    console.log("values", values);
     api
-      .post("auth/signin", {
+      .post("/auth/signin", {
         vendorCode: values.vendorCode,
         password: values.password,
         account: values.account,
-        token: "123",
-        testToken: "9527",
+        token: recaptchaRef.current.getValue(),
       })
       .then((res) => {
-        if (res.code === "200") {
-          // localStorage.setItem("token", "xxx");
-          router.push("/");
-        }
+        localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
+        router.push("/");
       })
-      .catch((err) => console.log(err))
+      .catch((err) => setErrorMsg(err.message))
       .finally(() => {});
   };
 
   return (
     <Container>
-      <Title className="title" level={1}>
+      <Typography.Title className="title" level={1}>
         SCM 線上商城
-      </Title>
+      </Typography.Title>
 
-      <Title className="title" level={4}>
+      <Typography.Title className="title" level={4}>
         輸入您的帳號與密碼
-      </Title>
+      </Typography.Title>
 
       <Form
         form={form[0]}
@@ -90,7 +88,14 @@ const Page = () => {
           <Input.Password size="large" placeholder="密碼" disabled={loading} />
         </Form.Item>
 
-        <Text type="danger">{errorMsg}</Text>
+        <Form.Item>
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+          />
+        </Form.Item>
+
+        <Typography.Text type="danger">{errorMsg}</Typography.Text>
 
         <Form.Item style={{ margin: 0 }}>
           <Flex justify="space-between">

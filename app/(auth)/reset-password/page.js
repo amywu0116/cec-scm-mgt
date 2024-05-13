@@ -1,5 +1,6 @@
 "use client";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -12,6 +13,8 @@ const { Text, Title } = Typography;
 
 const Page = () => {
   const form = Form.useForm();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
   return (
     <Container>
