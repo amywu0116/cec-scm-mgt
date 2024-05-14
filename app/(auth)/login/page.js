@@ -1,61 +1,145 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Form } from "antd";
+import React, { useState, useRef } from "react";
+import styled from "styled-components";
+import { redirect, useRouter } from "next/navigation";
+import { Button, Form, Input, Typography } from "antd";
+import ReCAPTCHA from "react-google-recaptcha";
+import Link from "next/link";
+
+import Title from "../Title";
+import Subtitle from "../Subtitle";
 
 import api from "@/api";
+import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 
-import FormLogin from "./FormLogin";
-import FormForgotPassword from "./FormForgotPassword";
+const Container = styled.div``;
+
+const RecaptchaWrapper = styled.div`
+  transform: scale(1.16);
+  transform-origin: 0 0;
+  height: 90px;
+`;
+
+const ForgotPasswordLink = styled(Link)`
+  color: #212b36;
+  text-decoration: underline;
+  text-align: right;
+`;
+
+const rules = [
+  {
+    required: true,
+    message: "必填",
+  },
+];
 
 const Page = () => {
   const router = useRouter();
-  const loginForm = Form.useForm();
+  const [form] = Form.useForm();
+  const recaptchaRef = useRef();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
 
-  const MODE_LOGIN = "MODE_LOGIN";
-  const MODE_FORGOT_PASSWORD = "MODE_FORGOT_PASSWORD";
-  const [mode, setMode] = useState(MODE_LOGIN);
+  const validateFields = () => {
+    const formValues = form.getFieldsValue();
+    const isFailed =
+      Object.values(formValues).includes("") ||
+      !recaptchaRef.current.getValue();
+    setIsNotFilledAll(isFailed);
+  };
 
-  const goToLogin = () => setMode(MODE_LOGIN);
-  const goToForgotPassword = () => setMode(MODE_FORGOT_PASSWORD);
-
-  const handleLogin = (values) => {
-    console.log("Received values of form: ", values);
+  const handleFinish = (values) => {
+    setLoading(true);
     api
-      .post("auth/signin", {
+      .post("/auth/signin", {
         vendorCode: values.vendorCode,
         password: values.password,
         account: values.account,
-        token: "123",
-        testToken: "9527",
+        token: recaptchaRef.current.getValue(),
       })
       .then((res) => {
-        if (res.code === "200") {
-          localStorage.setItem("token", "xxx");
-          router.push("/");
-        }
+        localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
+        router.push("/");
       })
-      .catch((err) => console.log(err))
-      .finally(() => {});
+      .catch((err) => setErrorMsg(err.message))
+      .finally(() => setLoading(false));
   };
 
+  const handleChangeRecaptcha = () => {
+    validateFields();
+  };
+
+  // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
+  //   redirect("/");
+  // }
+
   return (
-    <>
-      {mode === MODE_LOGIN ? (
-        <FormLogin
-          form={loginForm[0]}
-          loading={loading}
-          errorMsg={errorMsg}
-          goToForgotPassword={goToForgotPassword}
-          onFinish={handleLogin}
-        />
-      ) : (
-        <FormForgotPassword goToLogin={goToLogin} />
-      )}
-    </>
+    <Container>
+      <Title>歡迎，供應商管理系統！</Title>
+      <Subtitle>請輸入您的帳號密碼</Subtitle>
+
+      <Form
+        form={form}
+        initialValues={{
+          vendorCode: "",
+          account: "",
+          password: "",
+        }}
+        layout="vertical"
+        disabled={loading}
+        onFinish={handleFinish}
+        onValuesChange={() => validateFields()}
+      >
+        <Form.Item name="vendorCode" rules={rules}>
+          <Input size="large" placeholder="廠商代號" autoComplete="off" />
+        </Form.Item>
+
+        <Form.Item name="account" rules={rules}>
+          <Input size="large" placeholder="帳號" autoComplete="off" />
+        </Form.Item>
+
+        <Form.Item name="password" rules={rules}>
+          <Input.Password size="large" placeholder="密碼" />
+        </Form.Item>
+
+        <Form.Item style={{ textAlign: "right" }}>
+          <ForgotPasswordLink href={PATH_FORGOT_PASSWORD}>
+            忘記密碼
+          </ForgotPasswordLink>
+        </Form.Item>
+
+        <Form.Item>
+          <RecaptchaWrapper>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+              onChange={handleChangeRecaptcha}
+            />
+          </RecaptchaWrapper>
+        </Form.Item>
+
+        {errorMsg && (
+          <Form.Item>
+            <Typography.Text type="danger">{errorMsg}</Typography.Text>
+          </Form.Item>
+        )}
+
+        <Form.Item>
+          <Button
+            size="large"
+            type="primary"
+            block
+            htmlType="submit"
+            loading={loading}
+            disabled={isNotFilledAll}
+          >
+            登入
+          </Button>
+        </Form.Item>
+      </Form>
+    </Container>
   );
 };
 

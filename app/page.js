@@ -1,64 +1,48 @@
 "use client";
-import React from "react";
-import { redirect } from "next/navigation";
-import {
-  AppstoreOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  ShopOutlined,
-  TeamOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import React, { useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { Button, Layout, theme } from "antd";
 
-const { Header, Content, Footer, Sider } = Layout;
+import Sider from "./Sider";
+import api from "@/api";
 
-const items = [
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  AppstoreOutlined,
-  TeamOutlined,
-  ShopOutlined,
-].map((icon, index) => ({
-  key: String(index + 1),
-  icon: React.createElement(icon),
-  label: `nav ${index + 1}`,
-}));
+const { Header, Content, Footer } = Layout;
 
 const Page = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const router = useRouter();
+  const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
 
-  // if (true) {
-  //   redirect("/login");
-  // }
+  const handleLogout = () => {
+    const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
+    api
+      .post(
+        "/auth/signout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        router.push("/login");
+      })
+      .catch((err) => {})
+      .finally(() => {});
+  };
+
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     redirect("/login");
+  //   }
+  // }, [accessToken]);
 
   return (
     <Layout hasSider>
-      <Sider
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          bottom: 0,
-        }}
-      >
-        <div className="demo-logo-vertical" />
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={["4"]}
-          items={items}
-        />
-      </Sider>
+      <Sider />
 
       <Layout
         style={{
@@ -76,7 +60,11 @@ const Page = () => {
             alignItems: "center",
           }}
         >
-          <Button style={{ marginLeft: "auto" }} type="primary">
+          <Button
+            style={{ marginLeft: "auto" }}
+            type="primary"
+            onClick={handleLogout}
+          >
             登出
           </Button>
         </Header>
