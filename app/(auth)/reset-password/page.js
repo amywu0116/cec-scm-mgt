@@ -1,25 +1,33 @@
 "use client";
 import { useState } from "react";
-import { Button, Flex, Form, Input, Typography } from "antd";
+import { App, Button, Form, Input, Typography } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
+
+import Title from "../Title";
+import Subtitle from "../Subtitle";
 
 import api from "@/api";
 import { PATH_LOGIN } from "@/constants/paths";
 
-const Container = styled.div`
-  .title {
-    text-align: center;
-  }
-`;
+const Container = styled.div``;
 
 const Page = () => {
-  const form = Form.useForm();
+  const [form] = Form.useForm();
   const router = useRouter();
+  const { message } = App.useApp();
+
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
+
+  const validateFields = () => {
+    const formValues = form.getFieldsValue();
+    const isFailed = Object.values(formValues).includes("");
+    setIsNotFilledAll(isFailed);
+  };
 
   const handleFinish = (values) => {
     if (values.password !== values.passwordConfirm) {
@@ -29,21 +37,24 @@ const Page = () => {
 
     api
       .post("/auth/resetPassword", { token, newPassword: values.password })
-      .then(() => router.push(PATH_LOGIN))
+      .then(() => {
+        message.success("修改成功，請重新登入");
+        router.push(PATH_LOGIN);
+      })
       .catch((err) => setErrorMsg(err.message));
   };
 
   return (
     <Container>
-      <Typography.Title className="title" level={1}>
-        密碼設定
-      </Typography.Title>
+      <Title>密碼設定</Title>
+      <Subtitle>輸入新密碼以變更密碼</Subtitle>
 
       <Form
-        form={form[0]}
+        form={form}
         layout="vertical"
-        preserve={false}
+        initialValues={{ password: "", passwordConfirm: "" }}
         onFinish={handleFinish}
+        onValuesChange={() => validateFields()}
       >
         <Form.Item
           name="password"
@@ -76,15 +87,15 @@ const Page = () => {
         )}
 
         <Form.Item style={{ margin: 0 }}>
-          <Flex justify="space-between">
-            <Button size="large" type="primary" htmlType="submit">
-              確認
-            </Button>
-
-            <Button size="large" onClick={() => {}}>
-              取消
-            </Button>
-          </Flex>
+          <Button
+            size="large"
+            type="primary"
+            htmlType="submit"
+            block
+            disabled={isNotFilledAll}
+          >
+            確認
+          </Button>
         </Form.Item>
       </Form>
     </Container>

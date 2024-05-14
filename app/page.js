@@ -40,8 +40,6 @@ const Page = () => {
   //   }
   // }, [accessToken]);
 
-  console.log("accessToken", accessToken);
-
   return (
     <Layout hasSider>
       <Sider />

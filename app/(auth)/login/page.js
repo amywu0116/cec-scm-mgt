@@ -2,16 +2,28 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { redirect, useRouter } from "next/navigation";
-import { Button, Flex, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
+import Link from "next/link";
+
+import Title from "../Title";
+import Subtitle from "../Subtitle";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 
-const Container = styled.div`
-  .title {
-    text-align: center;
-  }
+const Container = styled.div``;
+
+const RecaptchaWrapper = styled.div`
+  transform: scale(1.16);
+  transform-origin: 0 0;
+  height: 90px;
+`;
+
+const ForgotPasswordLink = styled(Link)`
+  color: #212b36;
+  text-decoration: underline;
+  text-align: right;
 `;
 
 const rules = [
@@ -23,14 +35,22 @@ const rules = [
 
 const Page = () => {
   const router = useRouter();
-  const form = Form.useForm();
+  const [form] = Form.useForm();
   const recaptchaRef = useRef();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
+
+  const validateFields = () => {
+    const formValues = form.getFieldsValue();
+    const isFailed =
+      Object.values(formValues).includes("") ||
+      !recaptchaRef.current.getValue();
+    setIsNotFilledAll(isFailed);
+  };
 
   const handleFinish = (values) => {
-    console.log("values", values);
     setLoading(true);
     api
       .post("/auth/signin", {
@@ -47,57 +67,57 @@ const Page = () => {
       .finally(() => setLoading(false));
   };
 
+  const handleChangeRecaptcha = () => {
+    validateFields();
+  };
+
   // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
   //   redirect("/");
   // }
 
   return (
     <Container>
-      <Typography.Title className="title" level={1}>
-        SCM 線上商城
-      </Typography.Title>
-
-      <Typography.Title className="title" level={4}>
-        輸入您的帳號與密碼
-      </Typography.Title>
+      <Title>歡迎，供應商管理系統！</Title>
+      <Subtitle>請輸入您的帳號密碼</Subtitle>
 
       <Form
-        form={form[0]}
+        form={form}
         initialValues={{
-          vendorCode: "K0001",
-          account: "admin@syscom.com.tw",
-          password: "100200",
+          vendorCode: "",
+          account: "",
+          password: "",
         }}
         layout="vertical"
+        disabled={loading}
         onFinish={handleFinish}
+        onValuesChange={() => validateFields()}
       >
         <Form.Item name="vendorCode" rules={rules}>
-          <Input
-            size="large"
-            placeholder="廠商代號"
-            autoComplete="off"
-            disabled={loading}
-          />
+          <Input size="large" placeholder="廠商代號" autoComplete="off" />
         </Form.Item>
 
         <Form.Item name="account" rules={rules}>
-          <Input
-            size="large"
-            placeholder="帳號"
-            autoComplete="off"
-            disabled={loading}
-          />
+          <Input size="large" placeholder="帳號" autoComplete="off" />
         </Form.Item>
 
         <Form.Item name="password" rules={rules}>
-          <Input.Password size="large" placeholder="密碼" disabled={loading} />
+          <Input.Password size="large" placeholder="密碼" />
+        </Form.Item>
+
+        <Form.Item style={{ textAlign: "right" }}>
+          <ForgotPasswordLink href={PATH_FORGOT_PASSWORD}>
+            忘記密碼
+          </ForgotPasswordLink>
         </Form.Item>
 
         <Form.Item>
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
-          />
+          <RecaptchaWrapper>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+              onChange={handleChangeRecaptcha}
+            />
+          </RecaptchaWrapper>
         </Form.Item>
 
         {errorMsg && (
@@ -106,26 +126,17 @@ const Page = () => {
           </Form.Item>
         )}
 
-        <Form.Item style={{ margin: 0 }}>
-          <Flex justify="space-between">
-            <Button
-              size="large"
-              type="link"
-              disabled={loading}
-              onClick={() => router.push(PATH_FORGOT_PASSWORD)}
-            >
-              忘記密碼
-            </Button>
-
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-            >
-              登入
-            </Button>
-          </Flex>
+        <Form.Item>
+          <Button
+            size="large"
+            type="primary"
+            block
+            htmlType="submit"
+            loading={loading}
+            disabled={isNotFilledAll}
+          >
+            登入
+          </Button>
         </Form.Item>
       </Form>
     </Container>

@@ -1,29 +1,43 @@
 "use client";
 import { useState, useRef } from "react";
-import { Button, Flex, Form, Input, Typography } from "antd";
+import { App, Button, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import ReCAPTCHA from "react-google-recaptcha";
 
+import Title from "../Title";
+import Subtitle from "../Subtitle";
+
 import { PATH_LOGIN } from "@/constants/paths";
 import api from "@/api";
 
-const Container = styled.div`
-  .title {
-    text-align: center;
-  }
+const Container = styled.div``;
+
+const RecaptchaWrapper = styled.div`
+  transform: scale(1.16);
+  transform-origin: 0 0;
+  height: 90px;
 `;
 
 const Page = () => {
   const router = useRouter();
-  const form = Form.useForm();
+  const [form] = Form.useForm();
   const recaptchaRef = useRef();
+  const { message } = App.useApp();
 
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
+
+  const validateFields = () => {
+    const formValues = form.getFieldsValue();
+    const isFailed =
+      Object.values(formValues).includes("") ||
+      !recaptchaRef.current.getValue();
+    setIsNotFilledAll(isFailed);
+  };
 
   const handleFinish = (values) => {
-    console.log("values", values);
     setLoading(true);
     api
       .post("/auth/forgotPassword", {
@@ -31,27 +45,28 @@ const Page = () => {
         account: values.account,
         recaptchaResponse: recaptchaRef.current.getValue(),
       })
-      .then(() => router.push(PATH_LOGIN))
+      .then(() => {
+        message.success("已發送密碼重設信件，請檢查信箱");
+      })
       .catch((err) => setErrorMsg(err.message))
       .finally(() => setLoading(false));
   };
 
+  const handleChangeRecaptcha = () => {
+    validateFields();
+  };
+
   return (
     <Container>
-      <Typography.Title className="title" level={1}>
-        忘記密碼？
-      </Typography.Title>
-
-      <Typography.Title className="title" level={4}>
-        輸入廠商代號與帳號以變更密碼
-      </Typography.Title>
+      <Title>忘記密碼</Title>
+      <Subtitle>輸入廠商代號與帳號以變更密碼</Subtitle>
 
       <Form
-        form={form[0]}
-        initialValues={{}}
+        form={form}
+        initialValues={{ vendorCode: "", account: "" }}
         layout="vertical"
-        preserve={false}
         onFinish={handleFinish}
+        onValuesChange={() => validateFields()}
       >
         <Form.Item
           name="vendorCode"
@@ -62,7 +77,7 @@ const Page = () => {
             },
           ]}
         >
-          <Input size="large" placeholder="請輸入廠商代號" autoComplete="off" />
+          <Input size="large" placeholder="請輸入廠商" autoComplete="off" />
         </Form.Item>
 
         <Form.Item
@@ -78,10 +93,13 @@ const Page = () => {
         </Form.Item>
 
         <Form.Item>
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
-          />
+          <RecaptchaWrapper>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY}
+              onChange={handleChangeRecaptcha}
+            />
+          </RecaptchaWrapper>
         </Form.Item>
 
         {errorMsg && (
@@ -90,13 +108,14 @@ const Page = () => {
           </Form.Item>
         )}
 
-        <Form.Item style={{ margin: 0 }}>
-          <Flex justify="space-between">
+        <Form.Item>
+          <Flex vertical gap={20}>
             <Button
               size="large"
               type="primary"
-              loading={loading}
               htmlType="submit"
+              loading={loading}
+              disabled={isNotFilledAll}
             >
               確認
             </Button>
