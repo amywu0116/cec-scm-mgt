@@ -21,6 +21,7 @@ const Page = () => {
   const token = searchParams.get("token");
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
   const [isNotFilledAll, setIsNotFilledAll] = useState(true);
 
   const validateFields = () => {
@@ -35,13 +36,15 @@ const Page = () => {
       return;
     }
 
+    setLoading(true);
     api
       .post("/auth/resetPassword", { token, newPassword: values.password })
       .then(() => {
         message.success("修改成功，請重新登入");
         router.push(PATH_LOGIN);
       })
-      .catch((err) => setErrorMsg(err.message));
+      .catch((err) => setErrorMsg(err.message))
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -93,6 +96,7 @@ const Page = () => {
             htmlType="submit"
             block
             disabled={isNotFilledAll}
+            loading={loading}
           >
             確認
           </Button>
