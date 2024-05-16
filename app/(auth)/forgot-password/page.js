@@ -1,12 +1,13 @@
 "use client";
 import { useState, useRef } from "react";
-import { App, Button, Flex, Form, Input, Typography } from "antd";
+import { App, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import ReCAPTCHA from "react-google-recaptcha";
 
 import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Button from "@/components/Button";
 
 import { PATH_LOGIN } from "@/constants/paths";
 import api from "@/api";
@@ -111,7 +112,6 @@ const Page = () => {
         <Form.Item>
           <Flex vertical gap={20}>
             <Button
-              size="large"
               type="primary"
               htmlType="submit"
               loading={loading}
@@ -120,9 +120,7 @@ const Page = () => {
               確認
             </Button>
 
-            <Button size="large" onClick={() => router.push(PATH_LOGIN)}>
-              取消
-            </Button>
+            <Button onClick={() => router.push(PATH_LOGIN)}>取消</Button>
           </Flex>
         </Form.Item>
       </Form>

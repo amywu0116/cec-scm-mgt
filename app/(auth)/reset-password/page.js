@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
-import { App, Button, Form, Input, Typography } from "antd";
+import { App, Form, Input, Typography } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
 import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Button from "@/components/Button";
 
 import api from "@/api";
 import { PATH_LOGIN } from "@/constants/paths";
@@ -91,7 +92,6 @@ const Page = () => {
 
         <Form.Item style={{ margin: 0 }}>
           <Button
-            size="large"
             type="primary"
             htmlType="submit"
             block

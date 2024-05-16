@@ -2,12 +2,13 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { redirect, useRouter } from "next/navigation";
-import { Button, Form, Input, Typography } from "antd";
+import { Form, Input, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
 
 import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Button from "@/components/Button";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
@@ -25,13 +26,6 @@ const ForgotPasswordLink = styled(Link)`
   text-decoration: underline;
   text-align: right;
 `;
-
-const rules = [
-  {
-    required: true,
-    message: "必填",
-  },
-];
 
 const Page = () => {
   const router = useRouter();
@@ -83,24 +77,52 @@ const Page = () => {
       <Form
         form={form}
         initialValues={{
-          vendorCode: "",
-          account: "",
-          password: "",
+          vendorCode: "K0001",
+          account: "edward_hsu@syscom.com.tw",
+          password: "100200",
         }}
         layout="vertical"
         disabled={loading}
         onFinish={handleFinish}
         onValuesChange={() => validateFields()}
       >
-        <Form.Item name="vendorCode" rules={rules}>
+        <Form.Item
+          name="vendorCode"
+          rules={[
+            {
+              required: true,
+              message: "必填",
+            },
+          ]}
+        >
           <Input size="large" placeholder="廠商代號" autoComplete="off" />
         </Form.Item>
 
-        <Form.Item name="account" rules={rules}>
+        <Form.Item
+          name="account"
+          rules={[
+            {
+              required: true,
+              message: "必填",
+            },
+            {
+              type: "email",
+              message: "錯誤的信箱格式",
+            },
+          ]}
+        >
           <Input size="large" placeholder="帳號" autoComplete="off" />
         </Form.Item>
 
-        <Form.Item name="password" rules={rules}>
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: "必填",
+            },
+          ]}
+        >
           <Input.Password size="large" placeholder="密碼" />
         </Form.Item>
 
@@ -128,7 +150,6 @@ const Page = () => {
 
         <Form.Item>
           <Button
-            size="large"
             type="primary"
             block
             htmlType="submit"
