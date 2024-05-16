@@ -13,7 +13,7 @@ const Page = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const router = useRouter();
-  const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
+  // const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
 
   const handleLogout = () => {
     const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
