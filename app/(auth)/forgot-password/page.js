@@ -28,33 +28,42 @@ const Page = () => {
 
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
 
-  const validateFields = () => {
-    const formValues = form.getFieldsValue();
-    const isFailed =
-      Object.values(formValues).includes("") ||
-      !recaptchaRef.current.getValue();
-    setIsNotFilledAll(isFailed);
+  const [recaptchaValue, setRecaptchaValue] = useState("");
+
+  // 檢查是否表單 Input 都有填
+  const isNotAllFieldsFilled = () => {
+    return Object.values(form.getFieldsValue()).includes("");
   };
 
+  // 重置 recaptcha
+  const resetRecaptcha = () => {
+    recaptchaRef.current.reset();
+    setRecaptchaValue("");
+  };
+
+  // 表單提交
   const handleFinish = (values) => {
     setLoading(true);
     api
       .post("/auth/forgotPassword", {
         vendor_code: values.vendorCode,
         account: values.account,
-        recaptchaResponse: recaptchaRef.current.getValue(),
+        recaptchaResponse: recaptchaValue,
       })
       .then(() => {
         message.success("已發送密碼重設信件，請檢查信箱");
       })
-      .catch((err) => setErrorMsg(err.message))
+      .catch((err) => {
+        setErrorMsg(err.message);
+        resetRecaptcha();
+      })
       .finally(() => setLoading(false));
   };
 
-  const handleChangeRecaptcha = () => {
-    validateFields();
+  // 勾選 recaptcha
+  const handleChangeRecaptcha = (value) => {
+    setRecaptchaValue(value);
   };
 
   return (
@@ -64,10 +73,12 @@ const Page = () => {
 
       <Form
         form={form}
-        initialValues={{ vendorCode: "", account: "" }}
+        initialValues={{
+          vendorCode: "K0001",
+          account: "edward_hsu@syscom.com.tw",
+        }}
         layout="vertical"
         onFinish={handleFinish}
-        onValuesChange={() => validateFields()}
       >
         <Form.Item
           name="vendorCode"
@@ -115,7 +126,7 @@ const Page = () => {
               type="primary"
               htmlType="submit"
               loading={loading}
-              disabled={isNotFilledAll}
+              disabled={isNotAllFieldsFilled() || !recaptchaValue}
             >
               確認
             </Button>
