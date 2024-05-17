@@ -36,12 +36,8 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [recaptchaValue, setRecaptchaValue] = useState("");
-
-  // 檢查是否表單 Input 都有填
-  const isNotAllFieldsFilled = () => {
-    return Object.values(form.getFieldsValue()).includes("");
-  };
 
   // 重置 recaptcha
   const resetRecaptcha = () => {
@@ -75,6 +71,13 @@ const Page = () => {
     setRecaptchaValue(value);
   };
 
+  const handleFieldsChange = (changedFields, allFields) => {
+    const isFormValid = allFields.every(
+      (field) => field.errors.length === 0 && field.value
+    );
+    setIsSubmitDisabled(!isFormValid);
+  };
+
   // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
   //   redirect("/");
   // }
@@ -87,13 +90,14 @@ const Page = () => {
       <Form
         form={form}
         initialValues={{
-          vendorCode: "K0001",
-          account: "edward_hsu@syscom.com.tw",
-          password: "100200",
+          vendorCode: "",
+          account: "",
+          password: "",
         }}
         layout="vertical"
         disabled={loading}
         onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
       >
         <Form.Item
           name="vendorCode"
@@ -163,7 +167,7 @@ const Page = () => {
             block
             htmlType="submit"
             loading={loading}
-            disabled={isNotAllFieldsFilled() || !recaptchaValue}
+            disabled={isSubmitDisabled || !recaptchaValue}
           >
             登入
           </Button>

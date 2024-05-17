@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { App, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
@@ -29,12 +29,8 @@ const Page = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [recaptchaValue, setRecaptchaValue] = useState("");
-
-  // 檢查是否表單 Input 都有填
-  const isNotAllFieldsFilled = () => {
-    return Object.values(form.getFieldsValue()).includes("");
-  };
 
   // 重置 recaptcha
   const resetRecaptcha = () => {
@@ -53,6 +49,7 @@ const Page = () => {
       })
       .then(() => {
         message.success("已發送密碼重設信件，請檢查信箱");
+        router.push(PATH_LOGIN);
       })
       .catch((err) => {
         setErrorMsg(err.message);
@@ -66,6 +63,13 @@ const Page = () => {
     setRecaptchaValue(value);
   };
 
+  const handleFieldsChange = (changedFields, allFields) => {
+    const isFormValid = allFields.every(
+      (field) => field.errors.length === 0 && field.value
+    );
+    setIsSubmitDisabled(!isFormValid);
+  };
+
   return (
     <Container>
       <Title>忘記密碼</Title>
@@ -74,11 +78,12 @@ const Page = () => {
       <Form
         form={form}
         initialValues={{
-          vendorCode: "K0001",
-          account: "edward_hsu@syscom.com.tw",
+          vendorCode: "",
+          account: "",
         }}
         layout="vertical"
         onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
       >
         <Form.Item
           name="vendorCode"
@@ -126,7 +131,7 @@ const Page = () => {
               type="primary"
               htmlType="submit"
               loading={loading}
-              disabled={isNotAllFieldsFilled() || !recaptchaValue}
+              disabled={isSubmitDisabled || !recaptchaValue}
             >
               確認
             </Button>
