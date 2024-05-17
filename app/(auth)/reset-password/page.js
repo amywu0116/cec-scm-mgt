@@ -23,14 +23,13 @@ const Page = () => {
 
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
 
-  const validateFields = () => {
-    const formValues = form.getFieldsValue();
-    const isFailed = Object.values(formValues).includes("");
-    setIsNotFilledAll(isFailed);
+  // 檢查是否表單 Input 都有填
+  const isNotAllFieldsFilled = () => {
+    return Object.values(form.getFieldsValue()).includes("");
   };
 
+  // 表單提交
   const handleFinish = (values) => {
     if (values.password !== values.passwordConfirm) {
       setErrorMsg("密碼輸入不相同");
@@ -58,7 +57,6 @@ const Page = () => {
         layout="vertical"
         initialValues={{ password: "", passwordConfirm: "" }}
         onFinish={handleFinish}
-        onValuesChange={() => validateFields()}
       >
         <Form.Item
           name="password"
@@ -95,8 +93,8 @@ const Page = () => {
             type="primary"
             htmlType="submit"
             block
-            disabled={isNotFilledAll}
             loading={loading}
+            disabled={isNotAllFieldsFilled()}
           >
             確認
           </Button>

@@ -35,6 +35,7 @@ const Page = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
   const [recaptchaValue, setRecaptchaValue] = useState("");
 
   // 檢查是否表單 Input 都有填
@@ -78,8 +79,6 @@ const Page = () => {
   //   redirect("/");
   // }
 
-  console.log(isNotAllFieldsFilled(), recaptchaValue);
-
   return (
     <Container>
       <Title>歡迎，供應商管理系統！</Title>
@@ -95,7 +94,6 @@ const Page = () => {
         layout="vertical"
         disabled={loading}
         onFinish={handleFinish}
-        onValuesChange={() => validateFields()}
       >
         <Form.Item
           name="vendorCode"
