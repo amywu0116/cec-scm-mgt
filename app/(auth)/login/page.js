@@ -30,20 +30,25 @@ const ForgotPasswordLink = styled(Link)`
 const Page = () => {
   const router = useRouter();
   const [form] = Form.useForm();
+
   const recaptchaRef = useRef();
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isNotFilledAll, setIsNotFilledAll] = useState(true);
+  const [recaptchaValue, setRecaptchaValue] = useState("");
 
-  const validateFields = () => {
-    const formValues = form.getFieldsValue();
-    const isFailed =
-      Object.values(formValues).includes("") ||
-      !recaptchaRef.current.getValue();
-    setIsNotFilledAll(isFailed);
+  // 檢查是否表單 Input 都有填
+  const isNotAllFieldsFilled = () => {
+    return Object.values(form.getFieldsValue()).includes("");
   };
 
+  // 重置 recaptcha
+  const resetRecaptcha = () => {
+    recaptchaRef.current.reset();
+    setRecaptchaValue("");
+  };
+
+  // 表單提交
   const handleFinish = (values) => {
     setLoading(true);
     api
@@ -51,23 +56,29 @@ const Page = () => {
         vendorCode: values.vendorCode,
         password: values.password,
         account: values.account,
-        token: recaptchaRef.current.getValue(),
+        token: recaptchaValue,
       })
       .then((res) => {
         localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
         router.push("/");
       })
-      .catch((err) => setErrorMsg(err.message))
+      .catch((err) => {
+        setErrorMsg(err.message);
+        resetRecaptcha();
+      })
       .finally(() => setLoading(false));
   };
 
-  const handleChangeRecaptcha = () => {
-    validateFields();
+  // 勾選 recaptcha
+  const handleChangeRecaptcha = (value) => {
+    setRecaptchaValue(value);
   };
 
   // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
   //   redirect("/");
   // }
+
+  console.log(isNotAllFieldsFilled(), recaptchaValue);
 
   return (
     <Container>
@@ -154,7 +165,7 @@ const Page = () => {
             block
             htmlType="submit"
             loading={loading}
-            disabled={isNotFilledAll}
+            disabled={isNotAllFieldsFilled() || !recaptchaValue}
           >
             登入
           </Button>
