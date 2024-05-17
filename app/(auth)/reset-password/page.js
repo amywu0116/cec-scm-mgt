@@ -24,10 +24,7 @@ const Page = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 檢查是否表單 Input 都有填
-  const isNotAllFieldsFilled = () => {
-    return Object.values(form.getFieldsValue()).includes("");
-  };
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
   // 表單提交
   const handleFinish = (values) => {
@@ -47,6 +44,13 @@ const Page = () => {
       .finally(() => setLoading(false));
   };
 
+  const handleFieldsChange = (changedFields, allFields) => {
+    const isFormValid = allFields.every(
+      (field) => field.errors.length === 0 && field.value
+    );
+    setIsSubmitDisabled(!isFormValid);
+  };
+
   return (
     <Container>
       <Title>密碼設定</Title>
@@ -57,6 +61,7 @@ const Page = () => {
         layout="vertical"
         initialValues={{ password: "", passwordConfirm: "" }}
         onFinish={handleFinish}
+        onFieldsChange={handleFieldsChange}
       >
         <Form.Item
           name="password"
@@ -94,7 +99,7 @@ const Page = () => {
             htmlType="submit"
             block
             loading={loading}
-            disabled={isNotAllFieldsFilled()}
+            disabled={isSubmitDisabled}
           >
             確認
           </Button>
