@@ -8,22 +8,22 @@ import {
   Layout,
   Pagination,
   Radio,
-  Table,
   Tabs,
-  theme,
 } from "antd";
 import styled, { css } from "styled-components";
+import Link from "next/link";
 
 import Button from "@/components/Button";
-import Input from "@/components/Input";
 import DatePicker from "@/components/DatePicker";
+import Input from "@/components/Input";
 import Select from "@/components/Select";
+import Table from "@/components/Table";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-  margin: 64px 36px 0;
+  margin: 64px 36px 33px;
 
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
@@ -37,9 +37,22 @@ const Container = styled.div`
     margin: 0;
   }
 
+  .ant-tabs .ant-tabs-tab {
+    font-size: 14px;
+    font-weight: 700;
+    color: #7b8093;
+  }
+
   .ant-checkbox-group {
     gap: 20px 18px;
     padding: 0 16px;
+  }
+
+  .ant-radio + span,
+  .ant-checkbox + span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #7b8093;
   }
 
   .ant-checkbox + span {
@@ -48,13 +61,6 @@ const Container = styled.div`
 
   .ant-radio + span {
     word-break: keep-all;
-  }
-
-  .ant-radio + span,
-  .ant-checkbox + span {
-    font-size: 14px;
-    font-weight: 400;
-    color: #7b8093;
   }
 
   .ant-btn-link {
@@ -66,6 +72,22 @@ const Container = styled.div`
       font-weight: 400;
       color: #212b36;
       text-decoration: underline;
+    }
+  }
+
+  .ant-table-wrapper .ant-table-tbody {
+    .ant-table-row {
+      &.closed {
+        background-color: #eeeeee;
+
+        a {
+          color: #7b8093;
+        }
+
+        > .ant-table-cell-row-hover {
+          background-color: #eeeeee;
+        }
+      }
     }
   }
 `;
@@ -141,6 +163,35 @@ const PaginationWrapper = styled.div`
   }
 `;
 
+const TabLabelWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0 4px;
+`;
+
+const Tag = styled.div`
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  background-color: #ff563014;
+  color: #b71d18;
+
+  ${(props) =>
+    props.type === "closed" &&
+    css`
+      background-color: #919eab14;
+      color: #212b36;
+    `}
+
+  ${(props) =>
+    props.type === "pending" &&
+    css`
+      background-color: #ff563014;
+      color: #b71d18;
+    `}
+`;
+
 const Page = () => {
   const router = useRouter();
   // const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
@@ -155,6 +206,9 @@ const Page = () => {
       title: "訂單編號",
       dataIndex: "b",
       align: "center",
+      render: (text, record, index) => {
+        return <Link href={`/order/${text}`}>{text}</Link>;
+      },
     },
     {
       title: "預計配送日",
@@ -180,6 +234,21 @@ const Page = () => {
       title: "處理狀態",
       dataIndex: "g",
       align: "center",
+      render: (text, record, index) => {
+        let type = "";
+        switch (text) {
+          case "已結案":
+            type = "closed";
+            break;
+          case "待處理":
+            type = "pending";
+            break;
+          default:
+            type = "";
+            break;
+        }
+        return <Tag type={type}>{text}</Tag>;
+      },
     },
     {
       title: "狀態",
@@ -212,7 +281,7 @@ const Page = () => {
       d: "22,080",
       e: "王小花",
       f: "0980123123",
-      g: "已結案",
+      g: "待處理",
       h: "拒收",
       i: "",
     },
@@ -223,7 +292,7 @@ const Page = () => {
       d: "22,080",
       e: "王小花",
       f: "0980123123",
-      g: "已結案",
+      g: "待處理",
       h: "拒收",
       i: "",
     },
@@ -371,6 +440,9 @@ const Page = () => {
                 children: (
                   <>
                     <Table
+                      rowClassName={(record, index) => {
+                        if (index === 0) return "closed";
+                      }}
                       rowSelection={{
                         onChange: (selectedRowKeys, selectedRows) => {},
                         getCheckboxProps: (record) => ({
@@ -390,12 +462,20 @@ const Page = () => {
                 ),
               },
               {
-                label: "異常",
+                label: (
+                  <TabLabelWrapper>
+                    異常 <Tag>5</Tag>
+                  </TabLabelWrapper>
+                ),
                 key: "2",
                 children: "Tab 2",
               },
               {
-                label: "待處理",
+                label: (
+                  <TabLabelWrapper>
+                    待處理 <Tag>12</Tag>
+                  </TabLabelWrapper>
+                ),
                 key: "3",
                 children: "Tab 3",
               },

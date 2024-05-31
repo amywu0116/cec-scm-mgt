@@ -6,8 +6,6 @@ import { Breadcrumb, Button, Layout, theme } from "antd";
 import Sider from "@/app/Sider";
 import api from "@/api";
 
-const { Header, Content, Footer } = Layout;
-
 const PageLayout = (props) => {
   const { children } = props;
   const {
