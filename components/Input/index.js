@@ -9,10 +9,18 @@ const StyledInput = styled(AntdInput)`
     font-weight: 400;
     color: #595959;
   }
+
+  textarea {
+    color: red;
+  }
 `;
 
 const Input = (props) => {
   return <StyledInput {...props} />;
+};
+
+export const TextArea = (props) => {
+  return <StyledInput.TextArea {...props} />;
 };
 
 export default Input;
