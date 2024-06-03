@@ -1,7 +1,7 @@
 import { Input as AntdInput } from "antd";
 import styled from "styled-components";
 
-const StyledInput = styled(AntdInput)`
+const StyledTextArea = styled(AntdInput.TextArea)`
   &.ant-input {
     height: 42px;
     font-size: 14px;
@@ -10,8 +10,8 @@ const StyledInput = styled(AntdInput)`
   }
 `;
 
-const Input = (props) => {
-  return <StyledInput {...props} />;
+export const TextArea = (props) => {
+  return <StyledTextArea {...props} />;
 };
 
-export default Input;
+export default TextArea;

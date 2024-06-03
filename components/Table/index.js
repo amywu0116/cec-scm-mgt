@@ -10,6 +10,10 @@ const StyledTable = styled(AntdTable)`
     border-bottom: 1px solid #cccccc;
   }
 
+  &.ant-table-wrapper .ant-table-thead > tr > th {
+    background: #f1f4f7;
+  }
+
   .ant-table-thead tr {
     height: 72px;
   }
