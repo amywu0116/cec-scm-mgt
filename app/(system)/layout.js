@@ -1,10 +1,19 @@
 "use client";
-import React, { Children, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
-import { Breadcrumb, Button, Layout, theme } from "antd";
+import { Layout, theme } from "antd";
+import styled, { css } from "styled-components";
 
 import Sider from "@/app/Sider";
 import api from "@/api";
+
+const Container = styled.div`
+  ${(props) =>
+    props.$headerHeight &&
+    css`
+      margin: 124px 36px 33px;
+    `}
+`;
 
 const PageLayout = (props) => {
   const { children } = props;
@@ -13,6 +22,8 @@ const PageLayout = (props) => {
   } = theme.useToken();
   const router = useRouter();
   // const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
+
+  const [headerHeight, setHeaderHeight] = useState(100);
 
   const handleLogout = () => {
     const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
@@ -33,6 +44,12 @@ const PageLayout = (props) => {
       .finally(() => {});
   };
 
+  useEffect(() => {
+    const header = document.querySelector("header.ant-layout-header");
+    const headerHeight = header.getBoundingClientRect().height;
+    setHeaderHeight(headerHeight);
+  }, []);
+
   // useEffect(() => {
   //   if (!accessToken) {
   //     redirect("/login");
@@ -49,15 +66,7 @@ const PageLayout = (props) => {
           backgroundColor: "#fff",
         }}
       >
-        {children}
-
-        {/* <Footer
-          style={{
-            textAlign: "center",
-          }}
-        >
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        </Footer> */}
+        <Container $headerHeight={headerHeight}>{children}</Container>
       </Layout>
     </Layout>
   );

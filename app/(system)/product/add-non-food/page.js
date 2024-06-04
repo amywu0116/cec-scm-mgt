@@ -17,6 +17,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
@@ -26,7 +27,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-  margin: 64px 36px 33px;
 `;
 
 const Wrapper = styled.div`
@@ -114,19 +114,8 @@ const SpecItemContent = styled.div`
 const Page = () => {
   return (
     <>
-      <Layout.Header
-        style={{
-          padding: "0 36px",
-          position: "fixed",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          width: "calc(100vw - 280px)",
-        }}
-      >
-        <HeaderTitle>新增提品資料</HeaderTitle>
+      <LayoutHeader>
+        <LayoutHeaderTitle>新增提品資料</LayoutHeaderTitle>
 
         <Breadcrumb
           separator=">"
@@ -144,7 +133,7 @@ const Page = () => {
           <Button>關閉</Button>
           <Button type="primary">暫存</Button>
         </ButtonGroup>
-      </Layout.Header>
+      </LayoutHeader>
 
       <Container>
         <Wrapper>

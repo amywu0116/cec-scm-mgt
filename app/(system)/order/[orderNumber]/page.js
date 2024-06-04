@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Breadcrumb, Layout } from "antd";
+import { Breadcrumb } from "antd";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
@@ -17,14 +18,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-  margin: 64px 36px 33px;
-`;
-
-const HeaderTitle = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #212b36;
-  margin-right: 32px;
 `;
 
 const Wrapper = styled.div`
@@ -187,19 +180,9 @@ const Page = (props) => {
 
   return (
     <>
-      <Layout.Header
-        style={{
-          padding: "0 36px",
-          position: "fixed",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          width: "calc(100vw - 280px)",
-        }}
-      >
-        <HeaderTitle>訂單資料</HeaderTitle>
+      <LayoutHeader>
+        <LayoutHeaderTitle>訂單資料</LayoutHeaderTitle>
+
         <Breadcrumb
           separator=">"
           items={[
@@ -243,7 +226,7 @@ const Page = (props) => {
             </Button>
           )}
         </ButtonGroup>
-      </Layout.Header>
+      </LayoutHeader>
 
       <Container>
         <Wrapper>

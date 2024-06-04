@@ -16,6 +16,7 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import ModalAddType from "./ModalAddProduct";
@@ -24,7 +25,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-  margin: 64px 36px 33px;
 
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
@@ -93,13 +93,6 @@ const Container = styled.div`
   }
 `;
 
-const HeaderTitle = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #212b36;
-  margin-right: 32px;
-`;
-
 const ButtonGroup = styled.div`
   display: flex;
   gap: 0 16px;
@@ -162,7 +155,7 @@ const MaintainBtn = styled.div`
   }
 `;
 
-const Page = (props) => {
+const ReturnRequest = (props) => {
   const [showModalAddType, setShowModalAddType] = useState(false);
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -244,19 +237,8 @@ const Page = (props) => {
 
   return (
     <>
-      <Layout.Header
-        style={{
-          padding: "0 36px",
-          position: "fixed",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          width: "calc(100vw - 280px)",
-        }}
-      >
-        <HeaderTitle>提品申請</HeaderTitle>
+      <LayoutHeader>
+        <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
         <ButtonGroup style={{ marginLeft: "auto" }}>
           <Button>提品匯入範例下載</Button>
@@ -265,7 +247,7 @@ const Page = (props) => {
             新增提品
           </Button>
         </ButtonGroup>
-      </Layout.Header>
+      </LayoutHeader>
 
       <Container>
         <Card>
@@ -358,4 +340,4 @@ const Page = (props) => {
   );
 };
 
-export default Page;
+export default ReturnRequest;

@@ -16,6 +16,7 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
@@ -23,7 +24,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-  margin: 64px 36px 33px;
 
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;
@@ -92,17 +92,11 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #212b36;
-  margin-right: 32px;
-`;
-
 const TableTitle = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
+  line-height: 36px;
 `;
 
 const Card = styled.div`
@@ -143,7 +137,7 @@ const Row = styled.div`
   gap: 0 16px;
 `;
 
-const ListSection = styled.div`
+const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
@@ -300,19 +294,9 @@ const Page = () => {
 
   return (
     <>
-      <Layout.Header
-        style={{
-          padding: "0 36px",
-          position: "fixed",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          width: "calc(100vw - 280px)",
-        }}
-      >
-        <Title>訂單管理</Title>
+      <LayoutHeader>
+        <LayoutHeaderTitle>訂單管理</LayoutHeaderTitle>
+
         <Breadcrumb
           separator=">"
           items={[
@@ -324,7 +308,7 @@ const Page = () => {
             },
           ]}
         />
-      </Layout.Header>
+      </LayoutHeader>
 
       <Container>
         <Card>
@@ -423,7 +407,7 @@ const Page = () => {
           </ButtonGroup>
         </Card>
 
-        <ListSection>
+        <TableWrapper>
           <TableTitle>訂單列表</TableTitle>
 
           <ButtonGroup>
@@ -481,7 +465,7 @@ const Page = () => {
               },
             ]}
           />
-        </ListSection>
+        </TableWrapper>
       </Container>
     </>
   );
