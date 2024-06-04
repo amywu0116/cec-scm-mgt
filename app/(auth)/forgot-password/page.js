@@ -1,13 +1,14 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { App, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import ReCAPTCHA from "react-google-recaptcha";
 
+import Button from "@/components/Button";
+
 import Title from "../Title";
 import Subtitle from "../Subtitle";
-import Button from "@/components/Button";
 
 import { PATH_LOGIN } from "@/constants/paths";
 import api from "@/api";
@@ -128,6 +129,7 @@ const Page = () => {
         <Form.Item>
           <Flex vertical gap={20}>
             <Button
+              style={{ width: "100%" }}
               type="primary"
               htmlType="submit"
               loading={loading}
@@ -136,7 +138,13 @@ const Page = () => {
               確認
             </Button>
 
-            <Button onClick={() => router.push(PATH_LOGIN)}>取消</Button>
+            <Button
+              style={{ width: "100%" }}
+              type="secondary"
+              onClick={() => router.push(PATH_LOGIN)}
+            >
+              取消
+            </Button>
           </Flex>
         </Form.Item>
       </Form>
