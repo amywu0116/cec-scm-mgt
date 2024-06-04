@@ -1,0 +1,446 @@
+"use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Breadcrumb,
+  Checkbox,
+  Divider,
+  Layout,
+  Pagination,
+  Radio,
+  Tabs,
+} from "antd";
+import styled, { css } from "styled-components";
+import Link from "next/link";
+
+import Button from "@/components/Button";
+import DatePicker from "@/components/DatePicker";
+import Input from "@/components/Input";
+import Select from "@/components/Select";
+import Table from "@/components/Table";
+import TextArea from "@/components/TextArea";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+  margin: 64px 36px 33px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+`;
+
+const HeaderTitle = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+  color: #212b36;
+  margin-right: 32px;
+`;
+
+const TitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #56659b;
+  line-height: 35px;
+`;
+
+const Item = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0 16px;
+`;
+
+const ItemLabel = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #7b8093;
+  width: 64px;
+  flex-shrink: 0;
+`;
+
+const Row = styled.div`
+  display: flex;
+  gap: 0 32px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 0 16px;
+`;
+
+const Page = () => {
+  return (
+    <>
+      <Layout.Header
+        style={{
+          padding: "0 36px",
+          position: "fixed",
+          top: 0,
+          zIndex: 1,
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "#fff",
+          width: "calc(100vw - 280px)",
+        }}
+      >
+        <HeaderTitle>新增提品資料</HeaderTitle>
+
+        <Breadcrumb
+          separator=">"
+          items={[
+            {
+              title: "提品申請",
+            },
+            {
+              title: "新增提品資料_食品",
+            },
+          ]}
+        />
+
+        <ButtonGroup style={{ marginLeft: "auto" }}>
+          <Button>關閉</Button>
+          <Button type="primary">暫存</Button>
+        </ButtonGroup>
+      </Layout.Header>
+
+      <Container>
+        <Wrapper>
+          <Title>分類設定</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>分類1</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="選擇分類"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+
+            <Item>
+              <ItemLabel>分類2</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="選擇分類"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+
+            <Item>
+              <ItemLabel>分類3</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="選擇分類"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>分類4</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="選擇分類"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+
+            <Item>
+              <ItemLabel>分類5</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="選擇分類"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+
+            <Item></Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>中文品名</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>英文品名</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>供應商商品編號</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>銷售碼 Unitcode</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>條碼</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>應/免稅</ItemLabel>
+              <Select
+                style={{ width: 444 }}
+                placeholder=""
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>建議售價(含稅)</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>生產國家</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+        </Wrapper>
+
+        <Wrapper>
+          <Title>容量和重量</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>容量</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>容量單位</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>庫存單位</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>陳列單位(數字)</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>陳列容量</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>商品高度(cm)</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>商品寬度(cm)</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+
+            <Item>
+              <ItemLabel>商品長度(cm)</ItemLabel>
+              <Input style={{ width: 250 }} placeholder="請輸入品名" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>重量-毛重</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入重量-毛重" />
+            </Item>
+
+            <Item>
+              <ItemLabel>重量-淨重</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入重量-淨重" />
+            </Item>
+          </Row>
+        </Wrapper>
+
+        <Wrapper>
+          <Title>其他資訊</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>保存日期</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入保存日期" />
+            </Item>
+
+            <Item>
+              <ItemLabel>保存日期單位</ItemLabel>
+              <Select
+                style={{ width: "100%" }}
+                placeholder="請選擇保存日期單位"
+                options={[
+                  {
+                    value: "lucy",
+                    label: "Lucy",
+                  },
+                ]}
+              />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>影片檔Youtube之影音URL</ItemLabel>
+              <Input
+                style={{ width: 444 }}
+                placeholder="請輸入影片檔Youtube之影音URL"
+              />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>顏色</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入顏色" />
+            </Item>
+
+            <Item>
+              <ItemLabel>尺寸</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入尺寸" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>等級</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入等級" />
+            </Item>
+
+            <Item>
+              <ItemLabel>保存方式(文字)</ItemLabel>
+              <Input style={{ width: 444 }} placeholder="請輸入保存方式" />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>等級</ItemLabel>
+              <Radio.Group
+                style={{ display: "flex", alignItems: "center" }}
+                defaultValue={1}
+              >
+                <Radio value={1}>不庫控</Radio>
+                <Radio value={2}>活動庫存</Radio>
+              </Radio.Group>
+
+              <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
+
+              <Input style={{ width: 102, flex: 1 }} placeholder="起始日期" />
+            </Item>
+
+            <Item></Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>商品特色說明</ItemLabel>
+              <TextArea
+                placeholder="請輸入商品特色說明"
+                autoSize={{
+                  minRows: 3,
+                  maxRows: 3,
+                }}
+              />
+            </Item>
+
+            <Item>
+              <ItemLabel>商品完整說明(文字)</ItemLabel>
+              <TextArea
+                placeholder="請輸入商品完整說明(文字)"
+                autoSize={{
+                  minRows: 3,
+                  maxRows: 3,
+                }}
+              />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>產品成份及食品添加物(文字)</ItemLabel>
+              <TextArea
+                placeholder="請輸入產品成份及食品添加物(文字)"
+                autoSize={{
+                  minRows: 3,
+                  maxRows: 3,
+                }}
+              />
+            </Item>
+
+            <Item>
+              <ItemLabel>營養標示(文字)</ItemLabel>
+              <TextArea
+                placeholder="請輸入營養標示(文字)"
+                autoSize={{
+                  minRows: 3,
+                  maxRows: 3,
+                }}
+              />
+            </Item>
+          </Row>
+        </Wrapper>
+      </Container>
+    </>
+  );
+};
+
+export default Page;
