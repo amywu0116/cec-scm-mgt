@@ -6,9 +6,10 @@ import { Form, Input, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
 
+import Button from "@/components/Button";
+
 import Title from "../Title";
 import Subtitle from "../Subtitle";
-import Button from "@/components/Button";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";

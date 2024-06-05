@@ -4,9 +4,10 @@ import { App, Form, Input, Typography } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
+import Button from "@/components/Button";
+
 import Title from "../Title";
 import Subtitle from "../Subtitle";
-import Button from "@/components/Button";
 
 import api from "@/api";
 import { PATH_LOGIN } from "@/constants/paths";
