@@ -1,9 +1,11 @@
 import React from "react";
-import { Layout, Menu } from "antd";
+import { App, Layout, Menu } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+import api from "@/api";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -60,17 +62,17 @@ const StyledSider = styled(Layout.Sider)`
 const items = [
   { key: "sub1", label: "訊息與公告", icon: React.createElement(UserOutlined) },
   {
-    key: "sub2",
+    key: "/product",
     label: "商品",
     icon: React.createElement(UserOutlined),
     children: [
       {
-        key: "sub2-1",
+        key: "/product/product-list",
         label: "商品列表",
         icon: React.createElement(UserOutlined),
       },
       {
-        key: "sub2-2",
+        key: "/product/product-application",
         label: "提品申請",
         icon: React.createElement(UserOutlined),
       },
@@ -94,7 +96,7 @@ const items = [
     icon: React.createElement(UserOutlined),
   },
   {
-    key: "sub5",
+    key: "logout",
     label: "登出",
     icon: React.createElement(UserOutlined),
   },
@@ -102,9 +104,34 @@ const items = [
 
 const Sider = () => {
   const router = useRouter();
+  const { message } = App.useApp();
 
-  const handleClickItem = (e) => {
-    router.push(e.key);
+  const logout = () => {
+    const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
+    api
+      .post(
+        "/auth/signout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        router.push("/login");
+        message.success("登出成功");
+      })
+      .catch((err) => {})
+      .finally(() => {});
+  };
+
+  const handleClickItem = ({ item, key, keyPath, domEvent }) => {
+    if (key === "logout") {
+      logout();
+    } else {
+      router.push(key);
+    }
   };
 
   return (
@@ -125,7 +152,6 @@ const Sider = () => {
       <Menu
         theme="dark"
         mode="inline"
-        defaultSelectedKeys={["/order"]}
         items={items}
         onClick={handleClickItem}
       />

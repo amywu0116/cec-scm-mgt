@@ -13,7 +13,7 @@ const StyledLayoutHeader = styled(Layout.Header)`
     align-items: center;
     background-color: #fff;
     height: auto;
-    line-height: inherit;
+    line-height: 42px;
   }
 `;
 

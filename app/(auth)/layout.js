@@ -1,7 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import styled from "styled-components";
-import { Col, Row } from "antd";
+import { App, Col, Row } from "antd";
 import Image from "next/image";
 
 const Container = styled.div`
@@ -18,7 +18,15 @@ const Container = styled.div`
 
 const FormWrapper = styled.div`
   width: 352px;
-  margin: 133px auto 0;
+  margin: auto;
+`;
+
+const LogoWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 107px;
 `;
 
 const Layout = (props) => {
@@ -32,8 +40,11 @@ const Layout = (props) => {
             <Image src="/banner.svg" alt="" width={580} height={453} />
           </Col>
 
-          <Col flex="0 0 480px">
-            <Image src="/logo.svg" alt="" width={120} height={107} />
+          <Col style={{ display: "flex" }} flex="0 0 480px">
+            <LogoWrapper>
+              <Image src="/logo.svg" alt="" fill />
+            </LogoWrapper>
+
             <FormWrapper>{children}</FormWrapper>
           </Col>
         </Row>
