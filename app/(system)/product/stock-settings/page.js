@@ -34,18 +34,6 @@ const Container = styled.div`
     font-weight: 700;
     color: #7b8093;
   }
-
-  .ant-btn-link {
-    padding: 0;
-    min-width: 0;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: #212b36;
-      text-decoration: underline;
-    }
-  }
 `;
 
 const Card = styled.div`
@@ -69,7 +57,6 @@ const FormItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #7b8093;
-  width: 42px;
   flex-shrink: 0;
 `;
 
@@ -84,56 +71,36 @@ const TableWrapper = styled.div`
   gap: 16px 0;
 `;
 
-const PaginationWrapper = styled.div`
-  margin-top: 16px;
+const DeleteBtn = styled.div``;
+
+const SettingsCard = styled.div`
+  background-color: #f1f3f6;
   padding: 16px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .total {
-    font-size: 14px;
-    font-weight: 400;
-    color: #7b8093;
-  }
-`;
-
-const SettingBtn = styled.div`
-  border: 1px solid rgba(34, 197, 94, 0.48);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(34, 197, 94, 1);
-  padding: 4px 8px;
-  margin: auto;
-  width: fit-content;
-  cursor: pointer;
-
-  &:hover {
-    border: 1.5px solid rgba(34, 197, 94, 1);
-    background-color: rgba(34, 197, 94, 0.08);
-  }
+  gap: 0 16px;
 `;
 
 const Page = () => {
+  const [showSettings, setShowSettings] = useState(false);
+
   const columns = [
     {
-      title: "部門別",
+      title: "No",
       dataIndex: "a",
       align: "center",
     },
     {
-      title: "中文品名",
+      title: "起始日期",
       dataIndex: "b",
       align: "center",
     },
     {
-      title: "條碼",
+      title: "庫存",
       dataIndex: "c",
       align: "center",
     },
     {
-      title: "圖片",
+      title: "已販售量",
       dataIndex: "d",
       align: "center",
       render: () => {
@@ -146,7 +113,7 @@ const Page = () => {
       align: "center",
       render: (text, record, index) => {
         if (index === 0) {
-          return <SettingBtn>庫存設定</SettingBtn>;
+          return <DeleteBtn>刪除</DeleteBtn>;
         }
         return;
       },
@@ -155,17 +122,17 @@ const Page = () => {
 
   const data = [
     {
-      a: "14",
-      b: "法式傳統奶油酥餅（厚）",
+      a: "1",
+      b: "2024/05/01",
       c: "3472860001492",
-      d: "",
+      d: "30",
       e: "",
     },
     {
-      a: "14",
-      b: "法式傳統奶油酥餅（厚）",
+      a: "2",
+      b: "2024/04/23",
       c: "3472860001492",
-      d: "",
+      d: "35",
       e: "",
     },
   ];
@@ -174,6 +141,18 @@ const Page = () => {
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
+
+        <Breadcrumb
+          separator=">"
+          items={[
+            {
+              title: "商品列表",
+            },
+            {
+              title: "庫存設定",
+            },
+          ]}
+        />
       </LayoutHeader>
 
       <Container>
@@ -193,12 +172,46 @@ const Page = () => {
               style={{ marginLeft: "auto" }}
               justifyContent="flex-end"
             >
-              <Button type="secondary">查詢</Button>
-
-              <Button type="link">清除查詢條件</Button>
+              <Button
+                type="primary"
+                disabled={showSettings}
+                onClick={() => setShowSettings(true)}
+              >
+                新增庫存設定
+              </Button>
             </ButtonGroup>
           </Row>
         </Card>
+
+        {showSettings && (
+          <SettingsCard>
+            <FormItem style={{ flex: 1 }}>
+              <FormItemLabel>數量</FormItemLabel>
+              <Input placeholder="請輸入數量" />
+            </FormItem>
+
+            <FormItem style={{ flex: 1 }}>
+              <FormItemLabel>起始日期</FormItemLabel>
+              <DatePicker
+                style={{ width: "100%" }}
+                placeholder="請選擇起始日期"
+              />
+            </FormItem>
+
+            <ButtonGroup>
+              <Button style={{ width: 86 }} type="secondary">
+                確認
+              </Button>
+
+              <Button
+                style={{ width: 86 }}
+                onClick={() => setShowSettings(false)}
+              >
+                取消
+              </Button>
+            </ButtonGroup>
+          </SettingsCard>
+        )}
 
         <TableWrapper>
           <Tabs
@@ -224,10 +237,6 @@ const Page = () => {
                       dataSource={data}
                       pagination={false}
                     />
-                    <PaginationWrapper>
-                      <div className="total">共500筆</div>
-                      <Pagination defaultCurrent={6} total={500} />
-                    </PaginationWrapper>
                   </>
                 ),
               },
