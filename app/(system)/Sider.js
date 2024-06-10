@@ -148,7 +148,7 @@ const Sider = () => {
       }}
       width={280}
     >
-      <Image src="/logo-1.svg" width={40} height={27} />
+      <Image src="/logo-1.svg" width={40} height={27} alt="" />
       <Menu
         theme="dark"
         mode="inline"

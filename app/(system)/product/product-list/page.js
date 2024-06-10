@@ -116,6 +116,8 @@ const SettingBtn = styled.div`
 `;
 
 const Page = () => {
+  const router = useRouter();
+
   const columns = [
     {
       title: "部門別",
@@ -137,7 +139,9 @@ const Page = () => {
       dataIndex: "d",
       align: "center",
       render: () => {
-        return <img width={40} height={40} src="https://fakeimg.pl/40x40/" />;
+        return (
+          <img width={40} height={40} src="https://fakeimg.pl/40x40/" alt="" />
+        );
       },
     },
     {
@@ -146,7 +150,11 @@ const Page = () => {
       align: "center",
       render: (text, record, index) => {
         if (index === 0) {
-          return <SettingBtn>庫存設定</SettingBtn>;
+          return (
+            <SettingBtn onClick={() => router.push("/product/stock-settings")}>
+              庫存設定
+            </SettingBtn>
+          );
         }
         return;
       },
