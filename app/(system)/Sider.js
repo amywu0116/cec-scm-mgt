@@ -60,7 +60,23 @@ const StyledSider = styled(Layout.Sider)`
 `;
 
 const items = [
-  { key: "sub1", label: "訊息與公告", icon: React.createElement(UserOutlined) },
+  {
+    key: "",
+    label: "訊息與公告",
+    icon: React.createElement(UserOutlined),
+    children: [
+      {
+        key: "/announcement",
+        label: "公告設定",
+        icon: React.createElement(UserOutlined),
+      },
+      {
+        key: "/message",
+        label: "訊息列表",
+        icon: React.createElement(UserOutlined),
+      },
+    ],
+  },
   {
     key: "/product",
     label: "商品",

@@ -40,14 +40,14 @@ const Modal = (props) => {
 
   return (
     <StyledModal
-      footer={[
-        <Button key="cancel" {...cancelButtonProps} onClick={onCancel}>
-          {cancelText}
-        </Button>,
-        <Button key="ok" {...okButtonProps} type="primary" onClick={onOk}>
-          {okText}
-        </Button>,
-      ]}
+      // footer={[
+      //   <Button key="cancel" {...cancelButtonProps} onClick={onCancel}>
+      //     {cancelText}
+      //   </Button>,
+      //   <Button key="ok" {...okButtonProps} type="primary" onClick={onOk}>
+      //     {okText}
+      //   </Button>,
+      // ]}
       {...props}
     />
   );
