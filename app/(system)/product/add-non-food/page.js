@@ -413,11 +413,11 @@ const Page = () => {
                       placeholder="請輸入項目內容"
                     />
                     <SpecButton>
-                      <Image src="/button-add.svg" fill />
+                      <Image src="/button-add.svg" fill alt="" />
                     </SpecButton>
 
                     <SpecButton>
-                      <Image src="/button-remove.svg" fill />
+                      <Image src="/button-remove.svg" fill alt="" />
                     </SpecButton>
                   </SpecItemContent>
                 </SpecItemContentList>
@@ -445,7 +445,7 @@ const Page = () => {
                       placeholder="請輸入項目內容"
                     />
                     <SpecButton>
-                      <Image src="/button-add.svg" fill />
+                      <Image src="/button-add.svg" fill alt="" />
                     </SpecButton>
                   </SpecItemContent>
                 </SpecItemContentList>

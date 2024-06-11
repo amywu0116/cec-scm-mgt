@@ -191,7 +191,9 @@ const ReturnRequest = (props) => {
       dataIndex: "f",
       align: "center",
       render: () => {
-        return <img width={40} height={40} src="https://fakeimg.pl/40x40/" />;
+        return (
+          <img width={40} height={40} src="https://fakeimg.pl/40x40/" alt="" />
+        );
       },
     },
     {

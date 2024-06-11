@@ -57,14 +57,46 @@ const StyledSider = styled(Layout.Sider)`
   .ant-menu {
     padding: 0;
   }
+
+  .ant-menu-submenu-open {
+    > div {
+      background-color: rgba(255, 255, 255, 1);
+      color: rgba(30, 91, 198, 1);
+      font-weight: 600;
+    }
+  }
+
+  .ant-menu-submenu-active {
+    > div {
+      background-color: rgba(255, 255, 255, 1) !important;
+      color: rgba(30, 91, 198, 1);
+      font-weight: 600;
+    }
+  }
 `;
 
 const items = [
-  { key: "sub1", label: "訊息與公告", icon: React.createElement(UserOutlined) },
   {
-    key: "/product",
+    key: "announcement",
+    label: "訊息與公告",
+    icon: <Image src="/announcement.png" alt="" width={30} height={30} />,
+    children: [
+      {
+        key: "/announcement",
+        label: "公告設定",
+        icon: React.createElement(UserOutlined),
+      },
+      {
+        key: "/message",
+        label: "訊息列表",
+        icon: React.createElement(UserOutlined),
+      },
+    ],
+  },
+  {
+    key: "product",
     label: "商品",
-    icon: React.createElement(UserOutlined),
+    icon: <Image src="/product.svg" alt="" width={30} height={30} />,
     children: [
       {
         key: "/product/product-list",
@@ -79,9 +111,9 @@ const items = [
     ],
   },
   {
-    key: "/order",
+    key: "order",
     label: "訂單",
-    icon: React.createElement(UserOutlined),
+    icon: <Image src="/order.svg" alt="" width={30} height={30} />,
     children: [
       {
         key: "/order",
@@ -91,14 +123,31 @@ const items = [
     ],
   },
   {
-    key: "sub4",
+    key: "logistics",
+    label: "貨運公司維護",
+    icon: <Image src="/logistics.svg" alt="" width={30} height={30} />,
+  },
+  {
+    key: "supplier",
     label: "供應商",
-    icon: React.createElement(UserOutlined),
+    icon: <Image src="/supplier.svg" alt="" width={30} height={30} />,
+  },
+  {
+    key: "accounting",
+    label: "帳務",
+    icon: <Image src="/accounting.svg" alt="" width={30} height={30} />,
+    children: [
+      {
+        key: "/logistics",
+        label: "訂單管理",
+        icon: React.createElement(UserOutlined),
+      },
+    ],
   },
   {
     key: "logout",
     label: "登出",
-    icon: React.createElement(UserOutlined),
+    icon: <Image src="/logout.svg" alt="" width={30} height={30} />,
   },
 ];
 
@@ -148,11 +197,12 @@ const Sider = () => {
       }}
       width={280}
     >
-      <Image src="/logo-1.svg" width={40} height={27} />
+      <Image src="/logo-1.svg" width={40} height={27} alt="" />
       <Menu
         theme="dark"
         mode="inline"
         items={items}
+        defaultOpenKeys={["announcement"]}
         onClick={handleClickItem}
       />
     </StyledSider>
