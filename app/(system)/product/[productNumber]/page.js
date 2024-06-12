@@ -1,13 +1,16 @@
 "use client";
 import { useState } from "react";
-import { Breadcrumb, Checkbox, Divider, Pagination, Radio, Tabs } from "antd";
-import styled, { css } from "styled-components";
+import { Breadcrumb, Radio } from "antd";
+import styled from "styled-components";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import TextArea from "@/components/TextArea";
+
+import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -73,7 +76,7 @@ const Page = () => {
           separator=">"
           items={[
             {
-              title: "商品列表",
+              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
             },
             {
               title: "商品資料",
