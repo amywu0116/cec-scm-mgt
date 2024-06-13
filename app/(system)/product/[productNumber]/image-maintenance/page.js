@@ -10,8 +10,7 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import FunctionBtn from "@/components/Button/FunctionBtn";
-
-import ModalDelete from "./ModalDelete";
+import ModalDelete from "@/components/Modal/ModalDelete";
 
 import {
   PATH_PRODUCT_INFO,

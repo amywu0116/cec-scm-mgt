@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Breadcrumb } from "antd";
 import styled, { css } from "styled-components";
+import Link from "next/link";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
@@ -13,6 +14,8 @@ import TextArea from "@/components/TextArea";
 import ModalAddress from "./ModalAddress";
 import ModalReturnResult from "./ModalReturnResult";
 import ModalReturnApproval from "./ModalReturnApproval";
+
+import { PATH_ORDER } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -190,7 +193,7 @@ const Page = (props) => {
               title: "訂單",
             },
             {
-              title: "訂單管理",
+              title: <Link href={PATH_ORDER}>訂單管理</Link>,
             },
             {
               title: "訂單明細",
