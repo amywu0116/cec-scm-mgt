@@ -12,11 +12,20 @@ const StyledTable = styled(AntdTable)`
 
   &.ant-table-wrapper .ant-table-thead > tr > th {
     background: #f1f4f7;
-    padding: 25px 16px;
   }
 
   &.ant-table-wrapper .ant-table-tbody tr {
     min-height: 80px;
+  }
+
+  &.ant-table-wrapper .ant-table.ant-table-middle .ant-table-cell,
+  .ant-table-wrapper .ant-table.ant-table-middle .ant-table-thead > tr > th {
+    padding: 25px 16px;
+  }
+
+  &.ant-table-wrapper .ant-table.ant-table-small .ant-table-cell,
+  .ant-table-wrapper .ant-table.ant-table-small .ant-table-thead > tr > th {
+    padding: 13px 16px;
   }
 `;
 
@@ -37,11 +46,11 @@ const PaginationWrapper = styled.div`
 `;
 
 const Table = (props) => {
-  const { pagination = true } = props;
+  const { pagination = true, size = "middle" } = props;
 
   return (
     <TableWrapper>
-      <StyledTable pagination={false} {...props} />
+      <StyledTable size={size} pagination={false} {...props} />
 
       {pagination && (
         <PaginationWrapper>

@@ -8,3 +8,5 @@ export const PATH_PRODUCT_STOCK_SETTINGS = "/product/stock-settings";
 
 export const PATH_SHIPPING_COMPANY = "/shipping-company";
 export const PATH_SHIPPING_COMPANY_ADD = "/shipping-company/add";
+
+export const PATH_SUPPLIER = "/supplier";

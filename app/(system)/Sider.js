@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import api from "@/api";
-import { PATH_SHIPPING_COMPANY } from "@/constants/paths";
+import { PATH_SHIPPING_COMPANY, PATH_SUPPLIER } from "@/constants/paths";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -129,7 +129,7 @@ const items = [
     icon: <Image src="/logistics.svg" alt="" width={30} height={30} />,
   },
   {
-    key: "supplier",
+    key: PATH_SUPPLIER,
     label: "供應商",
     icon: <Image src="/supplier.svg" alt="" width={30} height={30} />,
   },
