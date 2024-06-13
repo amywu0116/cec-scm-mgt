@@ -16,7 +16,6 @@ const StyledSider = styled(Layout.Sider)`
     content: "";
     position: absolute;
     top: 0;
-
     width: 50%;
     height: 8px;
   }
@@ -60,19 +59,16 @@ const StyledSider = styled(Layout.Sider)`
   }
 
   .ant-menu-submenu-open {
-    > div {
-      background-color: rgba(255, 255, 255, 1);
-      color: rgba(30, 91, 198, 1);
+    > .ant-menu-submenu-title {
+      background-color: rgba(255, 255, 255, 1) !important;
+      color: rgba(30, 91, 198, 1) !important;
       font-weight: 600;
     }
   }
 
-  .ant-menu-submenu-active {
-    > div {
-      background-color: rgba(255, 255, 255, 1) !important;
-      color: rgba(30, 91, 198, 1);
-      font-weight: 600;
-    }
+  .ant-menu-item.ant-menu-item-selected {
+    background-color: transparent;
+    color: rgba(255, 255, 255);
   }
 `;
 
@@ -85,12 +81,12 @@ const items = [
       {
         key: "/announcement",
         label: "公告設定",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
         key: "/message",
         label: "訊息列表",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
   },
@@ -102,12 +98,12 @@ const items = [
       {
         key: "/product/product-list",
         label: "商品列表",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
         key: "/product/product-application",
         label: "提品申請",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
   },
@@ -119,7 +115,7 @@ const items = [
       {
         key: "/order",
         label: "訂單管理",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
   },
@@ -141,7 +137,7 @@ const items = [
       {
         key: "/logistics",
         label: "訂單管理",
-        icon: React.createElement(UserOutlined),
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
   },
@@ -202,8 +198,8 @@ const Sider = () => {
       <Menu
         theme="dark"
         mode="inline"
+        inlineIndent={10}
         items={items}
-        defaultOpenKeys={["announcement"]}
         onClick={handleClickItem}
       />
     </StyledSider>
