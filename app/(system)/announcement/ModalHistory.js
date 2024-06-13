@@ -9,10 +9,6 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-
-  .ant-table-wrapper .ant-table-thead > tr > th {
-    padding: 10px 16px !important;
-  }
 `;
 
 const Item = styled.div`
@@ -116,6 +112,7 @@ const ModalHistory = (props) => {
         </Item>
 
         <Table
+          size="small"
           columns={columns}
           dataSource={data}
           pagination={false}

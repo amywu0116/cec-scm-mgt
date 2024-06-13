@@ -436,12 +436,7 @@ const Page = () => {
                       }}
                       columns={columns}
                       dataSource={data}
-                      pagination={false}
                     />
-                    <PaginationWrapper>
-                      <div className="total">共500筆</div>
-                      <Pagination defaultCurrent={6} total={500} />
-                    </PaginationWrapper>
                   </>
                 ),
               },

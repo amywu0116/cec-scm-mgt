@@ -1,16 +1,17 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Breadcrumb, Checkbox, Divider, Pagination, Radio, Tabs } from "antd";
-import styled, { css } from "styled-components";
+import { Breadcrumb, Tabs } from "antd";
+import styled from "styled-components";
 import Link from "next/link";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Select from "@/components/Select";
 import Table from "@/components/Table";
+import FunctionBtn from "@/components/Button/FunctionBtn";
+
+import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -47,13 +48,13 @@ const Row = styled.div`
   gap: 0 16px;
 `;
 
-const FormItem = styled.div`
+const Item = styled.div`
   display: flex;
   align-items: center;
   gap: 0 16px;
 `;
 
-const FormItemLabel = styled.div`
+const ItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #7b8093;
@@ -70,8 +71,6 @@ const TableWrapper = styled.div`
   flex-direction: column;
   gap: 16px 0;
 `;
-
-const DeleteBtn = styled.div``;
 
 const SettingsCard = styled.div`
   background-color: #f1f3f6;
@@ -112,10 +111,7 @@ const Page = () => {
       dataIndex: "e",
       align: "center",
       render: (text, record, index) => {
-        if (index === 0) {
-          return <DeleteBtn>刪除</DeleteBtn>;
-        }
-        return;
+        return <FunctionBtn>刪除</FunctionBtn>;
       },
     },
   ];
@@ -146,7 +142,7 @@ const Page = () => {
           separator=">"
           items={[
             {
-              title: "商品列表",
+              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
             },
             {
               title: "庫存設定",
@@ -158,21 +154,22 @@ const Page = () => {
       <Container>
         <Card>
           <Row>
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>條碼</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>條碼</ItemLabel>
               <Input placeholder="請輸入條碼" />
-            </FormItem>
+            </Item>
 
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>品名</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>品名</ItemLabel>
               <Input placeholder="請輸入商品名稱" />
-            </FormItem>
+            </Item>
 
             <ButtonGroup
               style={{ marginLeft: "auto" }}
               justifyContent="flex-end"
             >
               <Button
+                style={{ width: 220 }}
                 type="primary"
                 disabled={showSettings}
                 onClick={() => setShowSettings(true)}
@@ -185,18 +182,18 @@ const Page = () => {
 
         {showSettings && (
           <SettingsCard>
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>數量</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>數量</ItemLabel>
               <Input placeholder="請輸入數量" />
-            </FormItem>
+            </Item>
 
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>起始日期</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>起始日期</ItemLabel>
               <DatePicker
                 style={{ width: "100%" }}
                 placeholder="請選擇起始日期"
               />
-            </FormItem>
+            </Item>
 
             <ButtonGroup>
               <Button style={{ width: 86 }} type="secondary">
@@ -223,16 +220,6 @@ const Page = () => {
                 children: (
                   <>
                     <Table
-                      rowClassName={(record, index) => {
-                        if (index === 0) return "closed";
-                      }}
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {},
-                        getCheckboxProps: (record) => ({
-                          disabled: record.name === "Disabled User",
-                          name: record.name,
-                        }),
-                      }}
                       columns={columns}
                       dataSource={data}
                       pagination={false}

@@ -1,16 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { Breadcrumb, Checkbox, Divider, Pagination, Radio, Tabs } from "antd";
-import styled, { css } from "styled-components";
-import Link from "next/link";
+import { Tabs } from "antd";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
+import FunctionBtn from "@/components/Button/FunctionBtn";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Select from "@/components/Select";
 import Table from "@/components/Table";
+
+import { PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -59,13 +59,13 @@ const Row = styled.div`
   gap: 0 16px;
 `;
 
-const FormItem = styled.div`
+const Item = styled.div`
   display: flex;
   align-items: center;
   gap: 0 16px;
 `;
 
-const FormItemLabel = styled.div`
+const ItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #7b8093;
@@ -82,37 +82,6 @@ const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-`;
-
-const PaginationWrapper = styled.div`
-  margin-top: 16px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .total {
-    font-size: 14px;
-    font-weight: 400;
-    color: #7b8093;
-  }
-`;
-
-const SettingBtn = styled.div`
-  border: 1px solid rgba(34, 197, 94, 0.48);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(34, 197, 94, 1);
-  padding: 4px 8px;
-  margin: auto;
-  width: fit-content;
-  cursor: pointer;
-
-  &:hover {
-    border: 1.5px solid rgba(34, 197, 94, 1);
-    background-color: rgba(34, 197, 94, 0.08);
-  }
 `;
 
 const Page = () => {
@@ -151,9 +120,12 @@ const Page = () => {
       render: (text, record, index) => {
         if (index === 0) {
           return (
-            <SettingBtn onClick={() => router.push("/product/stock-settings")}>
+            <FunctionBtn
+              color="green"
+              onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
+            >
               庫存設定
-            </SettingBtn>
+            </FunctionBtn>
           );
         }
         return;
@@ -187,22 +159,21 @@ const Page = () => {
       <Container>
         <Card>
           <Row>
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>條碼</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>條碼</ItemLabel>
               <Input placeholder="請輸入條碼" />
-            </FormItem>
+            </Item>
 
-            <FormItem style={{ flex: 1 }}>
-              <FormItemLabel>品名</FormItemLabel>
+            <Item style={{ flex: 1 }}>
+              <ItemLabel>品名</ItemLabel>
               <Input placeholder="請輸入商品名稱" />
-            </FormItem>
+            </Item>
 
             <ButtonGroup
               style={{ marginLeft: "auto" }}
               justifyContent="flex-end"
             >
               <Button type="secondary">查詢</Button>
-
               <Button type="link">清除查詢條件</Button>
             </ButtonGroup>
           </Row>
@@ -215,29 +186,7 @@ const Page = () => {
               {
                 label: "全部",
                 key: "1",
-                children: (
-                  <>
-                    <Table
-                      rowClassName={(record, index) => {
-                        if (index === 0) return "closed";
-                      }}
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {},
-                        getCheckboxProps: (record) => ({
-                          disabled: record.name === "Disabled User",
-                          name: record.name,
-                        }),
-                      }}
-                      columns={columns}
-                      dataSource={data}
-                      pagination={false}
-                    />
-                    <PaginationWrapper>
-                      <div className="total">共500筆</div>
-                      <Pagination defaultCurrent={6} total={500} />
-                    </PaginationWrapper>
-                  </>
-                ),
+                children: <Table columns={columns} dataSource={data} />,
               },
             ]}
           />

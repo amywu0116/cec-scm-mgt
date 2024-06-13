@@ -6,7 +6,6 @@ import styled from "styled-components";
 const StyledButton = styled(AntdButton)`
   &.ant-btn {
     min-width: 148px;
-    /* width: 148px; */
     height: 42px;
     font-size: 15px;
     font-weight: 700;

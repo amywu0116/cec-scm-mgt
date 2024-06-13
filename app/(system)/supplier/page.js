@@ -1,0 +1,343 @@
+"use client";
+import React, { useState } from "react";
+import { Checkbox, Radio } from "antd";
+import styled from "styled-components";
+
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import Table from "@/components/Table";
+
+import ModalHistory from "./ModalHistory";
+import ModalFees from "./ModalFees";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+`;
+
+const BtnGroup = styled.div`
+  display: flex;
+  margin-left: auto;
+  gap: 0 16px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #56659b;
+  line-height: 35px;
+`;
+
+const Item = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0 16px;
+`;
+
+const ItemLabel = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: #7b8093;
+  width: 64px;
+  flex-shrink: 0;
+`;
+
+const Row = styled.div`
+  display: flex;
+  gap: 0 32px;
+`;
+
+const Page = () => {
+  const [openModalHistory, setOpenModalHistory] = useState(false);
+  const [openModalFees, setOpenModalFees] = useState(false);
+
+  const columns = [
+    {
+      title: "使用者",
+      dataIndex: "a",
+      align: "center",
+    },
+    {
+      title: "E-mail",
+      dataIndex: "b",
+      align: "center",
+    },
+    {
+      title: "聯絡方式",
+      dataIndex: "c",
+      align: "center",
+    },
+    {
+      title: "啟用",
+      dataIndex: "d",
+      align: "center",
+      render: () => {
+        return <Checkbox />;
+      },
+    },
+  ];
+
+  const data = [
+    {
+      a: "王心凌",
+      b: "abc@gmail.com",
+      c: "0912123123",
+      d: "",
+    },
+    {
+      a: "王心凌",
+      b: "abc@gmail.com",
+      c: "0912123123",
+      d: "",
+    },
+    {
+      a: "王心凌",
+      b: "abc@gmail.com",
+      c: "0912123123",
+      d: "",
+    },
+  ];
+
+  return (
+    <>
+      <LayoutHeader>
+        <LayoutHeaderTitle>供應商</LayoutHeaderTitle>
+
+        <BtnGroup>
+          <Button type="secondary" onClick={() => setOpenModalFees(true)}>
+            費用和佣金
+          </Button>
+
+          <Button type="secondary" onClick={() => setOpenModalHistory(true)}>
+            查看登入歷程
+          </Button>
+        </BtnGroup>
+      </LayoutHeader>
+
+      <Container>
+        <Wrapper>
+          <Title>基礎資料</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                代碼
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                名稱
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                簡稱
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>統一編號</ItemLabel>
+              <Input />
+            </Item>
+
+            <Item style={{ flex: "2 1 32px" }}>
+              <ItemLabel>
+                供應商
+                <br />
+                地址
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+        </Wrapper>
+
+        <Wrapper>
+          <Title>人員聯絡方式</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>
+                業務
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                業務聯絡
+                <br />
+                電話
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                業務
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>
+                財務
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                財務聯絡
+                <br />
+                電話
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                財務
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>
+                出貨
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                出貨聯絡
+                <br />
+                電話
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                出貨
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+        </Wrapper>
+
+        <Wrapper>
+          <Title>出貨天數設定</Title>
+
+          <Row>
+            <Item>
+              <ItemLabel>
+                一般
+                <br />
+                出貨天數
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                一般低温
+                <br />
+                出貨天數
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                預購常温
+                <br />
+                出貨天數
+              </ItemLabel>
+              <Input />
+            </Item>
+
+            <Item>
+              <ItemLabel>
+                預購低温
+                <br />
+                出貨天數
+              </ItemLabel>
+              <Input />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>是否啟用</ItemLabel>
+              <Radio.Group
+                defaultValue={1}
+                // onChange={() => {}}
+                // value={1}
+              >
+                <Radio value={1}>是</Radio>
+                <Radio value={2}>否</Radio>
+              </Radio.Group>
+            </Item>
+          </Row>
+        </Wrapper>
+
+        <Wrapper>
+          <Title>使用者帳號</Title>
+
+          <Table columns={columns} dataSource={data} />
+        </Wrapper>
+      </Container>
+
+      <ModalHistory
+        open={openModalHistory}
+        onCancel={() => setOpenModalHistory(false)}
+      />
+
+      <ModalFees
+        open={openModalFees}
+        onCancel={() => setOpenModalFees(false)}
+      />
+    </>
+  );
+};
+
+export default Page;

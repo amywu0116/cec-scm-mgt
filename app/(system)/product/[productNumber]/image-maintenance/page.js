@@ -1,14 +1,21 @@
 "use client";
 import { useState } from "react";
-import { Breadcrumb, Image, Table } from "antd";
+import { Breadcrumb, Image } from "antd";
 import styled from "styled-components";
+import Link from "next/link";
 
 import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
+import Table from "@/components/Table";
+import FunctionBtn from "@/components/Button/FunctionBtn";
+import ModalDelete from "@/components/Modal/ModalDelete";
 
-import ModalDelete from "./ModalDelete";
+import {
+  PATH_PRODUCT_INFO,
+  PATH_PRODUCT_PRODUCT_LIST,
+} from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -91,7 +98,11 @@ const Page = () => {
       dataIndex: "h",
       align: "center",
       render: (text, record, index) => {
-        return <div onClick={() => setShowModalDelete(true)}>刪除</div>;
+        return (
+          <FunctionBtn onClick={() => setShowModalDelete(true)}>
+            刪除
+          </FunctionBtn>
+        );
       },
     },
   ];
@@ -120,10 +131,10 @@ const Page = () => {
           separator=">"
           items={[
             {
-              title: "商品列表",
+              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
             },
             {
-              title: "商品資料",
+              title: <Link href={PATH_PRODUCT_INFO}>商品資料</Link>,
             },
             {
               title: "圖片維護",
@@ -197,18 +208,7 @@ const Page = () => {
           )}
         </Wrapper>
 
-        <Table
-          rowSelection={{
-            onChange: (selectedRowKeys, selectedRows) => {},
-            getCheckboxProps: (record) => ({
-              disabled: record.name === "Disabled User",
-              name: record.name,
-            }),
-          }}
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-        />
+        <Table columns={columns} dataSource={data} pagination={false} />
       </Container>
 
       <ModalDelete
