@@ -14,7 +14,8 @@ RUN npm install
 COPY . .
 
 # 构建 Next.js 应用
-RUN npm run dev
+RUN npm run build
+RUN npm run start
 
 # 暴露端口
 EXPOSE 3000
