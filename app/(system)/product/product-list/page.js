@@ -110,12 +110,13 @@ const Page = () => {
       align: "center",
       render: () => {
         return (
-          <Image
-            width={40}
-            height={40}
-            src="https://fakeimg.pl/40x40/"
-            alt=""
-          />
+          // <Image
+          //   width={40}
+          //   height={40}
+          //   src="https://fakeimg.pl/40x40/"
+          //   alt=""
+          // />
+          <div>image</div>
         );
       },
     },
