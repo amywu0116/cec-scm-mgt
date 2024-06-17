@@ -76,7 +76,11 @@ const ModalHistory = (props) => {
         width={800}
         open={open}
         onCancel={onCancel}
-        footer={[<Button onClick={onCancel}>了解</Button>]}
+        footer={[
+          <Button key="ok" onClick={onCancel}>
+            了解
+          </Button>,
+        ]}
       >
         <Table
           size="small"

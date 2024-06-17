@@ -12,3 +12,7 @@ export const PATH_SHIPPING_COMPANY = "/shipping-company";
 export const PATH_SHIPPING_COMPANY_ADD = "/shipping-company/add";
 
 export const PATH_SUPPLIER = "/supplier";
+
+export const PATH_BILLING_COLLECTION_REPORT = "/billing/collection-report";
+export const PATH_BILLING_RECONCILIATION_REPORT =
+  "/billing/reconciliation-report";

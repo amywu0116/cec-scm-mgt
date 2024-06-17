@@ -12,6 +12,7 @@ import {
 } from "antd";
 import styled, { css } from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
@@ -93,7 +94,7 @@ const Container = styled.div`
   }
 `;
 
-const ButtonGroup = styled.div`
+const BtnGroup = styled.div`
   display: flex;
   gap: 0 16px;
 `;
@@ -106,13 +107,13 @@ const Card = styled.div`
   gap: 16px 0;
 `;
 
-const FormItem = styled.div`
+const Item = styled.div`
   display: flex;
   align-items: center;
   gap: 0 16px;
 `;
 
-const FormItemLabel = styled.div`
+const ItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #7b8093;
@@ -192,7 +193,12 @@ const ReturnRequest = (props) => {
       align: "center",
       render: () => {
         return (
-          <img width={40} height={40} src="https://fakeimg.pl/40x40/" alt="" />
+          <Image
+            width={40}
+            height={40}
+            src="https://fakeimg.pl/40x40/"
+            alt=""
+          />
         );
       },
     },
@@ -242,20 +248,20 @@ const ReturnRequest = (props) => {
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
-        <ButtonGroup style={{ marginLeft: "auto" }}>
+        <BtnGroup style={{ marginLeft: "auto" }}>
           <Button>提品匯入範例下載</Button>
           <Button type="secondary">提品匯入</Button>
           <Button type="primary" onClick={() => setShowModalAddType(true)}>
             新增提品
           </Button>
-        </ButtonGroup>
+        </BtnGroup>
       </LayoutHeader>
 
       <Container>
         <Card>
           <Row>
-            <FormItem>
-              <FormItemLabel>日期</FormItemLabel>
+            <Item>
+              <ItemLabel>日期</ItemLabel>
 
               <DatePicker
                 style={{ width: 203 }}
@@ -268,22 +274,22 @@ const ReturnRequest = (props) => {
                 placeholder="日期迄"
                 onChange={() => {}}
               />
-            </FormItem>
+            </Item>
           </Row>
 
           <Row>
-            <FormItem>
-              <FormItemLabel>條碼</FormItemLabel>
+            <Item>
+              <ItemLabel>條碼</ItemLabel>
               <Input style={{ width: 203 }} placeholder="請輸入條碼" />
-            </FormItem>
+            </Item>
 
-            <FormItem>
-              <FormItemLabel>品名</FormItemLabel>
+            <Item>
+              <ItemLabel>品名</ItemLabel>
               <Input style={{ width: 203 }} placeholder="請輸入商品名稱" />
-            </FormItem>
+            </Item>
 
-            <FormItem>
-              <FormItemLabel>狀態</FormItemLabel>
+            <Item>
+              <ItemLabel>狀態</ItemLabel>
               <Select
                 style={{ width: 203 }}
                 placeholder="請選擇狀態"
@@ -294,16 +300,13 @@ const ReturnRequest = (props) => {
                   },
                 ]}
               />
-            </FormItem>
+            </Item>
 
-            <ButtonGroup
-              style={{ marginLeft: "auto" }}
-              justifyContent="flex-end"
-            >
+            <BtnGroup style={{ marginLeft: "auto" }} justifyContent="flex-end">
               <Button type="secondary">查詢</Button>
 
               <Button type="link">清除查詢條件</Button>
-            </ButtonGroup>
+            </BtnGroup>
           </Row>
         </Card>
 
@@ -311,10 +314,10 @@ const ReturnRequest = (props) => {
           <TableTitle>申請列表</TableTitle>
 
           {selectedRows.length > 0 && (
-            <ButtonGroup>
+            <BtnGroup>
               <Button type="default">送審</Button>
               <Button type="default">刪除</Button>
-            </ButtonGroup>
+            </BtnGroup>
           )}
 
           <Table

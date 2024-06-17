@@ -107,13 +107,13 @@ const Card = styled.div`
   gap: 16px 0;
 `;
 
-const FormItem = styled.div`
+const Item = styled.div`
   display: flex;
   align-items: center;
   gap: 0 16px;
 `;
 
-const FormItemLabel = styled.div`
+const ItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: #7b8093;
@@ -121,7 +121,7 @@ const FormItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ButtonGroup = styled.div`
+const BtnGroup = styled.div`
   display: flex;
   gap: 0 16px;
 
@@ -141,20 +141,6 @@ const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-`;
-
-const PaginationWrapper = styled.div`
-  margin-top: 16px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .total {
-    font-size: 14px;
-    font-weight: 400;
-    color: #7b8093;
-  }
 `;
 
 const TabLabelWrapper = styled.div`
@@ -313,13 +299,13 @@ const Page = () => {
       <Container>
         <Card>
           <Row>
-            <FormItem>
-              <FormItemLabel>訂單編號</FormItemLabel>
+            <Item>
+              <ItemLabel>訂單編號</ItemLabel>
               <Input style={{ width: 250 }} placeholder="輸入訂單編號" />
-            </FormItem>
+            </Item>
 
-            <FormItem>
-              <FormItemLabel>日期</FormItemLabel>
+            <Item>
+              <ItemLabel>日期</ItemLabel>
               <DatePicker
                 style={{ width: 250 }}
                 placeholder="日期起"
@@ -331,12 +317,12 @@ const Page = () => {
                 placeholder="日期迄"
                 onChange={() => {}}
               />
-            </FormItem>
+            </Item>
           </Row>
 
           <Row>
-            <FormItem>
-              <FormItemLabel>貨運公司</FormItemLabel>
+            <Item>
+              <ItemLabel>貨運公司</ItemLabel>
               <Select
                 style={{ width: 250 }}
                 placeholder="選擇貨運公司"
@@ -347,10 +333,10 @@ const Page = () => {
                   },
                 ]}
               />
-            </FormItem>
+            </Item>
 
-            <FormItem>
-              <FormItemLabel>處理狀態</FormItemLabel>
+            <Item>
+              <ItemLabel>處理狀態</ItemLabel>
               <Radio.Group
                 style={{ display: "flex", flex: 1, alignItems: "center" }}
                 defaultValue={1}
@@ -360,12 +346,12 @@ const Page = () => {
                 <Radio value={1}>待處理</Radio>
                 <Radio value={2}>已結案</Radio>
               </Radio.Group>
-            </FormItem>
+            </Item>
           </Row>
 
           <Row>
-            <FormItem>
-              <FormItemLabel>訂單物流狀態</FormItemLabel>
+            <Item>
+              <ItemLabel>訂單物流狀態</ItemLabel>
               <Checkbox.Group
                 options={[
                   "收到訂單",
@@ -393,27 +379,27 @@ const Page = () => {
                 defaultValue={[""]}
                 onChange={() => {}}
               />
-            </FormItem>
+            </Item>
           </Row>
 
           <Divider style={{ margin: 0 }} />
 
-          <ButtonGroup justifyContent="flex-end">
+          <BtnGroup justifyContent="flex-end">
             <Button>出貨狀態匯入</Button>
 
             <Button type="secondary">查詢</Button>
 
             <Button type="link">清除查詢條件</Button>
-          </ButtonGroup>
+          </BtnGroup>
         </Card>
 
         <TableWrapper>
           <TableTitle>訂單列表</TableTitle>
 
-          <ButtonGroup>
+          <BtnGroup>
             <Button type="secondary">導出客戶清單</Button>
             <Button disabled>批次維護物流狀態為已送達</Button>
-          </ButtonGroup>
+          </BtnGroup>
 
           <Tabs
             defaultActiveKey="1"

@@ -6,7 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import api from "@/api";
-import { PATH_SHIPPING_COMPANY, PATH_SUPPLIER } from "@/constants/paths";
+import {
+  PATH_BILLING_COLLECTION_REPORT,
+  PATH_BILLING_RECONCILIATION_REPORT,
+  PATH_SHIPPING_COMPANY,
+  PATH_SUPPLIER,
+} from "@/constants/paths";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -130,13 +135,18 @@ const items = [
     icon: <Image src="/supplier.svg" alt="" width={30} height={30} />,
   },
   {
-    key: "accounting",
+    key: "billing",
     label: "帳務",
     icon: <Image src="/accounting.svg" alt="" width={30} height={30} />,
     children: [
       {
-        key: "/logistics",
-        label: "訂單管理",
+        key: PATH_BILLING_COLLECTION_REPORT,
+        label: "收款報表",
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
+      },
+      {
+        key: PATH_BILLING_RECONCILIATION_REPORT,
+        label: "對帳報表",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],

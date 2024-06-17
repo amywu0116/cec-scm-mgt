@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Tabs } from "antd";
 import styled from "styled-components";
+import Image from "next/image";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -109,7 +110,12 @@ const Page = () => {
       align: "center",
       render: () => {
         return (
-          <img width={40} height={40} src="https://fakeimg.pl/40x40/" alt="" />
+          <Image
+            width={40}
+            height={40}
+            src="https://fakeimg.pl/40x40/"
+            alt=""
+          />
         );
       },
     },

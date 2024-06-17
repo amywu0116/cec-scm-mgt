@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Breadcrumb, Tabs } from "antd";
 import styled from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
@@ -103,7 +104,14 @@ const Page = () => {
       dataIndex: "d",
       align: "center",
       render: () => {
-        return <img width={40} height={40} src="https://fakeimg.pl/40x40/" />;
+        return (
+          <Image
+            width={40}
+            height={40}
+            src="https://fakeimg.pl/40x40/"
+            alt=""
+          />
+        );
       },
     },
     {
