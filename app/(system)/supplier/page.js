@@ -188,9 +188,9 @@ const Page = () => {
 
             <Item>
               <ItemLabel>
-                業務聯絡
+                業務
                 <br />
-                電話
+                聯絡電話
               </ItemLabel>
               <Input />
             </Item>
@@ -217,9 +217,9 @@ const Page = () => {
 
             <Item>
               <ItemLabel>
-                財務聯絡
+                財務
                 <br />
-                電話
+                聯絡電話
               </ItemLabel>
               <Input />
             </Item>
@@ -246,9 +246,9 @@ const Page = () => {
 
             <Item>
               <ItemLabel>
-                出貨聯絡
+                出貨
                 <br />
-                電話
+                聯絡電話
               </ItemLabel>
               <Input />
             </Item>
@@ -306,7 +306,7 @@ const Page = () => {
           </Row>
 
           <Row>
-            <Item>
+            <Item style={{ height: 56 }}>
               <ItemLabel>是否啟用</ItemLabel>
               <Radio.Group
                 defaultValue={1}
