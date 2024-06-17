@@ -12,6 +12,7 @@ import {
 } from "antd";
 import styled, { css } from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
@@ -192,7 +193,12 @@ const ReturnRequest = (props) => {
       align: "center",
       render: () => {
         return (
-          <img width={40} height={40} src="https://fakeimg.pl/40x40/" alt="" />
+          <Image
+            width={40}
+            height={40}
+            src="https://fakeimg.pl/40x40/"
+            alt=""
+          />
         );
       },
     },
