@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Breadcrumb, Divider, Radio, Tabs } from "antd";
+import { Breadcrumb, Divider, Radio } from "antd";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
@@ -9,29 +9,12 @@ import Table from "@/components/Table";
 import Select from "@/components/Select";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
+import Tabs from "@/components/Tabs";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    padding: 12px 48px;
-  }
-
-  .ant-tabs .ant-tabs-tab + .ant-tabs-tab {
-    margin: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    font-size: 14px;
-    font-weight: 700;
-    color: #7b8093;
-  }
 
   .ant-checkbox-group {
     gap: 20px 18px;

@@ -1,15 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Breadcrumb,
-  Checkbox,
-  Divider,
-  Layout,
-  Pagination,
-  Radio,
-  Tabs,
-} from "antd";
 import styled, { css } from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
