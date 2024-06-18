@@ -149,6 +149,7 @@ const Page = (props) => {
                   {menus.props.items.map((item) => {
                     return (
                       <DropdownItem
+                        key={item.key}
                         onClick={() => {
                           setOpenDropdown((state) => ({
                             ...state,
