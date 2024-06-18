@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Breadcrumb, Tabs } from "antd";
+import { Breadcrumb } from "antd";
 import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,6 +11,7 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 import FunctionBtn from "@/components/Button/FunctionBtn";
+import Tabs from "@/components/Tabs";
 
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
@@ -18,24 +19,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    padding: 12px 48px;
-  }
-
-  .ant-tabs .ant-tabs-tab + .ant-tabs-tab {
-    margin: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    font-size: 14px;
-    font-weight: 700;
-    color: #7b8093;
-  }
 `;
 
 const Card = styled.div`

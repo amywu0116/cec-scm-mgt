@@ -1,15 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import {
-  Breadcrumb,
-  Checkbox,
-  Divider,
-  Layout,
-  Pagination,
-  Radio,
-  Tabs,
-} from "antd";
+import { Breadcrumb, Checkbox, Divider, Radio } from "antd";
 import styled, { css } from "styled-components";
 import Link from "next/link";
 
@@ -19,6 +11,7 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
+import Tabs from "@/components/Tabs";
 
 const Container = styled.div`
   display: flex;

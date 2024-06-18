@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Tabs } from "antd";
 import styled from "styled-components";
 import Image from "next/image";
 
@@ -10,6 +9,7 @@ import FunctionBtn from "@/components/Button/FunctionBtn";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
+import Tabs from "@/components/Tabs";
 
 import { PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
 
@@ -17,24 +17,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    padding: 12px 48px;
-  }
-
-  .ant-tabs .ant-tabs-tab + .ant-tabs-tab {
-    margin: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    font-size: 14px;
-    font-weight: 700;
-    color: #7b8093;
-  }
 
   .ant-btn-link {
     padding: 0;
