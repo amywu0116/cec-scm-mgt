@@ -58,7 +58,7 @@ const ModalMessageContent = (props) => {
       footer={(_, { OkBtn, CancelBtn }) => (
         <ButtonGroup>
           <Checkbox onChange={() => {}}>結案</Checkbox>
-          <Button>取消</Button>
+          <Button onClick={onCancel}>取消</Button>
           <Button type="primary">送出回覆</Button>
         </ButtonGroup>
       )}
