@@ -119,10 +119,6 @@ const Page = () => {
               required: true,
               message: "必填",
             },
-            {
-              type: "email",
-              message: "錯誤的信箱格式",
-            },
           ]}
         >
           <Input size="large" placeholder="帳號" autoComplete="off" />
