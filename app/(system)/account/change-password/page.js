@@ -7,6 +7,8 @@ import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import InputPassword from "@/components/Input/InputPassword";
 
+import { useBoundStore } from "@/store";
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -24,6 +26,8 @@ const Info = styled.div`
 const Page = () => {
   const [form] = Form.useForm();
 
+  const user = useBoundStore((state) => state.user);
+
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
@@ -36,6 +40,8 @@ const Page = () => {
     );
     setIsSubmitDisabled(!isFormValid);
   };
+
+  console.log("user", user);
 
   return (
     <>
@@ -56,7 +62,9 @@ const Page = () => {
       </LayoutHeader>
 
       <Container>
-        <Info>K0001 / Syscom</Info>
+        <Info>
+          {user.vendorCode} / {user.vendorName}
+        </Info>
 
         <Form
           form={form}
