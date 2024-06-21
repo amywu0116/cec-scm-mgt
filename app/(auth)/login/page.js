@@ -14,6 +14,8 @@ import Subtitle from "../Subtitle";
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 
+import { useBoundStore } from "@/store";
+
 const Container = styled.div``;
 
 const RecaptchaWrapper = styled.div`
@@ -33,6 +35,8 @@ const Page = () => {
   const [form] = Form.useForm();
 
   const recaptchaRef = useRef();
+
+  const updateUser = useBoundStore((state) => state.updateUser);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -58,6 +62,7 @@ const Page = () => {
       })
       .then((res) => {
         localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
+        updateUser(res.data);
         router.push("/");
       })
       .catch((err) => {

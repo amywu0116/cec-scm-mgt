@@ -18,6 +18,8 @@ import {
   PATH_ORDER_MANAGEMENT,
 } from "@/constants/paths";
 
+import { useBoundStore } from "@/store";
+
 const StyledSider = styled(Layout.Sider)`
   position: relative;
 
@@ -180,6 +182,8 @@ const Sider = () => {
   const { message } = App.useApp();
   const pathname = usePathname();
 
+  const user = useBoundStore((state) => state.user);
+
   const getOpenKeys = (url) => {
     const parts = url.split("/");
     parts.pop();
@@ -187,14 +191,13 @@ const Sider = () => {
   };
 
   const logout = () => {
-    const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
     api
       .post(
         "/auth/signout",
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
