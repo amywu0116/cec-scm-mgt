@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import api from "@/api";
 import {
+  PATH_ACCOUNT_CHANGE_PASSWORD,
   PATH_BILLING_COLLECTION_REPORT,
   PATH_BILLING_RECONCILIATION_REPORT,
   PATH_SHIPPING_COMPANY,
@@ -147,6 +148,18 @@ const items = [
       {
         key: PATH_BILLING_RECONCILIATION_REPORT,
         label: "對帳報表",
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
+      },
+    ],
+  },
+  {
+    key: "account",
+    label: "帳戶",
+    icon: <Image src="/account.svg" alt="" width={30} height={30} />,
+    children: [
+      {
+        key: PATH_ACCOUNT_CHANGE_PASSWORD,
+        label: "修改密碼",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
