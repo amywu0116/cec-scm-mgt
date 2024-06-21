@@ -1,5 +1,5 @@
-# 使用官方的 Node.js 18 鏡像
-FROM node:18
+# 使用官方的 Node.js 20 鏡像
+FROM node:20
 
 # 設定工作目錄
 WORKDIR /app
@@ -19,10 +19,5 @@ RUN npm run build
 # 暴露端口
 EXPOSE 3000
 
-<<<<<<< HEAD
-# 运行应用
-CMD ["npm", "run", "start"]
-=======
 # 運行應用
-CMD ["npm", "start"]
->>>>>>> dev
+RUN npm run start
