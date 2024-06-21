@@ -1,5 +1,5 @@
-# 使用官方的 Node.js 18 鏡像
-FROM node:18
+# 使用官方的 Node.js 20 鏡像
+FROM node:20
 
 # 設定工作目錄
 WORKDIR /app
@@ -15,10 +15,9 @@ COPY . .
 
 # 建立 Next.js 應用
 RUN npm run build
-RUN npm run start
 
 # 暴露端口
 EXPOSE 3000
 
 # 運行應用
-CMD ["npm", "start"]
+RUN npm run start
