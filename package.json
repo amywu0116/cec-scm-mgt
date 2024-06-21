@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{css,js,json}\""
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "14.2.4"
+    "eslint-config-next": "14.2.4",
+    "prettier": "3.3.2"
   }
 }
