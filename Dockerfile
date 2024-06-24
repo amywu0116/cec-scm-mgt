@@ -19,10 +19,5 @@ RUN npm run build
 # 暴露端口
 EXPOSE 3000
 
-<<<<<<< HEAD
-# 运行应用
-CMD ["npm", "run", "start"]
-=======
 # 運行應用
 CMD ["npm", "start"]
->>>>>>> dev
