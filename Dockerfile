@@ -1,5 +1,5 @@
-# 使用官方的 Node.js 18 鏡像
-FROM node:18
+# 使用官方的 Node.js 20 鏡像
+FROM node:20
 
 # 設定工作目錄
 WORKDIR /app

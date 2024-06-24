@@ -1,9 +1,8 @@
 import React from "react";
 import { App, Layout, Menu } from "antd";
-import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import api from "@/api";
 import {
@@ -12,7 +11,14 @@ import {
   PATH_BILLING_RECONCILIATION_REPORT,
   PATH_SHIPPING_COMPANY,
   PATH_SUPPLIER,
+  PATH_ANNOUNCEMENT_SETTINGS,
+  PATH_ANNOUNCEMENT_MESSAGE,
+  PATH_PRODUCT_PRODUCT_LIST,
+  PATH_PRODUCT_PRODUCT_APPLICATION,
+  PATH_ORDER_MANAGEMENT,
 } from "@/constants/paths";
+
+import { useBoundStore } from "@/store";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -85,12 +91,12 @@ const items = [
     icon: <Image src="/announcement.png" alt="" width={30} height={30} />,
     children: [
       {
-        key: "/announcement",
+        key: PATH_ANNOUNCEMENT_SETTINGS,
         label: "公告設定",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
-        key: "/message",
+        key: PATH_ANNOUNCEMENT_MESSAGE,
         label: "訊息列表",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
@@ -102,12 +108,12 @@ const items = [
     icon: <Image src="/product.svg" alt="" width={30} height={30} />,
     children: [
       {
-        key: "/product/product-list",
+        key: PATH_PRODUCT_PRODUCT_LIST,
         label: "商品列表",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
-        key: "/product/product-application",
+        key: PATH_PRODUCT_PRODUCT_APPLICATION,
         label: "提品申請",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
@@ -119,7 +125,7 @@ const items = [
     icon: <Image src="/order.svg" alt="" width={30} height={30} />,
     children: [
       {
-        key: "/order",
+        key: PATH_ORDER_MANAGEMENT,
         label: "訂單管理",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
@@ -174,16 +180,24 @@ const items = [
 const Sider = () => {
   const router = useRouter();
   const { message } = App.useApp();
+  const pathname = usePathname();
+
+  const user = useBoundStore((state) => state.user);
+
+  const getOpenKeys = (url) => {
+    const parts = url.split("/");
+    parts.pop();
+    return parts;
+  };
 
   const logout = () => {
-    const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
     api
       .post(
         "/auth/signout",
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
@@ -203,6 +217,8 @@ const Sider = () => {
     }
   };
 
+  console.log("pathname", getOpenKeys(pathname));
+
   return (
     <StyledSider
       style={{
@@ -218,10 +234,13 @@ const Sider = () => {
       width={280}
     >
       <Image src="/logo-1.svg" width={40} height={27} alt="" />
+
       <Menu
         theme="dark"
         mode="inline"
         inlineIndent={10}
+        defaultOpenKeys={getOpenKeys(pathname)}
+        defaultSelectedKeys={[pathname]}
         items={items}
         onClick={handleClickItem}
       />

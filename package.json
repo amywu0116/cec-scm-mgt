@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{css,js,json}\"",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
@@ -17,10 +19,13 @@
     "react-dom": "^18",
     "react-google-recaptcha": "^3.1.0",
     "sharp": "^0.33.4",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "14.2.4"
+    "eslint-config-next": "14.2.4",
+    "husky": "^9.0.11",
+    "prettier": "3.3.2"
   }
 }
