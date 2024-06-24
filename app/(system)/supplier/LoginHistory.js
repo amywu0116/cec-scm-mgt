@@ -1,10 +1,28 @@
-import Modal from "@/components/Modal";
-import Button from "@/components/Button";
+import styled from "styled-components";
+
 import Table from "@/components/Table";
 
-const ModalHistory = (props) => {
-  const { open, onCancel } = props;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+  padding: 16px 0;
+`;
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #56659b;
+  line-height: 35px;
+`;
+
+const LoginHistory = () => {
   const columns = [
     {
       title: "No.",
@@ -68,30 +86,14 @@ const ModalHistory = (props) => {
   ];
 
   return (
-    <>
-      <Modal
-        title="供應商登入歷程"
-        centered
-        closeIcon={false}
-        width={800}
-        open={open}
-        onCancel={onCancel}
-        footer={[
-          <Button key="ok" onClick={onCancel}>
-            了解
-          </Button>,
-        ]}
-      >
-        <Table
-          size="small"
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          scroll={{ y: 240 }}
-        />
-      </Modal>
-    </>
+    <Container>
+      <Wrapper>
+        <Title>供應商登入歷程</Title>
+
+        <Table columns={columns} dataSource={data} />
+      </Wrapper>
+    </Container>
   );
 };
 
-export default ModalHistory;
+export default LoginHistory;
