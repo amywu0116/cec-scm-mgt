@@ -1,12 +1,13 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Form, Typography } from "antd";
+import { useState, useEffect } from "react";
+import { App, Breadcrumb, Form, Typography } from "antd";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import InputPassword from "@/components/Input/InputPassword";
 
+import api from "@/api";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
@@ -25,6 +26,7 @@ const Info = styled.div`
 
 const Page = () => {
   const [form] = Form.useForm();
+  const { message } = App.useApp();
 
   const user = useBoundStore((state) => state.user);
 
@@ -32,7 +34,35 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  const handleFinish = () => {};
+  const handleFinish = (values) => {
+    console.log("values", values);
+
+    if (values.newPassword !== values.newPasswordConfirm) {
+      setErrorMsg("新密碼和確認密碼必須一致");
+      return;
+    }
+
+    api
+      .post(
+        "/auth/changePassword",
+        {
+          oldPassword: values.oldPassword,
+          newPassword: values.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        message.success("修改成功");
+      })
+      .catch((err) => {
+        setErrorMsg(err.message);
+      })
+      .finally(() => setLoading(false));
+  };
 
   const handleFieldsChange = (changedFields, allFields) => {
     const isFormValid = allFields.every(
@@ -74,7 +104,7 @@ const Page = () => {
           onFieldsChange={handleFieldsChange}
         >
           <Form.Item
-            name="password"
+            name="oldPassword"
             rules={[
               {
                 required: true,
@@ -98,7 +128,7 @@ const Page = () => {
           </Form.Item>
 
           <Form.Item
-            name="passwordConfirm"
+            name="newPasswordConfirm"
             rules={[
               {
                 required: true,
