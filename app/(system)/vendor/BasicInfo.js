@@ -291,12 +291,12 @@ const BasicInfo = () => {
         <Wrapper>
           <Title>出貨天數設定</Title>
 
-          {scmCart.map((a) => {
+          {scmCart.map((a, idx) => {
             const item =
               info?.settingList?.find((b) => b.cart === a.value) ?? {};
 
             return (
-              <Row>
+              <Row key={idx}>
                 <Item>
                   <ItemLabel>
                     {a.name}
