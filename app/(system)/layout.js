@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 
 import Sider from "./Sider";
 import api from "@/api";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   ${(props) =>
@@ -16,6 +17,8 @@ const Container = styled.div`
 
 const PageLayout = (props) => {
   const { children } = props;
+
+  const updateOptions = useBoundStore((state) => state.updateOptions);
 
   const [headerHeight, setHeaderHeight] = useState(100);
 

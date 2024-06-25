@@ -8,7 +8,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import InputPassword from "@/components/Input/InputPassword";
 
 import api from "@/api";
-import { useStore } from "@/store";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -28,7 +28,7 @@ const Page = () => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
 
-  const user = useStore((state) => state.user);
+  const user = useBoundStore((state) => state.user);
 
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);

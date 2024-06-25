@@ -15,7 +15,7 @@ import ModalAddress from "./ModalAddress";
 import ModalReturnResult from "./ModalReturnResult";
 import ModalReturnApproval from "./ModalReturnApproval";
 
-import { PATH_ORDER } from "@/constants/paths";
+import { PATH_ORDER_MANAGEMENT } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -193,7 +193,7 @@ const Page = (props) => {
               title: "訂單",
             },
             {
-              title: <Link href={PATH_ORDER}>訂單管理</Link>,
+              title: <Link href={PATH_ORDER_MANAGEMENT}>訂單管理</Link>,
             },
             {
               title: "訂單明細",

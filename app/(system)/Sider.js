@@ -18,7 +18,7 @@ import {
   PATH_ORDER_MANAGEMENT,
 } from "@/constants/paths";
 
-import { useStore } from "@/store";
+import { useBoundStore } from "@/store";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -182,8 +182,8 @@ const Sider = () => {
   const { message } = App.useApp();
   const pathname = usePathname();
 
-  const user = useStore((state) => state.user);
-  const clearUser = useStore((state) => state.clearUser);
+  const user = useBoundStore((state) => state.user);
+  const clearUser = useBoundStore((state) => state.clearUser);
 
   const getOpenKeys = (url) => {
     const parts = url.split("/");
