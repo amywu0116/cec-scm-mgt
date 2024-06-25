@@ -101,9 +101,9 @@ const BasicInfo = () => {
 
   const fetchInfo = () => {
     api
-      .get("/scm/vendor", {
+      .get("v1/scm/vendor", {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.token}`
         },
       })
       .then((res) => {
