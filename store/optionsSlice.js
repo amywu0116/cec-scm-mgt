@@ -5,5 +5,5 @@ const initialState = {
 
 export const createOptionsSlice = (set) => ({
   ...initialState,
-  updateOptions: (data) => set((state) => ({ ...state, ...data })),
+  updateOptions: (data) => set((state) => data),
 });

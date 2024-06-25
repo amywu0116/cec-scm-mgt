@@ -1,7 +1,11 @@
 "use client";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Spin } from "antd";
 
 import Input from "@/components/Input";
+
+import api from "@/api";
 
 const Container = styled.div`
   display: flex;
@@ -45,45 +49,64 @@ const Row = styled.div`
 `;
 
 const FeeInfo = () => {
+  const [info, setInfo] = useState({});
+
+  const [loading, setLoading] = useState({ page: false });
+
+  const fetchFee = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .get("v1/scm/vendor/fee")
+      .then((res) => setInfo(res.data))
+      .catch((err) => console.log(err))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
+  };
+
+  useEffect(() => {
+    fetchFee();
+  }, []);
+
   return (
-    <Container>
-      <Wrapper>
-        <Title>供應商商城費用</Title>
+    <Spin spinning={loading.page}>
+      <Container>
+        <Wrapper>
+          <Title>供應商商城費用</Title>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              行政
-              <br />
-              手續費
-            </ItemLabel>
-            <Input />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                系統
+                <br />
+                維護費
+              </ItemLabel>
+              <Input disabled value={`${info.maintainFee}%`} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              行銷
-              <br />
-              導流費
-            </ItemLabel>
-            <Input />
-          </Item>
-        </Row>
+            <Item>
+              <ItemLabel>
+                行銷
+                <br />
+                導流費
+              </ItemLabel>
+              <Input disabled value={`${info.referFee}%`} />
+            </Item>
+          </Row>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              會員
-              <br />
-              紅利費
-            </ItemLabel>
-            <Input />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                會員
+                <br />
+                紅利費
+              </ItemLabel>
+              <Input disabled value={`${info.referFee}%`} />
+            </Item>
 
-          <Item></Item>
-        </Row>
-      </Wrapper>
-    </Container>
+            <Item></Item>
+          </Row>
+        </Wrapper>
+      </Container>
+    </Spin>
   );
 };
 
