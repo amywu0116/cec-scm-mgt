@@ -111,7 +111,6 @@ const BasicInfo = () => {
   };
 
   const handleChangeTable = (page, pageSize) => {
-    console.log(page, pageSize);
     fetchUsers({ page, pageSize });
   };
 
@@ -326,7 +325,6 @@ const BasicInfo = () => {
             columns={columns}
             dataSource={userTableInfo.rows}
             total={userTableInfo.total}
-            showSizeChanger
             pageSize={userTableInfo.max}
             onChange={handleChangeTable}
           />

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Breadcrumb } from "antd";
 import styled from "styled-components";
 import Link from "next/link";
-import Image from "next/image";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
@@ -148,12 +147,12 @@ const Page = () => {
           <Row>
             <Item style={{ flex: 1 }}>
               <ItemLabel>條碼</ItemLabel>
-              <Input placeholder="請輸入條碼" />
+              <Input placeholder="請輸入條碼" disabled />
             </Item>
 
             <Item style={{ flex: 1 }}>
               <ItemLabel>品名</ItemLabel>
-              <Input placeholder="請輸入商品名稱" />
+              <Input placeholder="請輸入商品名稱" disabled />
             </Item>
 
             <ButtonGroup
