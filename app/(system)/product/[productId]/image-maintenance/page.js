@@ -12,10 +12,7 @@ import Table from "@/components/Table";
 import FunctionBtn from "@/components/Button/FunctionBtn";
 import ModalDelete from "@/components/Modal/ModalDelete";
 
-import {
-  PATH_PRODUCT_INFO,
-  PATH_PRODUCT_PRODUCT_LIST,
-} from "@/constants/paths";
+import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
@@ -134,7 +131,7 @@ const Page = () => {
               title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
             },
             {
-              title: <Link href={PATH_PRODUCT_INFO}>商品資料</Link>,
+              title: <Link href="">商品資料</Link>,
             },
             {
               title: "圖片維護",
