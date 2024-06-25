@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { createUserSlice } from "./userSlice";
+import { createOptionsSlice } from "./optionsSlice";
 
-export const useBoundStore = create((...a) => ({
+export const useStore = create((...a) => ({
   ...createUserSlice(...a),
+  ...createOptionsSlice(...a),
 }));

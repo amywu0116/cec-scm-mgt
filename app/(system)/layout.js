@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
 import { Layout } from "antd";
 import styled, { css } from "styled-components";
 
 import Sider from "./Sider";
+import api from "@/api";
 
 const Container = styled.div`
   ${(props) =>
@@ -16,9 +16,16 @@ const Container = styled.div`
 
 const PageLayout = (props) => {
   const { children } = props;
-  // const accessToken = localStorage.getItem("cec-scm-mgt-accessToken");
 
   const [headerHeight, setHeaderHeight] = useState(100);
+
+  const fetchOptions = () => {
+    api
+      .get("/system/option")
+      .then((res) => updateOptions(res.data))
+      .catch((err) => {})
+      .finally(() => {});
+  };
 
   useEffect(() => {
     const header = document.querySelector("header.ant-layout-header");
@@ -26,11 +33,9 @@ const PageLayout = (props) => {
     setHeaderHeight(headerHeight);
   }, []);
 
-  // useEffect(() => {
-  //   if (!accessToken) {
-  //     redirect("/login");
-  //   }
-  // }, [accessToken]);
+  useEffect(() => {
+    fetchOptions();
+  }, []);
 
   return (
     <Layout hasSider>
