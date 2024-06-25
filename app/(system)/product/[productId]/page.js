@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Radio } from "antd";
+import { useEffect, useState } from "react";
+import { Breadcrumb, Radio, Spin } from "antd";
 import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
 import Button from "@/components/Button";
@@ -11,6 +11,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import TextArea from "@/components/TextArea";
 
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
+import api from "@/api";
 
 const Container = styled.div`
   display: flex;
@@ -64,11 +65,28 @@ const CategoryLabel = styled.div`
 
 const Page = () => {
   const router = useRouter();
+  const params = useParams();
+
+  const [loading, setLoading] = useState({ page: false });
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const [info, setInfo] = useState({});
+
+  const fetchInfo = () => {
+    api
+      .get(`v1/scm/product/${params.productId}`)
+      .then((res) => setInfo(res.data))
+      .catch((err) => console.log(err))
+      .finally(() => {});
+  };
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
   return (
-    <>
+    <Spin spinning={loading.page}>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
 
@@ -122,7 +140,7 @@ const Page = () => {
             <Item>
               <ItemLabel>內部分類</ItemLabel>
               <CategoryLabel>
-                家電處/大家電/冰箱/三門以上冰箱/四門以上冰{"<"}500公升
+                {/* 家電處/大家電/冰箱/三門以上冰箱/四門以上冰{"<"}500公升 */}
               </CategoryLabel>
             </Item>
           </Row>
@@ -130,19 +148,19 @@ const Page = () => {
           <Row>
             <Item>
               <ItemLabel>中文品名</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.itemName} />
             </Item>
 
             <Item>
               <ItemLabel>英文品名</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.itemNameEn} />
             </Item>
           </Row>
 
           <Row>
             <Item>
               <ItemLabel>供應商商品編號</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.vendorProdCode} />
             </Item>
 
             <Item>
@@ -154,12 +172,15 @@ const Page = () => {
           <Row>
             <Item>
               <ItemLabel>條碼</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.itemEan} />
             </Item>
 
             <Item>
               <ItemLabel>應/免稅</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input
+                disabled={!isEditing}
+                value={info.isTax ? "應稅" : "免稅"}
+              />
             </Item>
           </Row>
 
@@ -171,7 +192,7 @@ const Page = () => {
 
             <Item>
               <ItemLabel>生產國家</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.itemCountry} />
             </Item>
           </Row>
         </Wrapper>
@@ -428,7 +449,7 @@ const Page = () => {
           </Row>
         </Wrapper>
       </Container>
-    </>
+    </Spin>
   );
 };
 

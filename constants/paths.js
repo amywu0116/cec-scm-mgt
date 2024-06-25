@@ -7,8 +7,8 @@ export const PATH_ANNOUNCEMENT_MESSAGE = "/announcement/message";
 
 export const PATH_ORDER_MANAGEMENT = "/order/management";
 
+export const PATH_PRODUCT = "/product";
 export const PATH_PRODUCT_PRODUCT_LIST = "/product/product-list";
-export const PATH_PRODUCT_INFO = "/product/:productNumber";
 export const PATH_PRODUCT_STOCK_SETTINGS = "/product/stock-settings";
 export const PATH_PRODUCT_PRODUCT_APPLICATION = "/product/product-application";
 

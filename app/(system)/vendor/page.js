@@ -9,7 +9,7 @@ import CommissionInfo from "./CommissionInfo";
 import FeeInfo from "./FeeInfo";
 import CommissionHistory from "./CommissionHistory";
 import FeeHistory from "./FeeHistory";
-import LoginHistory from "./LoginHistory";
+import LoginRecord from "./LoginRecord";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
@@ -64,7 +64,7 @@ const Page = () => {
           {
             label: "使用者登入歷程",
             key: "6",
-            children: <LoginHistory />,
+            children: <LoginRecord />,
           },
         ]}
       />

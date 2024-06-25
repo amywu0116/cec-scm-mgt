@@ -53,6 +53,7 @@ const Table = (props) => {
     loading,
     pageSize,
     onChange,
+    showSizeChanger = true,
   } = props;
 
   return (
@@ -70,6 +71,7 @@ const Table = (props) => {
           <Pagination
             defaultCurrent={1}
             total={total}
+            showSizeChanger={showSizeChanger}
             pageSize={pageSize}
             onChange={onChange}
           />
