@@ -4,20 +4,20 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_DOMAIN,
 });
 
-// api.interceptors.request.use(
-//   (config) => {
-//     const userStorage = localStorage.getItem("user-storage");
-//     const accessToken = JSON.parse(userStorage).state.accessToken;
+api.interceptors.request.use(
+  (config) => {
+    const userStorage = localStorage.getItem("user-storage");
+    const token = JSON.parse(userStorage).state.user.token;
 
-//     if (accessToken) {
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//     }
-//     return config;
-//   },
-//   () => {
-//     return Promise.reject(error);
-//   }
-// );
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  () => {
+    return Promise.reject(error);
+  }
+);
 
 api.interceptors.response.use(
   function (response) {

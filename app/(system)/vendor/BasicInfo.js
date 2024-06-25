@@ -1,10 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Checkbox, Radio } from "antd";
 import styled from "styled-components";
 
 import Input from "@/components/Input";
 import Table from "@/components/Table";
+
+import api from "@/api";
+import { useStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +50,53 @@ const Row = styled.div`
 `;
 
 const BasicInfo = () => {
+  const user = useStore((state) => state.user);
+
+  const [info, setInfo] = useState({
+    id: 1,
+    omsId: 1,
+    vendorCode: "K0001",
+    vendorName: "測試供應商A",
+    vendorAddress: "台北市信義區市府路1號",
+    taxId: "45033202",
+    businessContact: "business",
+    businessPhone: "0911222333",
+    businessEmail: "business@example.com",
+    financeContact: "finance",
+    financePhone: "0911222333",
+    financeEmail: "finance@example.com",
+    shipContact: "ship",
+    shipPhone: "0911222333",
+    shipEmail: "shipping@example.com",
+    status: 1,
+    sapVendorCode: "SAP1",
+    companyContact: "0911222333",
+    companyAlias: "簡稱A",
+    remark: null,
+    settingList: [
+      {
+        cart: "RR",
+        shippingMethod: "運費100，399免運",
+        shippingDays: 1,
+      },
+      {
+        cart: "RC",
+        shippingMethod: "運費100，599免運",
+        shippingDays: 1,
+      },
+      {
+        cart: "PR",
+        shippingMethod: "運費200，1000免運(建議低溫商品)",
+        shippingDays: 6,
+      },
+      {
+        cart: "PC",
+        shippingMethod: "運費200，1299免運(建議低溫商品)",
+        shippingDays: 8,
+      },
+    ],
+  });
+
   const columns = [
     {
       title: "使用者",
@@ -94,6 +144,25 @@ const BasicInfo = () => {
     },
   ];
 
+  const fetchInfo = () => {
+    api
+      .get("/scm/vendor", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setInfo(res.data);
+      })
+      .catch(() => {})
+      .finally(() => {});
+  };
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
   return (
     <Container>
       <Wrapper>
@@ -106,16 +175,31 @@ const BasicInfo = () => {
               <br />
               代碼
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.vendorCode} />
           </Item>
 
+          <Item>
+            <ItemLabel>
+              SPA
+              <br />
+              供應商
+              <br />
+              代碼
+            </ItemLabel>
+            <Input disabled value={info.sapVendorCode} />
+          </Item>
+
+          <Item></Item>
+        </Row>
+
+        <Row>
           <Item>
             <ItemLabel>
               供應商
               <br />
               名稱
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.vendorName} />
           </Item>
 
           <Item>
@@ -124,14 +208,23 @@ const BasicInfo = () => {
               <br />
               簡稱
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.companyAlias} />
+          </Item>
+
+          <Item>
+            <ItemLabel>統一編號</ItemLabel>
+            <Input disabled value={info.taxId} />
           </Item>
         </Row>
 
         <Row>
           <Item>
-            <ItemLabel>統一編號</ItemLabel>
-            <Input />
+            <ItemLabel>
+              供應商
+              <br />
+              代表號
+            </ItemLabel>
+            <Input disabled value={info.companyContact} />
           </Item>
 
           <Item style={{ flex: "2 1 32px" }}>
@@ -140,7 +233,7 @@ const BasicInfo = () => {
               <br />
               地址
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.vendorAddress} />
           </Item>
         </Row>
       </Wrapper>
@@ -155,7 +248,7 @@ const BasicInfo = () => {
               <br />
               承辦人
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.businessContact} />
           </Item>
 
           <Item>
@@ -164,7 +257,7 @@ const BasicInfo = () => {
               <br />
               聯絡電話
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.businessPhone} />
           </Item>
 
           <Item>
@@ -173,7 +266,7 @@ const BasicInfo = () => {
               <br />
               E-mai
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.businessEmail} />
           </Item>
         </Row>
 
@@ -184,7 +277,7 @@ const BasicInfo = () => {
               <br />
               承辦人
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.financeContact} />
           </Item>
 
           <Item>
@@ -193,7 +286,7 @@ const BasicInfo = () => {
               <br />
               聯絡電話
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.financePhone} />
           </Item>
 
           <Item>
@@ -202,7 +295,7 @@ const BasicInfo = () => {
               <br />
               E-mai
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.financeEmail} />
           </Item>
         </Row>
 
@@ -213,7 +306,7 @@ const BasicInfo = () => {
               <br />
               承辦人
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.shipContact} />
           </Item>
 
           <Item>
@@ -222,7 +315,7 @@ const BasicInfo = () => {
               <br />
               聯絡電話
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.shipPhone} />
           </Item>
 
           <Item>
@@ -231,7 +324,7 @@ const BasicInfo = () => {
               <br />
               E-mai
             </ItemLabel>
-            <Input />
+            <Input disabled value={info.shipEmail} />
           </Item>
         </Row>
       </Wrapper>
@@ -242,53 +335,73 @@ const BasicInfo = () => {
         <Row>
           <Item>
             <ItemLabel>
-              一般
+              一般常温
               <br />
-              出貨天數
+              /天
             </ItemLabel>
+            <Input disabled />
+          </Item>
+
+          <Item>
+            <ItemLabel>運費備註</ItemLabel>
             <Input />
           </Item>
 
+          <Item></Item>
+        </Row>
+
+        <Row>
           <Item>
             <ItemLabel>
               一般低温
               <br />
-              出貨天數
+              /天
             </ItemLabel>
             <Input />
           </Item>
 
+          <Item>
+            <ItemLabel>運費備註</ItemLabel>
+            <Input />
+          </Item>
+
+          <Item></Item>
+        </Row>
+
+        <Row>
           <Item>
             <ItemLabel>
               預購常温
               <br />
-              出貨天數
+              /天
             </ItemLabel>
             <Input />
           </Item>
 
           <Item>
-            <ItemLabel>
-              預購低温
-              <br />
-              出貨天數
-            </ItemLabel>
+            <ItemLabel>運費備註</ItemLabel>
             <Input />
           </Item>
+
+          <Item></Item>
         </Row>
 
         <Row>
-          <Item style={{ height: 56 }}>
-            <ItemLabel>是否啟用</ItemLabel>
-            <Radio.Group
-              defaultValue={1}
-              // onChange={() => {}}
-              // value={1}
-            >
-              <Radio value={1}>是</Radio>
-              <Radio value={2}>否</Radio>
-            </Radio.Group>
+          <Item>
+            <ItemLabel>
+              預購低温
+              <br />
+              /天
+            </ItemLabel>
+            <Input />
           </Item>
+
+          <Item>
+            <ItemLabel>運費備註</ItemLabel>
+            <Input />
+          </Item>
+
+          <Item></Item>
         </Row>
       </Wrapper>
 
