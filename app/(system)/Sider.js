@@ -219,8 +219,6 @@ const Sider = () => {
     }
   };
 
-  console.log("pathname", getOpenKeys(pathname));
-
   return (
     <StyledSider
       style={{

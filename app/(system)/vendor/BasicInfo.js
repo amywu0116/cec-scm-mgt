@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Checkbox, Radio } from "antd";
+import { Checkbox, Spin } from "antd";
 import styled from "styled-components";
 
 import Input from "@/components/Input";
@@ -51,366 +51,288 @@ const Row = styled.div`
 
 const BasicInfo = () => {
   const user = useBoundStore((state) => state.user);
+  const options = useBoundStore((state) => state.options);
+  const scmCart = options?.SCM_cart ?? [];
 
-  const [info, setInfo] = useState({
-    id: 1,
-    omsId: 1,
-    vendorCode: "K0001",
-    vendorName: "測試供應商A",
-    vendorAddress: "台北市信義區市府路1號",
-    taxId: "45033202",
-    businessContact: "business",
-    businessPhone: "0911222333",
-    businessEmail: "business@example.com",
-    financeContact: "finance",
-    financePhone: "0911222333",
-    financeEmail: "finance@example.com",
-    shipContact: "ship",
-    shipPhone: "0911222333",
-    shipEmail: "shipping@example.com",
-    status: 1,
-    sapVendorCode: "SAP1",
-    companyContact: "0911222333",
-    companyAlias: "簡稱A",
-    remark: null,
-    settingList: [
-      {
-        cart: "RR",
-        shippingMethod: "運費100，399免運",
-        shippingDays: 1,
-      },
-      {
-        cart: "RC",
-        shippingMethod: "運費100，599免運",
-        shippingDays: 1,
-      },
-      {
-        cart: "PR",
-        shippingMethod: "運費200，1000免運(建議低溫商品)",
-        shippingDays: 6,
-      },
-      {
-        cart: "PC",
-        shippingMethod: "運費200，1299免運(建議低溫商品)",
-        shippingDays: 8,
-      },
-    ],
+  const [loading, setLoading] = useState({ page: false, userTable: false });
+
+  const [info, setInfo] = useState({});
+
+  const [userTableInfo, setUserTableInfo] = useState({
+    offset: 0,
+    max: 10,
+    total: 0,
+    rows: [],
   });
 
   const columns = [
     {
       title: "使用者",
-      dataIndex: "a",
+      dataIndex: "name",
       align: "center",
     },
     {
       title: "E-mail",
-      dataIndex: "b",
+      dataIndex: "email",
       align: "center",
     },
     {
       title: "聯絡方式",
-      dataIndex: "c",
+      dataIndex: "phone",
       align: "center",
     },
     {
       title: "啟用",
-      dataIndex: "d",
+      dataIndex: "status",
       align: "center",
-      render: () => {
-        return <Checkbox />;
+      render: (text, record, index) => {
+        return <Checkbox checked={text === 1} />;
       },
     },
   ];
 
-  const data = [
-    {
-      a: "王心凌",
-      b: "abc@gmail.com",
-      c: "0912123123",
-      d: "",
-    },
-    {
-      a: "王心凌",
-      b: "abc@gmail.com",
-      c: "0912123123",
-      d: "",
-    },
-    {
-      a: "王心凌",
-      b: "abc@gmail.com",
-      c: "0912123123",
-      d: "",
-    },
-  ];
-
   const fetchInfo = () => {
+    setLoading((state) => ({ ...state, page: true }));
     api
-      .get("v1/scm/vendor", {
-        headers: {
-          Authorization: `Bearer ${user.token}`
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        setInfo(res.data);
-      })
-      .catch(() => {})
-      .finally(() => {});
+      .get("v1/scm/vendor")
+      .then((res) => setInfo(res.data))
+      .catch((err) => console.log(err))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
+  };
+
+  const fetchUsers = (pagination = { page: 1, pageSize: 10 }) => {
+    const offset = (pagination.page - 1) * pagination.pageSize;
+    setLoading((state) => ({ ...state, userTable: true }));
+    api
+      .get("v1/scm/vendor/user", { params: { offset, max: userTableInfo.max } })
+      .then((res) => setUserTableInfo((state) => ({ ...state, ...res.data })))
+      .catch((err) => console.log(err))
+      .finally(() => setLoading((state) => ({ ...state, userTable: false })));
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    console.log(page, pageSize);
+    fetchUsers({ page, pageSize });
   };
 
   useEffect(() => {
     fetchInfo();
+    fetchUsers({ page: 1, pageSize: 10 });
   }, []);
 
+  console.log("options", options, user);
+
   return (
-    <Container>
-      <Wrapper>
-        <Title>基礎資料</Title>
+    <Spin spinning={loading.page}>
+      <Container>
+        <Wrapper>
+          <Title>基礎資料</Title>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              供應商
-              <br />
-              代碼
-            </ItemLabel>
-            <Input disabled value={info.vendorCode} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                代碼
+              </ItemLabel>
+              <Input disabled value={info.vendorCode} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              SPA
-              <br />
-              供應商
-              <br />
-              代碼
-            </ItemLabel>
-            <Input disabled value={info.sapVendorCode} />
-          </Item>
+            <Item>
+              <ItemLabel>
+                SPA
+                <br />
+                供應商
+                <br />
+                代碼
+              </ItemLabel>
+              <Input disabled value={info.sapVendorCode} />
+            </Item>
 
-          <Item></Item>
-        </Row>
+            <Item></Item>
+          </Row>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              供應商
-              <br />
-              名稱
-            </ItemLabel>
-            <Input disabled value={info.vendorName} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                名稱
+              </ItemLabel>
+              <Input disabled value={info.vendorName} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              供應商
-              <br />
-              簡稱
-            </ItemLabel>
-            <Input disabled value={info.companyAlias} />
-          </Item>
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                簡稱
+              </ItemLabel>
+              <Input disabled value={info.companyAlias} />
+            </Item>
 
-          <Item>
-            <ItemLabel>統一編號</ItemLabel>
-            <Input disabled value={info.taxId} />
-          </Item>
-        </Row>
+            <Item>
+              <ItemLabel>統一編號</ItemLabel>
+              <Input disabled value={info.taxId} />
+            </Item>
+          </Row>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              供應商
-              <br />
-              代表號
-            </ItemLabel>
-            <Input disabled value={info.companyContact} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                供應商
+                <br />
+                代表號
+              </ItemLabel>
+              <Input disabled value={info.companyContact} />
+            </Item>
 
-          <Item style={{ flex: "2 1 32px" }}>
-            <ItemLabel>
-              供應商
-              <br />
-              地址
-            </ItemLabel>
-            <Input disabled value={info.vendorAddress} />
-          </Item>
-        </Row>
-      </Wrapper>
+            <Item style={{ flex: "2 1 32px" }}>
+              <ItemLabel>
+                供應商
+                <br />
+                地址
+              </ItemLabel>
+              <Input disabled value={info.vendorAddress} />
+            </Item>
+          </Row>
+        </Wrapper>
 
-      <Wrapper>
-        <Title>人員聯絡方式</Title>
+        <Wrapper>
+          <Title>人員聯絡方式</Title>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              業務
-              <br />
-              承辦人
-            </ItemLabel>
-            <Input disabled value={info.businessContact} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                業務
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input disabled value={info.businessContact} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              業務
-              <br />
-              聯絡電話
-            </ItemLabel>
-            <Input disabled value={info.businessPhone} />
-          </Item>
+            <Item>
+              <ItemLabel>
+                業務
+                <br />
+                聯絡電話
+              </ItemLabel>
+              <Input disabled value={info.businessPhone} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              業務
-              <br />
-              E-mai
-            </ItemLabel>
-            <Input disabled value={info.businessEmail} />
-          </Item>
-        </Row>
+            <Item>
+              <ItemLabel>
+                業務
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input disabled value={info.businessEmail} />
+            </Item>
+          </Row>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              財務
-              <br />
-              承辦人
-            </ItemLabel>
-            <Input disabled value={info.financeContact} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                財務
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input disabled value={info.financeContact} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              財務
-              <br />
-              聯絡電話
-            </ItemLabel>
-            <Input disabled value={info.financePhone} />
-          </Item>
+            <Item>
+              <ItemLabel>
+                財務
+                <br />
+                聯絡電話
+              </ItemLabel>
+              <Input disabled value={info.financePhone} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              財務
-              <br />
-              E-mai
-            </ItemLabel>
-            <Input disabled value={info.financeEmail} />
-          </Item>
-        </Row>
+            <Item>
+              <ItemLabel>
+                財務
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input disabled value={info.financeEmail} />
+            </Item>
+          </Row>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              出貨
-              <br />
-              承辦人
-            </ItemLabel>
-            <Input disabled value={info.shipContact} />
-          </Item>
+          <Row>
+            <Item>
+              <ItemLabel>
+                出貨
+                <br />
+                承辦人
+              </ItemLabel>
+              <Input disabled value={info.shipContact} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              出貨
-              <br />
-              聯絡電話
-            </ItemLabel>
-            <Input disabled value={info.shipPhone} />
-          </Item>
+            <Item>
+              <ItemLabel>
+                出貨
+                <br />
+                聯絡電話
+              </ItemLabel>
+              <Input disabled value={info.shipPhone} />
+            </Item>
 
-          <Item>
-            <ItemLabel>
-              出貨
-              <br />
-              E-mai
-            </ItemLabel>
-            <Input disabled value={info.shipEmail} />
-          </Item>
-        </Row>
-      </Wrapper>
+            <Item>
+              <ItemLabel>
+                出貨
+                <br />
+                E-mai
+              </ItemLabel>
+              <Input disabled value={info.shipEmail} />
+            </Item>
+          </Row>
+        </Wrapper>
 
-      <Wrapper>
-        <Title>出貨天數設定</Title>
+        <Wrapper>
+          <Title>出貨天數設定</Title>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              一般常温
-              <br />
-              /天
-            </ItemLabel>
-            <Input disabled />
-          </Item>
+          {scmCart.map((a) => {
+            const item =
+              info?.settingList?.find((b) => b.cart === a.value) ?? {};
 
-          <Item>
-            <ItemLabel>運費備註</ItemLabel>
-            <Input />
-          </Item>
+            return (
+              <Row>
+                <Item>
+                  <ItemLabel>
+                    {a.name}
+                    <br />
+                    /天
+                  </ItemLabel>
+                  <Input disabled value={item.shippingDays} />
+                </Item>
 
-          <Item></Item>
-        </Row>
+                <Item>
+                  <ItemLabel>運費備註</ItemLabel>
+                  <Input disabled value={item.shippingMethod} />
+                </Item>
 
-        <Row>
-          <Item>
-            <ItemLabel>
-              一般低温
-              <br />
-              /天
-            </ItemLabel>
-            <Input />
-          </Item>
+                <Item></Item>
+              </Row>
+            );
+          })}
+        </Wrapper>
 
-          <Item>
-            <ItemLabel>運費備註</ItemLabel>
-            <Input />
-          </Item>
+        <Wrapper>
+          <Title>使用者帳號</Title>
 
-          <Item></Item>
-        </Row>
-
-        <Row>
-          <Item>
-            <ItemLabel>
-              預購常温
-              <br />
-              /天
-            </ItemLabel>
-            <Input />
-          </Item>
-
-          <Item>
-            <ItemLabel>運費備註</ItemLabel>
-            <Input />
-          </Item>
-
-          <Item></Item>
-        </Row>
-
-        <Row>
-          <Item>
-            <ItemLabel>
-              預購低温
-              <br />
-              /天
-            </ItemLabel>
-            <Input />
-          </Item>
-
-          <Item>
-            <ItemLabel>運費備註</ItemLabel>
-            <Input />
-          </Item>
-
-          <Item></Item>
-        </Row>
-      </Wrapper>
-
-      <Wrapper>
-        <Title>使用者帳號</Title>
-
-        <Table columns={columns} dataSource={data} />
-      </Wrapper>
-    </Container>
+          <Table
+            loading={loading.userTable}
+            columns={columns}
+            dataSource={userTableInfo.rows}
+            total={userTableInfo.total}
+            showSizeChanger
+            pageSize={userTableInfo.max}
+            onChange={handleChangeTable}
+          />
+        </Wrapper>
+      </Container>
+    </Spin>
   );
 };
 

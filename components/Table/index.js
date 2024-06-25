@@ -46,16 +46,33 @@ const PaginationWrapper = styled.div`
 `;
 
 const Table = (props) => {
-  const { pagination = true, size = "middle" } = props;
+  const {
+    pagination = true,
+    size = "middle",
+    total,
+    loading,
+    pageSize,
+    onChange,
+  } = props;
 
   return (
     <TableWrapper>
-      <StyledTable size={size} pagination={false} {...props} />
+      <StyledTable
+        size={size}
+        pagination={false}
+        loading={loading}
+        {...props}
+      />
 
       {pagination && (
         <PaginationWrapper>
-          <div className="total">共500筆</div>
-          <Pagination defaultCurrent={1} total={500} />
+          <div className="total">共 {total} 筆</div>
+          <Pagination
+            defaultCurrent={1}
+            total={total}
+            pageSize={pageSize}
+            onChange={onChange}
+          />
         </PaginationWrapper>
       )}
     </TableWrapper>

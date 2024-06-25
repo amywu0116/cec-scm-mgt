@@ -11,7 +11,22 @@ import CommissionHistory from "./CommissionHistory";
 import FeeHistory from "./FeeHistory";
 import LoginHistory from "./LoginHistory";
 
+import api from "@/api";
+import { useBoundStore } from "@/store";
+
 const Page = () => {
+  const updateOptions = useBoundStore((state) => state.updateOptions);
+
+  const fetchOptions = () => {
+    api
+      .get("v1/system/option")
+      .then((res) => updateOptions(res.data))
+      .catch((err) => console.log(err))
+      .finally(() => {});
+  };
+
+  fetchOptions();
+
   return (
     <>
       <LayoutHeader>

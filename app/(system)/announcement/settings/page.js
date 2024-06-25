@@ -142,8 +142,6 @@ const Page = () => {
     },
   ];
 
-  console.log("openDropdown", openDropdown);
-
   return (
     <>
       <LayoutHeader>
