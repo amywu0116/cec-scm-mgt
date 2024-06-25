@@ -1,10 +1,13 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Checkbox, Radio } from "antd";
 import styled from "styled-components";
 
 import Input from "@/components/Input";
 import Table from "@/components/Table";
+
+import api from "@/api";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +50,8 @@ const Row = styled.div`
 `;
 
 const BasicInfo = () => {
+  const user = useBoundStore((state) => state.user);
+
   const columns = [
     {
       title: "使用者",
@@ -93,6 +98,24 @@ const BasicInfo = () => {
       d: "",
     },
   ];
+
+  const fetchInfo = () => {
+    api
+      .get("/scm/vendor", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(() => {})
+      .finally(() => {});
+  };
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
 
   return (
     <Container>

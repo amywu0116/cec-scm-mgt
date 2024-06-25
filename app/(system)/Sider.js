@@ -183,6 +183,7 @@ const Sider = () => {
   const pathname = usePathname();
 
   const user = useBoundStore((state) => state.user);
+  const clearUser = useBoundStore((state) => state.clearUser);
 
   const getOpenKeys = (url) => {
     const parts = url.split("/");
@@ -203,6 +204,7 @@ const Sider = () => {
       )
       .then((res) => {
         router.push("/login");
+        clearUser();
         message.success("登出成功");
       })
       .catch((err) => {})

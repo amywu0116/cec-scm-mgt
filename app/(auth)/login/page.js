@@ -61,7 +61,6 @@ const Page = () => {
         token: recaptchaValue,
       })
       .then((res) => {
-        localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
         updateUser(res.data);
         router.push("/");
       })
