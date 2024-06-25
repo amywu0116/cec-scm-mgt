@@ -7,7 +7,7 @@ import Input from "@/components/Input";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import { useStore } from "@/store";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -50,7 +50,7 @@ const Row = styled.div`
 `;
 
 const BasicInfo = () => {
-  const user = useStore((state) => state.user);
+  const user = useBoundStore((state) => state.user);
 
   const [info, setInfo] = useState({
     id: 1,

@@ -14,7 +14,7 @@ import Subtitle from "../Subtitle";
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 
-import { useStore } from "@/store";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div``;
 
@@ -36,7 +36,7 @@ const Page = () => {
 
   const recaptchaRef = useRef();
 
-  const updateUser = useStore((state) => state.updateUser);
+  const updateUser = useBoundStore((state) => state.updateUser);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
