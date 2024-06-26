@@ -34,8 +34,9 @@ const LoginRecord = () => {
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
+    total: 0,
     page: 1,
-    per_page: 10,
+    pageSize: 10,
   });
 
   const columns = [
@@ -87,8 +88,12 @@ const LoginRecord = () => {
         const records = res.data.map((d, i) => ({ ...d, id: i + 1 }));
         setRecordList(records);
 
-        const list = splitArrayIntoParts(records, tableInfo.per_page);
-        setTableInfo((state) => ({ ...state, rows: list[tableInfo.page - 1] }));
+        const list = splitArrayIntoParts(records, tableInfo.pageSize);
+        setTableInfo((state) => ({
+          ...state,
+          rows: list[tableInfo.page - 1],
+          total: records.length,
+        }));
       })
       .catch((err) => console.log(err))
       .finally(() => setLoading((state) => ({ ...state, page: false })));
@@ -96,7 +101,12 @@ const LoginRecord = () => {
 
   const handleChangeTable = (page, pageSize) => {
     const list = splitArrayIntoParts(recordList, pageSize);
-    setTableInfo((state) => ({ ...state, rows: list[page - 1] }));
+    setTableInfo((state) => ({
+      ...state,
+      rows: list[page - 1],
+      page,
+      pageSize,
+    }));
   };
 
   useEffect(() => {
@@ -111,7 +121,11 @@ const LoginRecord = () => {
           <Table
             columns={columns}
             dataSource={tableInfo.rows}
-            total={recordList.length}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
             onChange={handleChangeTable}
           />
         </Wrapper>

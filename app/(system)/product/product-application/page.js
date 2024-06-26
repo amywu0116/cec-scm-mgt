@@ -150,7 +150,6 @@ const Page = () => {
 
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
     setSelectedRows([]);
-    const offset = (pagination.page - 1) * pagination.pageSize;
     setLoading((state) => ({ ...state, table: true }));
     api
       .get("v1/scm/product/apply", {
@@ -164,7 +163,7 @@ const Page = () => {
           applyStatus: values.applyStatus,
           itemEan: values.itemEan ? values.itemEan : undefined,
           itemName: values.itemName ? values.itemName : undefined,
-          offset,
+          offset: (pagination.page - 1) * pagination.pageSize,
           max: pagination.pageSize,
         },
       })
