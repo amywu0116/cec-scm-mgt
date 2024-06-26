@@ -49,11 +49,10 @@ const Table = (props) => {
   const {
     pagination = true,
     size = "middle",
-    total,
     loading,
-    pageSize,
     onChange,
     showSizeChanger = true,
+    pageInfo = {},
   } = props;
 
   return (
@@ -67,12 +66,13 @@ const Table = (props) => {
 
       {pagination && (
         <PaginationWrapper>
-          <div className="total">共 {total} 筆</div>
+          <div className="total">共 {pageInfo.total} 筆</div>
           <Pagination
             defaultCurrent={1}
-            total={total}
+            total={pageInfo.total}
+            current={pageInfo.page}
+            pageSize={pageInfo.pageSize}
             showSizeChanger={showSizeChanger}
-            pageSize={pageSize}
             onChange={onChange}
           />
         </PaginationWrapper>

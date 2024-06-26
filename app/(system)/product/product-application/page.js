@@ -1,60 +1,27 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import styled, { css } from "styled-components";
-import Link from "next/link";
+import styled from "styled-components";
 import Image from "next/image";
+import { App, Form } from "antd";
+import dayjs from "dayjs";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
-import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Select from "@/components/Select";
+import Select, { SelectOption } from "@/components/Select";
 import Table from "@/components/Table";
+import Input from "@/components/Input";
+import FunctionBtn from "@/components/Button/FunctionBtn";
+
 import ModalAddType from "./ModalAddProduct";
+
+import api from "@/api";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    padding: 12px 48px;
-  }
-
-  .ant-tabs .ant-tabs-tab + .ant-tabs-tab {
-    margin: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    font-size: 14px;
-    font-weight: 700;
-    color: #7b8093;
-  }
-
-  .ant-checkbox-group {
-    gap: 20px 18px;
-    padding: 0 16px;
-  }
-
-  .ant-radio + span,
-  .ant-checkbox + span {
-    font-size: 14px;
-    font-weight: 400;
-    color: #7b8093;
-  }
-
-  .ant-checkbox + span {
-    width: 84px;
-  }
-
-  .ant-radio + span {
-    word-break: keep-all;
-  }
 
   .ant-btn-link {
     padding: 0;
@@ -67,22 +34,6 @@ const Container = styled.div`
       text-decoration: underline;
     }
   }
-
-  .ant-table-wrapper .ant-table-tbody {
-    .ant-table-row {
-      &.closed {
-        background-color: #eeeeee;
-
-        a {
-          color: #7b8093;
-        }
-
-        > .ant-table-cell-row-hover {
-          background-color: #eeeeee;
-        }
-      }
-    }
-  }
 `;
 
 const BtnGroup = styled.div`
@@ -91,8 +42,6 @@ const BtnGroup = styled.div`
 `;
 
 const Card = styled.div`
-  /* background-color: #f1f3f6; */
-  /* padding: 16px; */
   display: flex;
   flex-direction: column;
   gap: 16px 0;
@@ -130,110 +79,156 @@ const TableTitle = styled.div`
   line-height: 36px;
 `;
 
-const MaintainBtn = styled.div`
-  border: 1px solid rgba(34, 197, 94, 0.48);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(34, 197, 94, 1);
-  padding: 4px 8px;
-  margin: auto;
-  width: fit-content;
-  cursor: pointer;
+const Page = () => {
+  const { message } = App.useApp();
+  const [form] = Form.useForm();
+  const dateFormat = "YYYY/MM/DD";
 
-  &:hover {
-    border: 1.5px solid rgba(34, 197, 94, 1);
-    background-color: rgba(34, 197, 94, 0.08);
-  }
-`;
+  const options = useBoundStore((state) => state.options);
+  const applyStatusOptions = options?.apply_status ?? [];
 
-const ReturnRequest = (props) => {
+  const [loading, setLoading] = useState({ table: false });
   const [showModalAddType, setShowModalAddType] = useState(false);
-
   const [selectedRows, setSelectedRows] = useState([]);
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
 
   const columns = [
     {
       title: "申請日期",
-      dataIndex: "a",
+      dataIndex: "createdTime",
       align: "center",
     },
     {
       title: "申請類型",
-      dataIndex: "b",
+      dataIndex: "applyTypeName",
       align: "center",
     },
     {
       title: "部門別",
-      dataIndex: "c",
+      dataIndex: "scmCategoryCode",
       align: "center",
     },
     {
       title: "中文品名",
-      dataIndex: "d",
+      dataIndex: "itemName",
       align: "center",
     },
     {
       title: "條碼",
-      dataIndex: "e",
+      dataIndex: "itemEan",
       align: "center",
     },
     {
       title: "圖片",
-      dataIndex: "f",
+      dataIndex: "productImgUrl",
       align: "center",
-      render: () => {
-        return (
-          // <Image
-          //   width={40}
-          //   height={40}
-          //   src="https://fakeimg.pl/40x40/"
-          //   alt=""
-          // />
-          <div>image</div>
-        );
+      render: (text, record) => {
+        if (!text) return "-";
+        return <Image width={40} height={40} src={text} alt="" />;
       },
     },
     {
       title: "審核狀態",
-      dataIndex: "g",
+      dataIndex: "applyStatusName",
       align: "center",
     },
     {
       title: "功能",
-      dataIndex: "h",
+      dataIndex: "",
       align: "center",
       render: (text, record, index) => {
-        if (index === 0) {
-          return <MaintainBtn>商品相關圖檔維護</MaintainBtn>;
-        }
-        return;
+        return <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>;
       },
     },
   ];
 
-  const data = [
-    {
-      a: "2024/04/23",
-      b: "新品提品",
-      c: "12",
-      d: "法式傳統奶油酥餅（厚）",
-      e: "3472860001492",
-      f: "",
-      g: "暫存",
-      h: "",
-    },
-    {
-      a: "2024/04/23",
-      b: "新品提品",
-      c: "12",
-      d: "法式傳統奶油酥餅（厚）",
-      e: "3472860001492",
-      f: "",
-      g: "暫存",
-      h: "",
-    },
-  ];
+  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
+    setSelectedRows([]);
+    const offset = (pagination.page - 1) * pagination.pageSize;
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get("v1/scm/product/apply", {
+        params: {
+          applyDateStart: values.applyDateStart
+            ? dayjs(values.applyDateStart.$d).format(dateFormat)
+            : undefined,
+          applyDateEnd: values.applyDateEnd
+            ? dayjs(values.applyDateEnd.$d).format(dateFormat)
+            : undefined,
+          applyStatus: values.applyStatus,
+          itemEan: values.itemEan ? values.itemEan : undefined,
+          itemName: values.itemName ? values.itemName : undefined,
+          offset,
+          max: pagination.pageSize,
+        },
+      })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }));
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  const refreshTable = () => {
+    const formValues = form.getFieldsValue(true);
+    fetchList(formValues);
+    setSelectedRows([]);
+  };
+
+  const handleFinish = (values) => {
+    fetchList(values);
+  };
+
+  // 切換分頁、分頁大小
+  const handleChangeTable = (page, pageSize) => {
+    const formValues = form.getFieldsValue(true);
+    fetchList(formValues, { page, pageSize });
+  };
+
+  // 送審
+  const handleApply = () => {
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .post(`v1/scm/product/apply`, {
+        applyIds: selectedRows.map((row) => row.applyId),
+      })
+      .then(() => {
+        message.success("送審成功");
+        refreshTable();
+      })
+      .catch((err) => message.error(err))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  // 刪除
+  const handleDeleteApply = () => {
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .delete(`v1/scm/product/apply`, {
+        data: { applyIds: selectedRows.map((row) => row.applyId) },
+      })
+      .then((res) => {
+        if (res.message !== "200") {
+          message.error(res.data);
+        } else {
+          message.success(res.data);
+          refreshTable();
+        }
+      })
+      .catch((err) => message.error(err))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
 
   return (
     <>
@@ -250,70 +245,97 @@ const ReturnRequest = (props) => {
       </LayoutHeader>
 
       <Container>
-        <Card>
-          <Row>
-            <Item>
-              <ItemLabel>日期</ItemLabel>
+        <Form form={form} onFinish={handleFinish}>
+          <Card>
+            <Row>
+              <Item>
+                <ItemLabel>日期</ItemLabel>
+                <Form.Item name="applyDateStart" style={{ margin: 0 }}>
+                  <DatePicker
+                    style={{ width: 203 }}
+                    placeholder="日期起"
+                    format="YYYY/MM/DD"
+                  />
+                </Form.Item>
 
-              <DatePicker
-                style={{ width: 203 }}
-                placeholder="日期起"
-                onChange={() => {}}
-              />
-              <div style={{ width: 42, textAlign: "center" }}>-</div>
-              <DatePicker
-                style={{ width: 203 }}
-                placeholder="日期迄"
-                onChange={() => {}}
-              />
-            </Item>
-          </Row>
+                <div style={{ width: 42, textAlign: "center" }}>-</div>
 
-          <Row>
-            <Item>
-              <ItemLabel>條碼</ItemLabel>
-              <Input style={{ width: 203 }} placeholder="請輸入條碼" />
-            </Item>
+                <Form.Item name="applyDateEnd" style={{ margin: 0 }}>
+                  <DatePicker
+                    style={{ width: 203 }}
+                    placeholder="日期迄"
+                    format="YYYY/MM/DD"
+                  />
+                </Form.Item>
+              </Item>
+            </Row>
 
-            <Item>
-              <ItemLabel>品名</ItemLabel>
-              <Input style={{ width: 203 }} placeholder="請輸入商品名稱" />
-            </Item>
+            <Row>
+              <Item>
+                <ItemLabel>條碼</ItemLabel>
+                <Form.Item name="itemEan" style={{ margin: 0 }}>
+                  <Input style={{ width: 203 }} placeholder="請輸入條碼" />
+                </Form.Item>
+              </Item>
 
-            <Item>
-              <ItemLabel>狀態</ItemLabel>
-              <Select
-                style={{ width: 203 }}
-                placeholder="請選擇狀態"
-                options={[
-                  {
-                    value: "lucy",
-                    label: "Lucy",
-                  },
-                ]}
-              />
-            </Item>
+              <Item>
+                <ItemLabel>品名</ItemLabel>
+                <Form.Item name="itemName" style={{ margin: 0 }}>
+                  <Input style={{ width: 203 }} placeholder="請輸入商品名稱" />
+                </Form.Item>
+              </Item>
 
-            <BtnGroup style={{ marginLeft: "auto" }} justifyContent="flex-end">
-              <Button type="secondary">查詢</Button>
+              <Item>
+                <ItemLabel>狀態</ItemLabel>
+                <Form.Item name="applyStatus" style={{ margin: 0 }}>
+                  <Select style={{ width: 203 }} placeholder="請選擇狀態">
+                    {applyStatusOptions.map((opt) => {
+                      return (
+                        <SelectOption value={opt.value}>
+                          {opt.name}
+                        </SelectOption>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+              </Item>
 
-              <Button type="link">清除查詢條件</Button>
-            </BtnGroup>
-          </Row>
-        </Card>
+              <BtnGroup
+                style={{ marginLeft: "auto" }}
+                justifyContent="flex-end"
+              >
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
+
+                <Button type="link" htmlType="reset">
+                  清除查詢條件
+                </Button>
+              </BtnGroup>
+            </Row>
+          </Card>
+        </Form>
 
         <TableWrapper>
           <TableTitle>申請列表</TableTitle>
 
           {selectedRows.length > 0 && (
             <BtnGroup>
-              <Button type="default">送審</Button>
-              <Button type="default">刪除</Button>
+              <Button type="default" onClick={handleApply}>
+                送審
+              </Button>
+
+              <Button type="default" onClick={handleDeleteApply}>
+                刪除
+              </Button>
             </BtnGroup>
           )}
 
           <Table
+            rowKey="applyId"
+            loading={loading.table}
             rowSelection={{
+              selectedRowKeys: selectedRows.map((row) => row.applyId),
               onChange: (selectedRowKeys, selectedRows) => {
                 setSelectedRows(selectedRows);
               },
@@ -322,9 +344,14 @@ const ReturnRequest = (props) => {
                 name: record.name,
               }),
             }}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
             columns={columns}
-            dataSource={data}
-            pagination={false}
+            dataSource={tableInfo.rows}
+            onChange={handleChangeTable}
           />
         </TableWrapper>
       </Container>
@@ -337,4 +364,4 @@ const ReturnRequest = (props) => {
   );
 };
 
-export default ReturnRequest;
+export default Page;
