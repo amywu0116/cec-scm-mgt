@@ -95,9 +95,9 @@ const Page = () => {
       <Form
         form={form}
         initialValues={{
-          vendorCode: "",
-          account: "",
-          password: "",
+          vendorCode: "K0001",
+          account: "edward_hsu@syscom.com.tw",
+          password: "1qaz2wsx",
         }}
         layout="vertical"
         disabled={loading}
