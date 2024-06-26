@@ -139,7 +139,7 @@ const BasicInfo = () => {
 
             <Item>
               <ItemLabel>
-                SPA
+                SAP
                 <br />
                 供應商
                 <br />
