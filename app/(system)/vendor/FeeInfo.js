@@ -99,7 +99,7 @@ const FeeInfo = () => {
                 <br />
                 紅利費
               </ItemLabel>
-              <Input disabled value={`${info.referFee}%`} />
+              <Input disabled value={`${info.bonusFee}%`} />
             </Item>
 
             <Item></Item>
