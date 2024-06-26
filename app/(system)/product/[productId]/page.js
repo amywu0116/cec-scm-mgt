@@ -140,8 +140,20 @@ const Page = () => {
             <Item>
               <ItemLabel>內部分類</ItemLabel>
               <CategoryLabel>
-                {/* 家電處/大家電/冰箱/三門以上冰箱/四門以上冰{"<"}500公升 */}
+                {info.scmCategoryCode} / {info.scmCategoryName}
               </CategoryLabel>
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>品名</ItemLabel>
+              <Input disabled={!isEditing} />
+            </Item>
+
+            <Item>
+              <ItemLabel>生產國家</ItemLabel>
+              <Input disabled={!isEditing} value={info.itemCountry} />
             </Item>
           </Row>
 
@@ -164,8 +176,8 @@ const Page = () => {
             </Item>
 
             <Item>
-              <ItemLabel>銷售碼Unitcode</ItemLabel>
-              <Input disabled={!isEditing} />
+              <ItemLabel>規格</ItemLabel>
+              <Input disabled={!isEditing} value={info.itemSpec} />
             </Item>
           </Row>
 
@@ -186,13 +198,13 @@ const Page = () => {
 
           <Row>
             <Item>
-              <ItemLabel>建議售價(含稅)</ItemLabel>
+              <ItemLabel>原價</ItemLabel>
               <Input disabled={!isEditing} />
             </Item>
 
             <Item>
-              <ItemLabel>生產國家</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemCountry} />
+              <ItemLabel>促銷價</ItemLabel>
+              <Input disabled={!isEditing} />
             </Item>
           </Row>
         </Wrapper>
@@ -200,24 +212,24 @@ const Page = () => {
         <Wrapper>
           <Title>容量和重量</Title>
 
-          <Row>
+          {/* <Row>
             <Item>
               <ItemLabel>容量</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.v_capacity} />
             </Item>
 
             <Item>
               <ItemLabel>容量單位</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.vunit} />
             </Item>
 
             <Item>
               <ItemLabel>庫存單位</ItemLabel>
               <Input disabled={!isEditing} />
             </Item>
-          </Row>
+          </Row> */}
 
-          <Row>
+          {/* <Row>
             <Item>
               <ItemLabel>陳列單位(數字)</ItemLabel>
               <Input disabled={!isEditing} />
@@ -229,34 +241,34 @@ const Page = () => {
             </Item>
 
             <Item></Item>
-          </Row>
+          </Row> */}
 
           <Row>
             <Item>
               <ItemLabel>商品高度(cm)</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.productHeight} />
             </Item>
 
             <Item>
               <ItemLabel>商品寬度(cm)</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.productWidth} />
             </Item>
 
             <Item>
               <ItemLabel>商品長度(cm)</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.productLength} />
             </Item>
           </Row>
 
           <Row>
             <Item>
-              <ItemLabel>重量-毛重</ItemLabel>
-              <Input disabled={!isEditing} />
+              <ItemLabel>重量-淨重</ItemLabel>
+              <Input disabled={!isEditing} value={info.netWeight} />
             </Item>
 
             <Item>
-              <ItemLabel>重量-淨重</ItemLabel>
-              <Input disabled={!isEditing} />
+              <ItemLabel>重量-毛重</ItemLabel>
+              <Input disabled={!isEditing} value={info.grossWeight} />
             </Item>
 
             <Item></Item>
@@ -269,49 +281,58 @@ const Page = () => {
           <Row>
             <Item>
               <ItemLabel>保存日期</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.expDateValue} />
             </Item>
 
             <Item>
               <ItemLabel>保存日期單位</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.expDateUnit} />
             </Item>
           </Row>
 
           <Row>
             <Item>
               <ItemLabel>電源規格</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.powerSpec} />
             </Item>
 
             <Item>
-              <ItemLabel>影片檔Youtube之影音URL</ItemLabel>
-              <Input disabled={!isEditing} />
+              <ItemLabel>保存方式(文字)</ItemLabel>
+              <Input disabled={!isEditing} value={info.itemStoreway} />
             </Item>
           </Row>
 
           <Row>
             <Item>
               <ItemLabel>顏色</ItemLabel>
-              <Input disabled={!isEditing} />
+              <Input disabled={!isEditing} value={info.vcolor} />
             </Item>
 
             <Item>
               <ItemLabel>尺寸</ItemLabel>
+              <Input disabled={!isEditing} value={info.vsize} />
+            </Item>
+          </Row>
+
+          <Row>
+            <Item>
+              <ItemLabel>容量</ItemLabel>
+              <Input disabled={!isEditing} value={info.v_capacity} />
+            </Item>
+
+            <Item>
+              <ItemLabel>入數</ItemLabel>
               <Input disabled={!isEditing} />
             </Item>
           </Row>
 
           <Row>
             <Item>
-              <ItemLabel>等級</ItemLabel>
+              <ItemLabel>款式</ItemLabel>
               <Input disabled={!isEditing} />
             </Item>
 
-            <Item>
-              <ItemLabel>保存方式(文字)</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
+            <Item></Item>
           </Row>
 
           <Row>
@@ -340,8 +361,6 @@ const Page = () => {
                 </Radio>
               </Radio.Group>
             </Item>
-
-            <Item></Item>
           </Row>
 
           <Row>
@@ -366,6 +385,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.itemDetail}
               />
             </Item>
           </Row>
@@ -380,6 +400,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.ingredients}
               />
             </Item>
 
@@ -392,6 +413,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.nutrition}
               />
             </Item>
           </Row>
@@ -406,6 +428,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.dutyInsurance}
               />
             </Item>
 
@@ -418,6 +441,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.approvalId}
               />
             </Item>
           </Row>
@@ -432,6 +456,7 @@ const Page = () => {
                   maxRows: 3,
                 }}
                 disabled={!isEditing}
+                value={info.warrantyScope}
               />
             </Item>
 

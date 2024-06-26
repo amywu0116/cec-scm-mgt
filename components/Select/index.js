@@ -15,4 +15,8 @@ const Select = (props) => {
   return <StyledSelect {...props} />;
 };
 
+export const SelectOption = (props) => {
+  return <AntdSelect.Option {...props} />;
+};
+
 export default Select;
