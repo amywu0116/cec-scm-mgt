@@ -59,16 +59,21 @@ const BasicInfo = () => {
   const [info, setInfo] = useState({});
 
   const [userTableInfo, setUserTableInfo] = useState({
-    offset: 0,
-    max: 10,
-    total: 0,
     rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
   });
 
   const columns = [
     {
-      title: "使用者",
+      title: "使用者姓名",
       dataIndex: "name",
+      align: "center",
+    },
+    {
+      title: "帳號",
+      dataIndex: "account",
       align: "center",
     },
     {
@@ -86,8 +91,13 @@ const BasicInfo = () => {
       dataIndex: "status",
       align: "center",
       render: (text, record, index) => {
-        return <Checkbox checked={text === 1} />;
+        return <Checkbox disabled checked={text === 1} />;
       },
+    },
+    {
+      title: "備註",
+      dataIndex: "remark",
+      align: "center",
     },
   ];
 
@@ -101,11 +111,22 @@ const BasicInfo = () => {
   };
 
   const fetchUsers = (pagination = { page: 1, pageSize: 10 }) => {
-    const offset = (pagination.page - 1) * pagination.pageSize;
     setLoading((state) => ({ ...state, userTable: true }));
     api
-      .get("v1/scm/vendor/user", { params: { offset, max: userTableInfo.max } })
-      .then((res) => setUserTableInfo((state) => ({ ...state, ...res.data })))
+      .get("v1/scm/vendor/user", {
+        params: {
+          offset: (pagination.page - 1) * pagination.pageSize,
+          max: pagination.pageSize,
+        },
+      })
+      .then((res) =>
+        setUserTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }))
+      )
       .catch((err) => console.log(err))
       .finally(() => setLoading((state) => ({ ...state, userTable: false })));
   };
@@ -324,8 +345,11 @@ const BasicInfo = () => {
             loading={loading.userTable}
             columns={columns}
             dataSource={userTableInfo.rows}
-            total={userTableInfo.total}
-            pageSize={userTableInfo.max}
+            pageInfo={{
+              total: userTableInfo.total,
+              page: userTableInfo.page,
+              pageSize: userTableInfo.pageSize,
+            }}
             onChange={handleChangeTable}
           />
         </Wrapper>

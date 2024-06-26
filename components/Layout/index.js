@@ -46,7 +46,7 @@ export const LayoutHeader = (props) => {
       {children}
 
       <UserInfo>
-        {user.vendorCode} / {user.vendorName}
+        {user.account} / {user.name}
       </UserInfo>
     </StyledLayoutHeader>
   );

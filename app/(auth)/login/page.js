@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Form, Input, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
@@ -83,10 +83,6 @@ const Page = () => {
     setIsSubmitDisabled(!isFormValid);
   };
 
-  // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
-  //   redirect("/");
-  // }
-
   return (
     <Container>
       <Title>歡迎，供應商管理系統！</Title>
@@ -95,9 +91,9 @@ const Page = () => {
       <Form
         form={form}
         initialValues={{
-          vendorCode: "K0001",
-          account: "edward_hsu@syscom.com.tw",
-          password: "1qaz2wsx",
+          vendorCode: "",
+          account: "",
+          password: "",
         }}
         layout="vertical"
         disabled={loading}
