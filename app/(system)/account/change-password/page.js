@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { App, Breadcrumb, Form, Typography } from "antd";
 import styled from "styled-components";
 
@@ -8,7 +8,6 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import InputPassword from "@/components/Input/InputPassword";
 
 import api from "@/api";
-import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -17,50 +16,27 @@ const Container = styled.div`
   width: 352px;
 `;
 
-const Info = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(145, 158, 171, 1);
-  text-align: right;
-`;
-
 const Page = () => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
-
-  const user = useBoundStore((state) => state.user);
 
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
   const handleFinish = (values) => {
-    console.log("values", values);
-
     if (values.newPassword !== values.newPasswordConfirm) {
       setErrorMsg("新密碼和確認密碼必須一致");
       return;
     }
 
     api
-      .post(
-        "/auth/changePassword",
-        {
-          oldPassword: values.oldPassword,
-          newPassword: values.newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      )
-      .then((res) => {
-        message.success("修改成功");
+      .post("/auth/changePassword", {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
       })
-      .catch((err) => {
-        setErrorMsg(err.message);
-      })
+      .then((res) => message.success("修改成功"))
+      .catch((err) => setErrorMsg(err.message))
       .finally(() => setLoading(false));
   };
 
@@ -70,8 +46,6 @@ const Page = () => {
     );
     setIsSubmitDisabled(!isFormValid);
   };
-
-  console.log("user", user);
 
   return (
     <>
@@ -92,10 +66,6 @@ const Page = () => {
       </LayoutHeader>
 
       <Container>
-        <Info>
-          {user.vendorCode} / {user.vendorName}
-        </Info>
-
         <Form
           form={form}
           layout="vertical"
