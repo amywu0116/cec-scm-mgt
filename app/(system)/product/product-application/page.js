@@ -289,9 +289,9 @@ const Page = () => {
                 <ItemLabel>狀態</ItemLabel>
                 <Form.Item name="applyStatus" style={{ margin: 0 }}>
                   <Select style={{ width: 203 }} placeholder="請選擇狀態">
-                    {applyStatusOptions.map((opt) => {
+                    {applyStatusOptions.map((opt, idx) => {
                       return (
-                        <SelectOption value={opt.value}>
+                        <SelectOption key={idx} value={opt.value}>
                           {opt.name}
                         </SelectOption>
                       );
