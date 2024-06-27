@@ -76,8 +76,10 @@ const Page = () => {
   const [loading, setLoading] = useState({ table: false });
 
   const [tableInfo, setTableInfo] = useState({
-    total: 0,
     rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
   });
 
   const columns = [
@@ -126,18 +128,24 @@ const Page = () => {
   ];
 
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
-    const offset = (pagination.page - 1) * pagination.pageSize;
     setLoading((state) => ({ ...state, table: true }));
     api
       .get("v1/scm/product", {
         params: {
           itemEan: values.itemEan ? values.itemEan : undefined,
           itemName: values.itemName ? values.itemName : undefined,
-          offset,
+          offset: (pagination.page - 1) * pagination.pageSize,
           max: pagination.pageSize,
         },
       })
-      .then((res) => setTableInfo((state) => ({ ...state, ...res.data })))
+      .then((res) =>
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }))
+      )
       .catch((err) => console.log(err))
       .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
@@ -199,8 +207,6 @@ const Page = () => {
                     loading={loading.table}
                     columns={columns}
                     dataSource={tableInfo.rows}
-                    total={tableInfo.total}
-                    onChange={handleChangeTable}
                     onRow={(record, index) => {
                       return {
                         onClick: (e) => {
@@ -210,6 +216,12 @@ const Page = () => {
                         },
                       };
                     }}
+                    pageInfo={{
+                      total: tableInfo.total,
+                      page: tableInfo.page,
+                      pageSize: tableInfo.pageSize,
+                    }}
+                    onChange={handleChangeTable}
                   />
                 ),
               },
