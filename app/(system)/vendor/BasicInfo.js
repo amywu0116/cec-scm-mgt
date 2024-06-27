@@ -7,7 +7,6 @@ import Input from "@/components/Input";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   display: flex;
@@ -50,10 +49,6 @@ const Row = styled.div`
 `;
 
 const BasicInfo = () => {
-  const user = useBoundStore((state) => state.user);
-  const options = useBoundStore((state) => state.options);
-  const scmCart = options?.SCM_cart ?? [];
-
   const [loading, setLoading] = useState({ page: false, userTable: false });
 
   const [info, setInfo] = useState({});
@@ -139,8 +134,6 @@ const BasicInfo = () => {
     fetchInfo();
     fetchUsers({ page: 1, pageSize: 10 });
   }, []);
-
-  console.log("options", options, user);
 
   return (
     <Spin spinning={loading.page}>
@@ -307,35 +300,6 @@ const BasicInfo = () => {
               <Input disabled value={info.shipEmail} />
             </Item>
           </Row>
-        </Wrapper>
-
-        <Wrapper>
-          <Title>出貨天數設定</Title>
-
-          {scmCart.map((a, idx) => {
-            const item =
-              info?.settingList?.find((b) => b.cart === a.value) ?? {};
-
-            return (
-              <Row key={idx}>
-                <Item>
-                  <ItemLabel>
-                    {a.name}
-                    <br />
-                    /天
-                  </ItemLabel>
-                  <Input disabled value={item.shippingDays} />
-                </Item>
-
-                <Item>
-                  <ItemLabel>運費備註</ItemLabel>
-                  <Input disabled value={item.shippingMethod} />
-                </Item>
-
-                <Item></Item>
-              </Row>
-            );
-          })}
         </Wrapper>
 
         <Wrapper>

@@ -13,7 +13,7 @@ import Table from "@/components/Table";
 import Input from "@/components/Input";
 import FunctionBtn from "@/components/Button/FunctionBtn";
 
-import ModalAddType from "./ModalAddProduct";
+import ModalAddProduct from "./ModalAddProduct";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
@@ -355,7 +355,7 @@ const Page = () => {
         </TableWrapper>
       </Container>
 
-      <ModalAddType
+      <ModalAddProduct
         open={showModalAddType}
         onCancel={() => setShowModalAddType(false)}
       />
