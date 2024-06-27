@@ -10,6 +10,7 @@ import FeeInfo from "./FeeInfo";
 import CommissionHistory from "./CommissionHistory";
 import FeeHistory from "./FeeHistory";
 import LoginRecord from "./LoginRecord";
+import ShippingFeeSettings from "./ShippingFeeSettings";
 
 const Page = () => {
   return (
@@ -50,6 +51,11 @@ const Page = () => {
             label: "使用者登入歷程",
             key: "6",
             children: <LoginRecord />,
+          },
+          {
+            label: "運費設定",
+            key: "7",
+            children: <ShippingFeeSettings />,
           },
         ]}
       />

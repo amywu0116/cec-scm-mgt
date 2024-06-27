@@ -79,7 +79,10 @@ const FeeInfo = () => {
                 <br />
                 維護費
               </ItemLabel>
-              <Input disabled value={`${info.maintainFee}%`} />
+              <Input
+                disabled
+                value={info.maintainFee ? `${info.maintainFee}%` : ""}
+              />
             </Item>
 
             <Item>
@@ -88,7 +91,10 @@ const FeeInfo = () => {
                 <br />
                 導流費
               </ItemLabel>
-              <Input disabled value={`${info.referFee}%`} />
+              <Input
+                disabled
+                value={info.referFee ? `${info.referFee}%` : ""}
+              />
             </Item>
           </Row>
 
@@ -99,7 +105,10 @@ const FeeInfo = () => {
                 <br />
                 紅利費
               </ItemLabel>
-              <Input disabled value={`${info.bonusFee}%`} />
+              <Input
+                disabled
+                value={info.bonusFee ? `${info.bonusFee}%` : ""}
+              />
             </Item>
 
             <Item></Item>

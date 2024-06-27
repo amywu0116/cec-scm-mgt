@@ -1,7 +1,9 @@
 import { Modal as AntdModal } from "antd";
 import styled from "styled-components";
+import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button";
+import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
 
 const StyledModal = styled(AntdModal)`
   &.ant-modal .ant-modal-content {
@@ -30,6 +32,7 @@ const ButtonGroup = styled.div`
 
 const ModalAddProduct = (props) => {
   const { open, onCancel } = props;
+  const router = useRouter();
 
   return (
     <StyledModal
@@ -43,8 +46,24 @@ const ModalAddProduct = (props) => {
       <Content>
         <Title>請選擇新增類別</Title>
         <ButtonGroup>
-          <Button type="secondary">食品</Button>
-          <Button type="secondary">非食品</Button>
+          <Button
+            type="secondary"
+            onClick={() => {
+              router.push(`${PATH_PRODUCT_PRODUCT_APPLICATION}/add/food`);
+            }}
+          >
+            食品
+          </Button>
+
+          <Button
+            type="secondary"
+            onClick={() => {
+              router.push(`${PATH_PRODUCT_PRODUCT_APPLICATION}/add/non-food`);
+            }}
+          >
+            非食品
+          </Button>
+
           <Button onClick={() => onCancel()}>取消</Button>
         </ButtonGroup>
       </Content>
