@@ -41,13 +41,34 @@ const ShippingFeeSettings = () => {
 
   const [loading, setLoading] = useState({ page: false });
 
-  const [info, setInfo] = useState([]);
+  const settingList = [
+    {
+      cart: "RR",
+      shippingMethod: "運費100，399免運",
+      shippingDays: 1,
+    },
+    {
+      cart: "RC",
+      shippingMethod: "運費100，599免運",
+      shippingDays: 1,
+    },
+    {
+      cart: "PR",
+      shippingMethod: "運費200，1000免運(建議低溫商品)",
+      shippingDays: 6,
+    },
+    {
+      cart: "PC",
+      shippingMethod: "運費200，1299免運(建議低溫商品)",
+      shippingDays: 8,
+    },
+  ];
 
   return (
     <Spin spinning={loading.page}>
       <Container>
         {scmCart.map((a, idx) => {
-          const item = info?.settingList?.find((b) => b.cart === a.value) ?? {};
+          const item = settingList?.find((b) => b.cart === a.value) ?? {};
 
           return (
             <Row key={idx}>

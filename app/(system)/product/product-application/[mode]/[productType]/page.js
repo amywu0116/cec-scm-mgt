@@ -3,12 +3,14 @@ import React, { useState, useEffect } from "react";
 import { App, Breadcrumb, Radio, Spin, Form } from "antd";
 import styled from "styled-components";
 import { useParams, useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
+import DatePicker from "@/components/DatePicker";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
@@ -18,12 +20,29 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
+
+  .ant-form-item {
+    .ant-form-item-label > label {
+      height: 100%;
+      font-size: 14px;
+      font-weight: 700;
+      color: #7b8093;
+
+      &::after {
+        margin-inline-end: 16px;
+      }
+    }
+  }
+
+  .ant-radio + span {
+    word-break: keep-all;
+  }
 `;
 
 const Wrapper = styled.div`
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  gap: 16px 0;
+  gap: 16px 0; */
 `;
 
 const Title = styled.div`
@@ -53,7 +72,7 @@ const Row = styled.div`
   gap: 0 32px;
 `;
 
-const ButtonGroup = styled.div`
+const BtnGroup = styled.div`
   display: flex;
   gap: 0 16px;
 `;
@@ -62,6 +81,7 @@ const Page = () => {
   const router = useRouter();
   const [form] = Form.useForm();
   const { message } = App.useApp();
+  const dateFormat = "YYYY/MM/DD";
 
   const params = useParams();
   const isFood = params.productType === "food";
@@ -85,8 +105,8 @@ const Page = () => {
   const handleFinish = (values) => {
     console.log("finish", values);
     const data = {
-      scmCategoryCode: values.scmCategory.categoryCode,
-      scmCategoryName: values.scmCategory.categoryName,
+      scmCategoryCode: values.scmCategory?.categoryCode ?? undefined,
+      scmCategoryName: values.scmCategory?.categoryName ?? undefined,
       isFood: isFood,
       // cartType: "1",
       itemName: values.itemName,
@@ -136,7 +156,9 @@ const Page = () => {
       manufacturerPhone: values.manufacturerPhone,
       manufacturerAddress: values.manufacturerAddress,
       perpetual: values.perpetual,
-      stockStartdate: values.stockStartdate,
+      stockStartdate: values.stockStartdate
+        ? dayjs(values.stockStartdate.$d).format(dateFormat)
+        : undefined,
     };
 
     console.log("data", data);
@@ -144,9 +166,8 @@ const Page = () => {
     api
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
-        if (res.message !== "200") {
+        if (res.code !== "200") {
           message.error(res.data);
-          return;
         } else {
           message.success("新增成功");
           router.push(PATH_PRODUCT_PRODUCT_APPLICATION);
@@ -179,7 +200,7 @@ const Page = () => {
           ]}
         />
 
-        <ButtonGroup style={{ marginLeft: "auto" }}>
+        <BtnGroup style={{ marginLeft: "auto" }}>
           <Button onClick={() => router.push(PATH_PRODUCT_PRODUCT_APPLICATION)}>
             關閉
           </Button>
@@ -187,12 +208,17 @@ const Page = () => {
           <Button type="primary" onClick={() => form.submit()}>
             暫存
           </Button>
-        </ButtonGroup>
+        </BtnGroup>
       </LayoutHeader>
 
       <Form
         form={form}
-        layout="vertical"
+        autoComplete="off"
+        layout="horizontal"
+        colon={false}
+        labelCol={{ span: 6 }}
+        labelWrap
+        labelAlign="right"
         onFinish={handleFinish}
         onFieldsChange={handleFieldsChange}
       >
@@ -202,10 +228,8 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>分類</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="scmCategory">
+                <Form.Item style={{ flex: 1 }} name="scmCategory" label="分類">
                   <Select
-                    // style={{ width: "100%" }}
                     placeholder="選擇分類"
                     options={categoryList.map((c) => {
                       return {
@@ -215,7 +239,6 @@ const Page = () => {
                       };
                     })}
                     showSearch
-                    dropdownMatchSelectWidth
                     onSelect={(value, option) => {
                       form.setFieldValue("scmCategory", option);
                     }}
@@ -224,60 +247,68 @@ const Page = () => {
               </Item>
 
               <Item></Item>
+              <Item></Item>
+            </Row>
+
+            <Row>
+              <Item>
+                <Form.Item style={{ flex: 1 }} name="itemName" label="中文品名">
+                  <Input placeholder="請輸入中文品名" />
+                </Form.Item>
+              </Item>
+
+              <Item>
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="itemNameEn"
+                  label="英文品名"
+                >
+                  <Input placeholder="請輸入英文品名" />
+                </Form.Item>
+              </Item>
 
               <Item></Item>
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>中文品名</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemName">
-                  <Input placeholder="請輸入中文品名" />
-                </Form.Item>
-              </Item>
-
-              <Item>
-                <ItemLabel>英文品名</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemNameEn">
-                  <Input placeholder="請輸入英文品名" />
-                </Form.Item>
-              </Item>
-            </Row>
-
-            <Row>
-              <Item>
-                <ItemLabel>供應商商品編號</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vendorProdCode">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="vendorProdCode"
+                  label="供應商商品編號"
+                >
                   <Input placeholder="請輸入供應商商品編號" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>生產國家</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemCountry">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="itemCountry"
+                  label="生產國家"
+                >
                   <Input placeholder="請輸入生產國家" />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>條碼</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemEan">
+                <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
                   <Input placeholder="請輸入條碼" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>規格</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemSpec">
+                <Form.Item style={{ flex: 1 }} name="itemSpec" label="規格">
                   <Input placeholder="請輸入規格" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>應/免稅</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="isTax">
+                <Form.Item style={{ flex: 1 }} name="isTax" label="應/免稅">
                   <Select
                     style={{ width: "100%" }}
                     placeholder="請輸入應/免稅"
@@ -298,18 +329,22 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>原價</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="price">
+                <Form.Item style={{ flex: 1 }} name="price" label="原價">
                   <Input placeholder="請輸入原價" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>促銷價</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="specialPrice">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="specialPrice"
+                  label="促銷價"
+                >
                   <Input placeholder="請輸入促銷價" />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
           </Wrapper>
 
@@ -318,34 +353,35 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>容量</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vCapacity">
+                <Form.Item style={{ flex: 1 }} name="vCapacity" label="容量">
                   <Input placeholder="請輸入容量" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>容量單位</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vUnit">
+                <Form.Item style={{ flex: 1 }} name="vUnit" label="容量單位">
                   <Input placeholder="請輸入容量單位" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>庫存單位</ItemLabel>
-                <Input placeholder="請輸入庫存單位" />
+                <Form.Item style={{ flex: 1 }} name="1" label="庫存單位">
+                  <Input placeholder="請輸入庫存單位" />
+                </Form.Item>
               </Item>
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>陳列單位(數字)</ItemLabel>
-                <Input placeholder="請輸入陳列單位(數字)" />
+                <Form.Item style={{ flex: 1 }} name="2" label="陳列單位(數字)">
+                  <Input placeholder="請輸入陳列單位(數字)" />
+                </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>陳列容量</ItemLabel>
-                <Input placeholder="請輸入陳列容量" />
+                <Form.Item style={{ flex: 1 }} name="3" label="陳列容量">
+                  <Input placeholder="請輸入陳列容量" />
+                </Form.Item>
               </Item>
 
               <Item></Item>
@@ -353,22 +389,31 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>商品高度(cm)</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="productHeight">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="productHeight"
+                  label="商品高度(cm)"
+                >
                   <Input placeholder="請輸入商品高度(cm)" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>商品寬度(cm)</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="productWidth">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="productWidth"
+                  label="商品寬度(cm)"
+                >
                   <Input placeholder="請輸入商品寬度(cm)" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>商品長度(cm)</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="productLength">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="productLength"
+                  label="商品長度(cm)"
+                >
                   <Input placeholder="請輸入商品長度(cm)" />
                 </Form.Item>
               </Item>
@@ -376,15 +421,21 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>重量-毛重</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="grossWeight">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="grossWeight"
+                  label="重量-毛重"
+                >
                   <Input placeholder="請輸入重量-毛重" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>重量-淨重</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="netWeight">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="netWeight"
+                  label="重量-淨重"
+                >
                   <Input placeholder="請輸入重量-淨重" />
                 </Form.Item>
               </Item>
@@ -398,25 +449,36 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>保存日期</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="expDateValue">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="expDateValue"
+                  label="保存日期"
+                >
                   <Input placeholder="請輸入保存日期" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>保存日期單位</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="expDateUnit">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="expDateUnit"
+                  label="保存日期單位"
+                >
                   <Input placeholder="請輸入保存日期單位" />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
 
             {!isFood && (
               <Row>
                 <Item>
-                  <ItemLabel>電源規格</ItemLabel>
-                  <Form.Item style={{ flex: 1 }} name="powerSpec">
+                  <Form.Item
+                    style={{ flex: 1 }}
+                    name="powerSpec"
+                    label="電源規格"
+                  >
                     <Input placeholder="請輸入電源規格" />
                   </Form.Item>
                 </Item>
@@ -427,38 +489,43 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>顏色</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vColor">
+                <Form.Item style={{ flex: 1 }} name="vColor" label="顏色">
                   <Input placeholder="請輸入顏色" />
                 </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>尺寸</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vSize">
+                <Form.Item style={{ flex: 1 }} name="vSize" label="尺寸">
                   <Input placeholder="請輸入尺寸" />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>等級</ItemLabel>
-                <Input placeholder="請輸入等級" />
+                <Form.Item style={{ flex: 1 }} name="4" label="等級">
+                  <Input placeholder="請輸入等級" />
+                </Form.Item>
               </Item>
 
               <Item>
-                <ItemLabel>保存方式(文字)</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemStoreway">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="itemStoreway"
+                  label="保存方式(文字)"
+                >
                   <Input placeholder="請輸入保存方式" />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>款式</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="vStyle">
+                <Form.Item style={{ flex: 1 }} name="vStyle" label="款式">
                   <Input placeholder="請輸入款式" />
                 </Form.Item>
               </Item>
@@ -469,8 +536,7 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>庫存</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="perpetual">
+                <Form.Item name="perpetual" label="庫存">
                   <Radio.Group
                     style={{ display: "flex", alignItems: "center" }}
                     defaultValue={1}
@@ -480,23 +546,30 @@ const Page = () => {
                   </Radio.Group>
                 </Form.Item>
 
-                <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
+                <Form.Item name="5">
+                  <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
+                </Form.Item>
 
-                <Form.Item style={{ flex: 1 }} name="stockStartdate">
-                  <Input
-                    style={{ width: 102, flex: 1 }}
+                <Form.Item name="stockStartdate">
+                  <DatePicker
+                    style={{ flex: 1 }}
                     placeholder="起始日期"
+                    format="YYYY/MM/DD"
                   />
                 </Form.Item>
               </Item>
 
-              <Item></Item>
+              {/* <Item></Item>
+              <Item></Item> */}
             </Row>
 
             <Row>
               <Item>
-                <ItemLabel>商品特色說明</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemShortdescription">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="itemShortdescription"
+                  label="商品特色說明"
+                >
                   <TextArea
                     placeholder="請輸入商品特色說明"
                     autoSize={{
@@ -508,8 +581,11 @@ const Page = () => {
               </Item>
 
               <Item>
-                <ItemLabel>商品完整說明(文字)</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="itemDetail">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="itemDetail"
+                  label="商品完整說明(文字)"
+                >
                   <TextArea
                     placeholder="請輸入商品完整說明(文字)"
                     autoSize={{
@@ -519,115 +595,192 @@ const Page = () => {
                   />
                 </Form.Item>
               </Item>
-            </Row>
 
-            <Row>
-              <Item>
-                <ItemLabel>國內負責廠商名稱</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="manufacturer">
-                  <Input placeholder="請輸入國內負責廠商名稱" />
-                </Form.Item>
-              </Item>
-
-              <Item>
-                <ItemLabel>電話</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="manufacturerPhone">
-                  <Input placeholder="請輸入電話" />
-                </Form.Item>
-              </Item>
-
-              <Item>
-                <ItemLabel>地址</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="manufacturerAddress">
-                  <Input placeholder="請輸入地址" />
-                </Form.Item>
-              </Item>
-            </Row>
-
-            <Row>
-              <Item>
-                <ItemLabel>素食種類</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="veggieType">
-                  <Select
-                    style={{ width: "100%" }}
-                    placeholder="請選擇素食種類"
-                    options={veggieType.map((v) => ({
-                      ...v,
-                      label: v.name,
-                      value: v.value,
-                    }))}
-                  />
-                </Form.Item>
-              </Item>
-
-              <Item></Item>
               <Item></Item>
             </Row>
 
             {isFood && (
-              <Row>
-                <Item>
-                  <ItemLabel>產品成份及食品添加物(文字)</ItemLabel>
-                  <Form.Item style={{ flex: 1 }} name="ingredients">
-                    <TextArea
-                      placeholder="請輸入產品成份及食品添加物(文字)"
-                      autoSize={{
-                        minRows: 3,
-                        maxRows: 3,
-                      }}
-                    />
-                  </Form.Item>
-                </Item>
-
-                <Item>
-                  <ItemLabel>營養標示(文字)</ItemLabel>
-                  <Form.Item style={{ flex: 1 }} name="nutrition">
-                    <TextArea
-                      placeholder="請輸入營養標示(文字)"
-                      autoSize={{
-                        minRows: 3,
-                        maxRows: 3,
-                      }}
-                    />
-                  </Form.Item>
-                </Item>
-              </Row>
-            )}
-
-            {!isFood && (
               <>
                 <Row>
                   <Item>
-                    <ItemLabel>產品責任險</ItemLabel>
-                    <Form.Item style={{ flex: 1 }} name="dutyInsurance">
-                      <TextArea
-                        placeholder="請輸入產品責任險"
-                        autoSize={{
-                          minRows: 3,
-                          maxRows: 3,
-                        }}
-                      />
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="manufacturer"
+                      label="國內負責廠商名稱"
+                      rules={[
+                        {
+                          required: true,
+                          message: "必填",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="請輸入國內負責廠商名稱" />
                     </Form.Item>
                   </Item>
 
                   <Item>
-                    <ItemLabel>產品核准字號</ItemLabel>
-                    <Form.Item style={{ flex: 1 }} name="approvalId">
-                      <TextArea
-                        placeholder="請輸入產品核准字號"
-                        autoSize={{
-                          minRows: 3,
-                          maxRows: 3,
-                        }}
-                      />
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="manufacturerPhone"
+                      label="電話"
+                      rules={[
+                        {
+                          required: true,
+                          message: "必填",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="請輸入電話" />
+                    </Form.Item>
+                  </Item>
+
+                  <Item>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="manufacturerAddress"
+                      label="地址"
+                      rules={[
+                        {
+                          required: true,
+                          message: "必填",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="請輸入地址" />
                     </Form.Item>
                   </Item>
                 </Row>
 
                 <Row>
                   <Item>
-                    <ItemLabel>保固範圍(文字)</ItemLabel>
-                    <Form.Item style={{ flex: 1 }} name="warrantyScope">
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="veggieType"
+                      label="素食種類"
+                    >
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="請選擇素食種類"
+                        options={veggieType.map((v) => ({
+                          ...v,
+                          label: v.name,
+                          value: v.value,
+                        }))}
+                      />
+                    </Form.Item>
+                  </Item>
+
+                  <Item></Item>
+                  <Item></Item>
+                </Row>
+
+                <Row>
+                  <Item>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="ingredients"
+                      label="產品成份及食品添加物(文字)"
+                      rules={[
+                        {
+                          required: true,
+                          message: "必填",
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        placeholder="請輸入產品成份及食品添加物(文字)"
+                        autoSize={{
+                          minRows: 3,
+                          maxRows: 3,
+                        }}
+                      />
+                    </Form.Item>
+                  </Item>
+
+                  <Item>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="nutrition"
+                      label="營養標示(文字)"
+                      rules={[
+                        {
+                          required: true,
+                          message: "必填",
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        placeholder="請輸入營養標示(文字)"
+                        autoSize={{
+                          minRows: 3,
+                          maxRows: 3,
+                        }}
+                      />
+                    </Form.Item>
+                  </Item>
+
+                  <Item></Item>
+                </Row>
+              </>
+            )}
+
+            <Row>
+              <Item>
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="dutyInsurance"
+                  label="產品責任險"
+                  rules={[
+                    {
+                      required: true,
+                      message: "必填",
+                    },
+                  ]}
+                >
+                  <TextArea
+                    placeholder="請輸入產品責任險"
+                    autoSize={{
+                      minRows: 3,
+                      maxRows: 3,
+                    }}
+                  />
+                </Form.Item>
+              </Item>
+
+              <Item>
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="approvalId"
+                  label="產品核准字號"
+                  rules={[
+                    {
+                      required: true,
+                      message: "必填",
+                    },
+                  ]}
+                >
+                  <TextArea
+                    placeholder="請輸入產品核准字號"
+                    autoSize={{
+                      minRows: 3,
+                      maxRows: 3,
+                    }}
+                  />
+                </Form.Item>
+              </Item>
+
+              <Item></Item>
+            </Row>
+
+            {!isFood && (
+              <>
+                <Row>
+                  <Item>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="warrantyScope"
+                      label="保固範圍(文字)"
+                    >
                       <TextArea
                         placeholder="請輸入保固範圍(文字)"
                         autoSize={{
@@ -639,8 +792,11 @@ const Page = () => {
                   </Item>
 
                   <Item>
-                    <ItemLabel>其他證明(文字)</ItemLabel>
-                    <Form.Item style={{ flex: 1 }} name="approvalOther">
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="approvalOther"
+                      label="其他證明(文字)"
+                    >
                       <TextArea
                         placeholder="請輸入其他證明(文字)"
                         autoSize={{
@@ -656,8 +812,7 @@ const Page = () => {
 
             <Row>
               <Item>
-                <ItemLabel>標章</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="certMark">
+                <Form.Item style={{ flex: 1 }} name="certMark" label="標章">
                   <TextArea
                     placeholder="請輸入標章"
                     autoSize={{
@@ -669,8 +824,11 @@ const Page = () => {
               </Item>
 
               <Item>
-                <ItemLabel>能源效率</ItemLabel>
-                <Form.Item style={{ flex: 1 }} name="energyEfficiency">
+                <Form.Item
+                  style={{ flex: 1 }}
+                  name="energyEfficiency"
+                  label="能源效率"
+                >
                   <TextArea
                     placeholder="請輸入能源效率"
                     autoSize={{
@@ -680,6 +838,8 @@ const Page = () => {
                   />
                 </Form.Item>
               </Item>
+
+              <Item></Item>
             </Row>
           </Wrapper>
         </Container>
