@@ -6,7 +6,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const userStorage = localStorage.getItem("user-storage");
+    const userStorage = localStorage.getItem("cec-scm-mgt");
     const token = JSON.parse(userStorage).state.user.token;
 
     if (token) {
@@ -21,13 +21,19 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
     return response.data;
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
+    const errRes = error.response;
+    // Token 過期的話要導頁去登入頁
+    if (
+      errRes &&
+      errRes.status === 401 &&
+      errRes.data.message === "JWT Expired"
+    ) {
+      localStorage.removeItem("cec-scm-mgt");
+      window.location.href = "/login";
+    }
     return Promise.reject(error.response.data);
   }
 );

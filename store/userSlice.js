@@ -10,5 +10,5 @@ export const createUserSlice = persist(
     updateUser: (data) => set((state) => ({ user: data })),
     clearUser: (data) => set(initialState),
   }),
-  { name: "user-storage" }
+  { name: "cec-scm-mgt" }
 );
