@@ -8,6 +8,13 @@ const StyledInput = styled(AntdInput)`
     font-weight: 400;
     color: #595959;
   }
+
+  &.ant-input-affix-wrapper {
+    height: 42px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #595959;
+  }
 `;
 
 const Input = (props) => {
