@@ -49,20 +49,58 @@ const ShippingFeeSettings = () => {
   const scmShippingMethod = options?.SCM_shipping_method ?? [];
 
   const [loading, setLoading] = useState({ page: false });
-  const [error, setError] = useState([]);
+  const [error, setError] = useState({});
 
   const [isEdit, setIsEdit] = useState(false);
 
   const [shippingListDefault, setShippingListDefault] = useState([]);
   const [shippingList, setShippingList] = useState([]);
 
+  const validate = (arr) => {
+    const obj = {};
+    arr.forEach((item) => {
+      obj[item.cartType] = {
+        shippingDays: item.shippingDays === "",
+        shippingMethod: item.shippingMethod === "",
+      };
+    });
+    return obj;
+  };
+
+  const checkError = (obj) => {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+
+        if (typeof value === "object" && value !== null) {
+          if (checkError(value)) {
+            return true;
+          }
+        } else if (value === true) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   const fetchShipping = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get("v1/scm/vendor/shipping")
       .then((res) => {
-        setShippingListDefault(res.data);
-        setShippingList(res.data);
+        const list = scmCart.map((item) => {
+          return {
+            cartType: item.value,
+            cartTypeName: item.name,
+            shippingDays: ["RR", "RC"].includes(item.value) ? "1" : "",
+            shippingMethod: "",
+            shippingMethodName: "",
+          };
+        });
+        setShippingListDefault(res.data ?? list);
+        setShippingList(res.data ?? list);
       })
       .catch((err) => {
         console.log(err);
@@ -70,15 +108,6 @@ const ShippingFeeSettings = () => {
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
       });
-  };
-
-  const validateShippingDays = (arr) => {
-    return arr.reduce((indices, item) => {
-      if (item.shippingDays === "") {
-        indices.push(item.cartType);
-      }
-      return indices;
-    }, []);
   };
 
   const removeLeadingZero = (value) => {
@@ -89,13 +118,19 @@ const ShippingFeeSettings = () => {
   };
 
   const handleSave = () => {
-    const errorList = validateShippingDays(shippingList);
-    setError(errorList);
+    const errorObj = validate(shippingList);
+    setError(errorObj);
 
     const data = shippingList.map((item) => {
       return { ...item, shippingDays: Number(item.shippingDays) };
     });
-    console.log("data", data);
+
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .post("v1/scm/vendor/shipping", data)
+      .then((res) => {})
+      .catch((err) => console.log(err))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleCancelEdit = () => {
@@ -108,8 +143,9 @@ const ShippingFeeSettings = () => {
     fetchShipping();
   }, []);
 
-  console.log("shippingList", shippingList);
-  console.log("error", error);
+  // console.log("shippingList", shippingList);
+  // console.log("error", error);
+  // console.log("scmCart", scmCart);
 
   return (
     <Spin spinning={loading.page}>
@@ -129,15 +165,17 @@ const ShippingFeeSettings = () => {
           )}
         </BtnGroup>
 
-        {error.length > 0 && <ErrorMessage>請填寫所有欄位</ErrorMessage>}
+        {checkError(error) && <ErrorMessage>請填寫所有欄位</ErrorMessage>}
 
         {scmCart.map((a, idx) => {
-          const item = shippingList.find((b) => b.cartType === a.value);
-          if (!item) return;
+          const item = shippingList?.find((b) => b.cartType === a.value) ?? {};
 
-          const feeComment = scmShippingMethod.find(
-            (c) => c.value === item.shippingMethod
-          );
+          let shippingMethod = {};
+          if (item.shippingMethod) {
+            shippingMethod = scmShippingMethod.find(
+              (c) => c.value === item.shippingMethod
+            );
+          }
 
           return (
             <Row key={idx}>
@@ -149,7 +187,9 @@ const ShippingFeeSettings = () => {
                   disabled={
                     !isEdit || (isEdit && ["RR", "RC"].includes(a.value))
                   }
-                  status={error.includes(item.cartType) ? "error" : undefined}
+                  status={
+                    error[item.cartType]?.shippingDays ? "error" : undefined
+                  }
                   suffix="天"
                   value={item.shippingDays}
                   onChange={(e) => {
@@ -175,7 +215,10 @@ const ShippingFeeSettings = () => {
                     ...a,
                     label: a.name,
                   }))}
-                  value={feeComment}
+                  status={
+                    error[item.cartType]?.shippingMethod ? "error" : undefined
+                  }
+                  value={shippingMethod}
                   onChange={(value, option) => {
                     const newList = shippingList.map((item, i) => {
                       if (item.cartType !== a.value) return item;
