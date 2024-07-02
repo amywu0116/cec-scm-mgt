@@ -7,6 +7,8 @@ import Sider from "./Sider";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
+import { useRouter } from "next/navigation";
+import { PATH_LOGIN } from "@/constants/paths";
 
 const Container = styled.div`
   ${(props) =>
@@ -17,8 +19,17 @@ const Container = styled.div`
 `;
 
 const PageLayout = (props) => {
+  const router = useRouter();
   const { children } = props;
 
+  // 如果沒有登入，跳回登入頁
+  const userStorage = localStorage.getItem("cec-scm-mgt");
+  const token = JSON.parse(userStorage)?.state?.user?.token;
+  if (!token) {
+    router.push(PATH_LOGIN);
+    return null;
+  }
+  
   const updateOptions = useBoundStore((state) => state.updateOptions);
 
   const [headerHeight, setHeaderHeight] = useState(100);
