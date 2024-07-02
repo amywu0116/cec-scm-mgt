@@ -16,6 +16,7 @@ import {
   PATH_PRODUCT_PRODUCT_LIST,
   PATH_PRODUCT_PRODUCT_APPLICATION,
   PATH_ORDER_MANAGEMENT,
+  PATH_LOGIN,
 } from "@/constants/paths";
 
 import { useBoundStore } from "@/store";
@@ -203,7 +204,7 @@ const Sider = () => {
         }
       )
       .then((res) => {
-        router.push("/login");
+        router.push(PATH_LOGIN);
         clearUser();
         message.success("登出成功");
       })
