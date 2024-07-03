@@ -30,7 +30,7 @@ api.interceptors.response.use(
     if (
       errRes &&
       errRes.status === 401 &&
-      (errRes.data.message === "JWT Expired" || errRes.data.message === "Unauthorized")
+      (errRes.data.message === "JWT Expired")
     ) {
       localStorage.removeItem("cec-scm-mgt");
       window.location.href = PATH_LOGIN;

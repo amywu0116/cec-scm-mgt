@@ -1,12 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Layout } from "antd";
+import React, { useEffect, useState } from "react";
+import { ConfigProvider, Layout } from "antd";
 import styled, { css } from "styled-components";
 
 import Sider from "./Sider";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
+import { useRouter } from "next/navigation";
+import { PATH_LOGIN } from "@/constants/paths";
+import zhTW from "antd/locale/zh_TW";
+import "dayjs/locale/zh-tw";
 
 const Container = styled.div`
   ${(props) =>
@@ -17,8 +21,16 @@ const Container = styled.div`
 `;
 
 const PageLayout = (props) => {
+  const router = useRouter();
   const { children } = props;
 
+  // 如果沒有登入，跳回登入頁
+  const user = useBoundStore((state) => state.user);
+  if (!user?.token) {
+    router.push(PATH_LOGIN);
+    return null;
+  }
+  
   const updateOptions = useBoundStore((state) => state.updateOptions);
 
   const [headerHeight, setHeaderHeight] = useState(100);
@@ -51,7 +63,9 @@ const PageLayout = (props) => {
           minHeight: "100vh",
         }}
       >
-        <Container $headerHeight={headerHeight}>{children}</Container>
+        <ConfigProvider locale={zhTW}>
+          <Container $headerHeight={headerHeight}>{children}</Container>
+        </ConfigProvider>
       </Layout>
     </Layout>
   );

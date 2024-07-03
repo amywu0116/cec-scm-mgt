@@ -1,9 +1,10 @@
 "use client";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import styled from "styled-components";
-import { App, Col, Row } from "antd";
+import { Col, Row } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   width: 100vw;
@@ -35,14 +36,11 @@ const Layout = (props) => {
   const router = useRouter();
 
   // 已經登入的話不能再進入登入頁
-  useEffect(() => {
-    const userStorage = localStorage.getItem("cec-scm-mgt");
-    const token = JSON.parse(userStorage).state.user.token;
-
-    if (token) {
-      router.back();
-    }
-  }, []);
+  const user = useBoundStore((state) => state.user);
+  if (user?.token) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <Suspense>
