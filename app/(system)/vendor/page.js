@@ -1,14 +1,12 @@
 "use client";
-import React from "react";
-
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Tabs from "@/components/Tabs";
 
 import BasicInfo from "./BasicInfo";
-import CommissionInfo from "./CommissionInfo";
-import FeeInfo from "./FeeInfo";
 import CommissionHistory from "./CommissionHistory";
+import CommissionInfo from "./CommissionInfo";
 import FeeHistory from "./FeeHistory";
+import FeeInfo from "./FeeInfo";
 import LoginRecord from "./LoginRecord";
 import ShippingFeeSettings from "./ShippingFeeSettings";
 
@@ -21,6 +19,7 @@ const Page = () => {
 
       <Tabs
         defaultActiveKey="1"
+        destroyInactiveTabPane
         items={[
           {
             label: "基本資料",
