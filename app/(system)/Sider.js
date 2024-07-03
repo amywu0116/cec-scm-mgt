@@ -1,22 +1,21 @@
-import React from "react";
 import { App, Layout, Menu } from "antd";
-import styled from "styled-components";
 import Image from "next/image";
-import { useRouter, usePathname, redirect } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import styled from "styled-components";
 
 import api from "@/api";
 import {
   PATH_ACCOUNT_CHANGE_PASSWORD,
+  PATH_ANNOUNCEMENT_MESSAGE,
+  PATH_ANNOUNCEMENT_SETTINGS,
   PATH_BILLING_COLLECTION_REPORT,
   PATH_BILLING_RECONCILIATION_REPORT,
+  PATH_LOGIN,
+  PATH_ORDER_MANAGEMENT,
+  PATH_PRODUCT_PRODUCT_APPLICATION,
+  PATH_PRODUCT_PRODUCT_LIST,
   PATH_SHIPPING_COMPANY,
   PATH_SUPPLIER,
-  PATH_ANNOUNCEMENT_SETTINGS,
-  PATH_ANNOUNCEMENT_MESSAGE,
-  PATH_PRODUCT_PRODUCT_LIST,
-  PATH_PRODUCT_PRODUCT_APPLICATION,
-  PATH_ORDER_MANAGEMENT,
-  PATH_LOGIN,
 } from "@/constants/paths";
 
 import { useBoundStore } from "@/store";
@@ -206,7 +205,7 @@ const Sider = () => {
       .then((res) => {
         clearUser();
         message.success("登出成功");
-        redirect(PATH_LOGIN);
+        router.push(PATH_LOGIN);
       })
       .catch((err) => {})
       .finally(() => {});

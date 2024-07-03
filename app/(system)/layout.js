@@ -1,16 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { ConfigProvider, Layout } from "antd";
+import zhTW from "antd/locale/zh_TW";
+import "dayjs/locale/zh-tw";
+import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Sider from "./Sider";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
-import { redirect, useRouter } from "next/navigation";
-import { PATH_LOGIN } from "@/constants/paths";
-import zhTW from "antd/locale/zh_TW";
-import "dayjs/locale/zh-tw";
 
 const Container = styled.div`
   ${(props) =>
@@ -22,16 +20,10 @@ const Container = styled.div`
 
 const PageLayout = (props) => {
   const { children } = props;
-  
+
   const [headerHeight, setHeaderHeight] = useState(100);
   const updateOptions = useBoundStore((state) => state.updateOptions);
-  
-  const user = useBoundStore((state) => state.user);
-  const token = user?.token;
-  if (!token) {
-    redirect(PATH_LOGIN);
-  }
-  
+
   if (updateOptions) {
     const fetchOptions = () => {
       api
@@ -48,7 +40,7 @@ const PageLayout = (props) => {
     const headerHeight = header.getBoundingClientRect().height;
     setHeaderHeight(headerHeight);
   }, []);
-  
+
   return (
     <Layout hasSider>
       <Sider />

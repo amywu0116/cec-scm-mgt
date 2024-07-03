@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { PATH_LOGIN } from "@/constants/paths";
 
 const api = axios.create({
@@ -9,7 +10,6 @@ api.interceptors.request.use(
   (config) => {
     const userStorage = localStorage.getItem("cec-scm-mgt");
     const token = JSON.parse(userStorage).state.user.token;
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -21,16 +21,16 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  function (response) {
+  (response) => {
     return response.data;
   },
-  function (error) {
+  (error) => {
     const errRes = error.response;
     // Token 過期的話要導頁去登入頁
     if (
       errRes &&
       errRes.status === 401 &&
-      (errRes.data.message === "JWT Expired")
+      ["Unauthorized", "JWT Expired"].includes(errRes.data.message)
     ) {
       localStorage.removeItem("cec-scm-mgt");
       window.location.href = PATH_LOGIN;
