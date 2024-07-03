@@ -2,7 +2,7 @@ import React from "react";
 import { App, Layout, Menu } from "antd";
 import styled from "styled-components";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, redirect } from "next/navigation";
 
 import api from "@/api";
 import {
@@ -204,9 +204,9 @@ const Sider = () => {
         }
       )
       .then((res) => {
-        router.push(PATH_LOGIN);
         clearUser();
         message.success("登出成功");
+        redirect(PATH_LOGIN);
       })
       .catch((err) => {})
       .finally(() => {});
