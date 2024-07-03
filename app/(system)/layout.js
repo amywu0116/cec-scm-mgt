@@ -25,8 +25,9 @@ const PageLayout = (props) => {
   const { children } = props;
 
   // 如果沒有登入，跳回登入頁
-  const user = useBoundStore((state) => state.user);
-  if (!user?.token) {
+  const userStorage = localStorage.getItem("cec-scm-mgt");
+  const token = JSON.parse(userStorage)?.state?.user?.token;
+  if (!token) {
     router.push(PATH_LOGIN);
     return null;
   }
