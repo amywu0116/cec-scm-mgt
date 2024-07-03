@@ -1,10 +1,10 @@
 "use client";
+import { App, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Spin } from "antd";
 
-import Input from "@/components/Input";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 import Select from "@/components/Select";
 
 import api from "@/api";
@@ -44,6 +44,8 @@ const ErrorMessage = styled.div`
 `;
 
 const ShippingFeeSettings = () => {
+  const { message } = App.useApp();
+
   const options = useBoundStore((state) => state.options);
   const scmCart = options?.SCM_cart ?? [];
   const scmShippingMethod = options?.SCM_shipping_method ?? [];
@@ -69,7 +71,7 @@ const ShippingFeeSettings = () => {
 
   const checkError = (obj) => {
     for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (obj.hasOwnProperty.call(obj, key)) {
         const value = obj[key];
 
         if (typeof value === "object" && value !== null) {
@@ -128,9 +130,16 @@ const ShippingFeeSettings = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .post("v1/scm/vendor/shipping", data)
-      .then((res) => {})
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, page: false })));
+      .then((res) => {
+        message.success(res.data?.reason ?? res.message);
+        setIsEdit(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
 
   const handleCancelEdit = () => {

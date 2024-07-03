@@ -35,64 +35,9 @@ const CommissionInfo = () => {
       align: "center",
     },
     {
-      title: "開始時間",
-      dataIndex: "c",
-      align: "center",
-    },
-    {
-      title: "結束時間",
-      dataIndex: "d",
-      align: "center",
-    },
-    {
       title: "佣金比例",
       dataIndex: "e",
       align: "center",
-    },
-  ];
-
-  const data = [
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "2024/05/01",
-      d: "2024/05/16",
-      e: "2%",
     },
   ];
 
@@ -101,7 +46,7 @@ const CommissionInfo = () => {
       <Wrapper>
         <Title>商城分類佣金</Title>
 
-        <Table columns={columns} dataSource={data} />
+        <Table columns={columns} dataSource={[]} />
       </Wrapper>
     </Container>
   );
