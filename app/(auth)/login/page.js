@@ -1,19 +1,18 @@
 "use client";
-import React, { useState, useRef } from "react";
-import styled from "styled-components";
-import { redirect, useRouter } from "next/navigation";
 import { Form, Input, Typography } from "antd";
-import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 
-import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Title from "../Title";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
-
 import { useBoundStore } from "@/store";
 
 const Container = styled.div``;
@@ -62,7 +61,7 @@ const Page = () => {
       })
       .then((res) => {
         updateUser(res.data);
-        redirect("/");
+        router.push("/");
       })
       .catch((err) => {
         setErrorMsg(err.message);
