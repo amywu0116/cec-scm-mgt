@@ -71,7 +71,7 @@ const ShippingFeeSettings = () => {
 
   const checkError = (obj) => {
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (obj.hasOwnProperty.call(obj, key)) {
         const value = obj[key];
 
         if (typeof value === "object" && value !== null) {
