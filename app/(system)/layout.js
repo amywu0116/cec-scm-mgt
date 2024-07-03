@@ -7,7 +7,7 @@ import Sider from "./Sider";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { PATH_LOGIN } from "@/constants/paths";
 import zhTW from "antd/locale/zh_TW";
 import "dayjs/locale/zh-tw";
@@ -21,21 +21,17 @@ const Container = styled.div`
 `;
 
 const PageLayout = (props) => {
-  const router = useRouter();
   const { children } = props;
-
-  // 如果沒有登入，跳回登入頁
-  const userStorage = localStorage.getItem("cec-scm-mgt");
-  const token = JSON.parse(userStorage)?.state?.user?.token;
+  
+  const [headerHeight, setHeaderHeight] = useState(100);
+  const updateOptions = useBoundStore((state) => state.updateOptions);
+  
+  const user = useBoundStore((state) => state.user);
+  const token = user?.token;
   if (!token) {
-    router.push(PATH_LOGIN);
-    return null;
+    redirect(PATH_LOGIN);
   }
   
-  const updateOptions = useBoundStore((state) => state.updateOptions);
-
-  const [headerHeight, setHeaderHeight] = useState(100);
-
   if (updateOptions) {
     const fetchOptions = () => {
       api
@@ -52,7 +48,7 @@ const PageLayout = (props) => {
     const headerHeight = header.getBoundingClientRect().height;
     setHeaderHeight(headerHeight);
   }, []);
-
+  
   return (
     <Layout hasSider>
       <Sider />

@@ -94,16 +94,6 @@ const CommissionHistory = () => {
       align: "center",
     },
     {
-      title: "異動前起迄時間",
-      dataIndex: "d",
-      align: "center",
-    },
-    {
-      title: "異動後起迄時間",
-      dataIndex: "e",
-      align: "center",
-    },
-    {
       title: "異動前佣金比例",
       dataIndex: "f",
       align: "center",
@@ -120,36 +110,13 @@ const CommissionHistory = () => {
     },
   ];
 
-  const data = [
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "修改",
-      d: "2024/04/26",
-      e: "2024/04/26",
-      f: "2%",
-      g: "3%",
-      h: "2024/05/16 17:00",
-    },
-    {
-      a: "G001",
-      b: "Carbonate碳酸飲料",
-      c: "修改",
-      d: "2024/04/26",
-      e: "2024/04/26",
-      f: "2%",
-      g: "3%",
-      h: "2024/05/16 17:00",
-    },
-  ];
-
   return (
     <Container>
       <Wrapper>
         <Card>
           <Row>
             <Item>
-              <ItemLabel>費用名稱</ItemLabel>
+              <ItemLabel>分類編碼 / 名稱</ItemLabel>
               <Select
                 style={{ width: 250 }}
                 placeholder="請選擇問題類別"
@@ -193,7 +160,7 @@ const CommissionHistory = () => {
         <TableWrapper>
           <Title>佣金異動歷程</Title>
 
-          <Table columns={columns} dataSource={data} />
+          <Table columns={columns} dataSource={[]} />
         </TableWrapper>
       </Wrapper>
     </Container>

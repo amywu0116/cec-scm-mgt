@@ -3,8 +3,9 @@ import { Suspense } from "react";
 import styled from "styled-components";
 import { Col, Row } from "antd";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useBoundStore } from "@/store";
+import { PATH_LOGIN } from "@/constants/paths";
 
 const Container = styled.div`
   width: 100vw;
@@ -33,14 +34,12 @@ const LogoWrapper = styled.div`
 
 const Layout = (props) => {
   const { children } = props;
-  const router = useRouter();
 
   // 已經登入的話不能再進入登入頁
-  const userStorage = localStorage.getItem("cec-scm-mgt");
-  const token = JSON.parse(userStorage)?.state?.user?.token;
+  const user = useBoundStore((state) => state.user);
+  const token = user?.token;
   if (token) {
-    router.push("/");
-    return null;
+    redirect("/");
   }
 
   return (

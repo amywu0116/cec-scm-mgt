@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Form, Input, Typography } from "antd";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
@@ -46,7 +46,7 @@ const Page = () => {
 
   // 重置 recaptcha
   const resetRecaptcha = () => {
-    recaptchaRef.current.reset();
+    recaptchaRef.current?.reset();
     setRecaptchaValue("");
   };
 
@@ -62,7 +62,7 @@ const Page = () => {
       })
       .then((res) => {
         updateUser(res.data);
-        router.push("/");
+        redirect("/");
       })
       .catch((err) => {
         setErrorMsg(err.message);
