@@ -8,7 +8,7 @@ import FeeInfo from "./FeeInfo";
 import CommissionRecord from "./CommissionRecord";
 import FeeRecord from "./FeeRecord";
 import LoginRecord from "./LoginRecord";
-import ShippingFeeSettings from "./ShippingFeeSettings";
+import Shipping from "./Shipping";
 
 const Page = () => {
   return (
@@ -54,7 +54,7 @@ const Page = () => {
           {
             label: "運費設定",
             key: "7",
-            children: <ShippingFeeSettings />,
+            children: <Shipping />,
           },
         ]}
       />
