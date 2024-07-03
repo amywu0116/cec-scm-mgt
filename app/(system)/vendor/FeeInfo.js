@@ -1,7 +1,7 @@
 "use client";
+import { Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Spin } from "antd";
 
 import Input from "@/components/Input";
 

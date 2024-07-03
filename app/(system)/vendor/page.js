@@ -4,8 +4,8 @@ import Tabs from "@/components/Tabs";
 
 import BasicInfo from "./BasicInfo";
 import CommissionInfo from "./CommissionInfo";
-import FeeInfo from "./FeeInfo";
 import CommissionRecord from "./CommissionRecord";
+import FeeInfo from "./FeeInfo";
 import FeeRecord from "./FeeRecord";
 import LoginRecord from "./LoginRecord";
 import Shipping from "./Shipping";
