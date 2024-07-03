@@ -19,7 +19,6 @@ const Container = styled.div`
 
   .ant-form-item {
     .ant-form-item-label > label {
-      width: 100%;
       height: 42px;
       font-size: 14px;
       font-weight: 700;
@@ -65,7 +64,7 @@ const BtnGroup = styled.div`
   gap: 0 16px;
 `;
 
-const CommissionHistory = () => {
+const CommissionRecord = () => {
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState({ table: false });
@@ -197,16 +196,12 @@ const CommissionHistory = () => {
     fetchCategory();
   }, []);
 
-  console.log(form.getFieldsValue(true));
-  console.log("tableInfo", tableInfo);
-
   return (
     <Container>
       <Form
         form={form}
         colon={false}
         labelCol={{ flex: "110px" }}
-        labelWrap
         scrollToFirstError={{ behavior: "smooth", block: "center" }}
         onFinish={handleFinish}
       >
@@ -214,7 +209,7 @@ const CommissionHistory = () => {
           <Form.Item name="categoryCode" label="分類編碼 / 名稱">
             <Select
               style={{ width: 400 }}
-              placeholder="請選擇問題類別"
+              placeholder="請選擇分類編碼 / 名稱"
               showSearch
               options={categoryOptions.map((opt) => ({
                 ...opt,
@@ -273,4 +268,4 @@ const CommissionHistory = () => {
   );
 };
 
-export default CommissionHistory;
+export default CommissionRecord;

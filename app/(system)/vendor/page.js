@@ -3,10 +3,10 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Tabs from "@/components/Tabs";
 
 import BasicInfo from "./BasicInfo";
-import CommissionHistory from "./CommissionHistory";
 import CommissionInfo from "./CommissionInfo";
-import FeeHistory from "./FeeHistory";
 import FeeInfo from "./FeeInfo";
+import CommissionRecord from "./CommissionRecord";
+import FeeRecord from "./FeeRecord";
 import LoginRecord from "./LoginRecord";
 import ShippingFeeSettings from "./ShippingFeeSettings";
 
@@ -39,12 +39,12 @@ const Page = () => {
           {
             label: "佣金異動歷程",
             key: "4",
-            children: <CommissionHistory />,
+            children: <CommissionRecord />,
           },
           {
             label: "費用異動歷程",
             key: "5",
-            children: <FeeHistory />,
+            children: <FeeRecord />,
           },
           {
             label: "使用者登入歷程",
