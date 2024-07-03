@@ -192,6 +192,7 @@ const FeeRecord = () => {
               style={{ width: 400 }}
               placeholder="請選擇費用名稱"
               showSearch
+              allowClear
               options={scmFeeTypeOptions.map((opt) => ({
                 ...opt,
                 label: opt.name,

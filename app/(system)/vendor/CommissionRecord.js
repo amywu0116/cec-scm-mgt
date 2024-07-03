@@ -211,6 +211,7 @@ const CommissionRecord = () => {
               style={{ width: 400 }}
               placeholder="請選擇分類編碼 / 名稱"
               showSearch
+              allowClear
               options={categoryOptions.map((opt) => ({
                 ...opt,
                 label: `${opt.categoryCode} / ${opt.categoryName}`,
