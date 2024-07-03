@@ -1,16 +1,14 @@
 "use client";
-import React from "react";
-
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Tabs from "@/components/Tabs";
 
 import BasicInfo from "./BasicInfo";
 import CommissionInfo from "./CommissionInfo";
+import CommissionRecord from "./CommissionRecord";
 import FeeInfo from "./FeeInfo";
-import CommissionHistory from "./CommissionHistory";
-import FeeHistory from "./FeeHistory";
+import FeeRecord from "./FeeRecord";
 import LoginRecord from "./LoginRecord";
-import ShippingFeeSettings from "./ShippingFeeSettings";
+import Shipping from "./Shipping";
 
 const Page = () => {
   return (
@@ -21,6 +19,7 @@ const Page = () => {
 
       <Tabs
         defaultActiveKey="1"
+        destroyInactiveTabPane
         items={[
           {
             label: "基本資料",
@@ -40,12 +39,12 @@ const Page = () => {
           {
             label: "佣金異動歷程",
             key: "4",
-            children: <CommissionHistory />,
+            children: <CommissionRecord />,
           },
           {
             label: "費用異動歷程",
             key: "5",
-            children: <FeeHistory />,
+            children: <FeeRecord />,
           },
           {
             label: "使用者登入歷程",
@@ -55,7 +54,7 @@ const Page = () => {
           {
             label: "運費設定",
             key: "7",
-            children: <ShippingFeeSettings />,
+            children: <Shipping />,
           },
         ]}
       />

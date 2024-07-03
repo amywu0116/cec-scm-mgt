@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import { Checkbox, Spin } from "antd";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Input from "@/components/Input";
@@ -49,11 +49,11 @@ const Row = styled.div`
 `;
 
 const BasicInfo = () => {
-  const [loading, setLoading] = useState({ page: false, userTable: false });
+  const [loading, setLoading] = useState({ page: false, table: false });
 
   const [info, setInfo] = useState({});
 
-  const [userTableInfo, setUserTableInfo] = useState({
+  const [tableInfo, setTableInfo] = useState({
     rows: [],
     total: 0,
     page: 1,
@@ -106,7 +106,7 @@ const BasicInfo = () => {
   };
 
   const fetchUsers = (pagination = { page: 1, pageSize: 10 }) => {
-    setLoading((state) => ({ ...state, userTable: true }));
+    setLoading((state) => ({ ...state, table: true }));
     api
       .get("v1/scm/vendor/user", {
         params: {
@@ -114,16 +114,20 @@ const BasicInfo = () => {
           max: pagination.pageSize,
         },
       })
-      .then((res) =>
-        setUserTableInfo((state) => ({
+      .then((res) => {
+        setTableInfo((state) => ({
           ...state,
           ...res.data,
           page: pagination.page,
           pageSize: pagination.pageSize,
-        }))
-      )
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, userTable: false })));
+        }));
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -304,15 +308,14 @@ const BasicInfo = () => {
 
         <Wrapper>
           <Title>使用者帳號</Title>
-
           <Table
-            loading={loading.userTable}
+            loading={loading.table}
             columns={columns}
-            dataSource={userTableInfo.rows}
+            dataSource={tableInfo.rows}
             pageInfo={{
-              total: userTableInfo.total,
-              page: userTableInfo.page,
-              pageSize: userTableInfo.pageSize,
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
             }}
             onChange={handleChangeTable}
           />

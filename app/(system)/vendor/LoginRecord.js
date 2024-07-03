@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
-import styled from "styled-components";
 import { Spin } from "antd";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Table from "@/components/Table";
 

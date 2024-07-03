@@ -123,6 +123,8 @@ const ShippingFeeSettings = () => {
     const errorObj = validate(shippingList);
     setError(errorObj);
 
+    if (checkError(errorObj)) return;
+
     const data = shippingList.map((item) => {
       return { ...item, shippingDays: Number(item.shippingDays) };
     });
@@ -131,7 +133,7 @@ const ShippingFeeSettings = () => {
     api
       .post("v1/scm/vendor/shipping", data)
       .then((res) => {
-        message.success(res.data?.reason ?? res.message);
+        message.success(res.message);
         setIsEdit(false);
       })
       .catch((err) => {
@@ -151,10 +153,6 @@ const ShippingFeeSettings = () => {
   useEffect(() => {
     fetchShipping();
   }, []);
-
-  // console.log("shippingList", shippingList);
-  // console.log("error", error);
-  // console.log("scmCart", scmCart);
 
   return (
     <Spin spinning={loading.page}>
