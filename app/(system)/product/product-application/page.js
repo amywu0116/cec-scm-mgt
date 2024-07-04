@@ -1,17 +1,16 @@
 "use client";
-import React, { useState } from "react";
-import styled from "styled-components";
-import Image from "next/image";
 import { App, Form } from "antd";
-import dayjs from "dayjs";
+import Image from "next/image";
+import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
-import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Select, { SelectOption } from "@/components/Select";
-import Table from "@/components/Table";
-import Input from "@/components/Input";
 import FunctionBtn from "@/components/Button/FunctionBtn";
+import RangePicker from "@/components/DatePicker/RangePicker";
+import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import Select from "@/components/Select";
+import Table from "@/components/Table";
 
 import ModalAddProduct from "./ModalAddProduct";
 
@@ -21,7 +20,15 @@ import { useBoundStore } from "@/store";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
+
+  .ant-form-item {
+    .ant-form-item-label > label {
+      height: 100%;
+      font-size: 14px;
+      font-weight: 700;
+      color: #7b8093;
+    }
+  }
 
   .ant-btn-link {
     padding: 0;
@@ -44,21 +51,6 @@ const BtnGroup = styled.div`
 const Card = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  width: 42px;
-  flex-shrink: 0;
 `;
 
 const Row = styled.div`
@@ -82,7 +74,6 @@ const TableTitle = styled.div`
 const Page = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
-  const dateFormat = "YYYY/MM/DD";
 
   const options = useBoundStore((state) => state.options);
   const applyStatusOptions = options?.apply_status ?? [];
@@ -149,39 +140,43 @@ const Page = () => {
   ];
 
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
+    const data = {
+      applyDateStart: values.applyDate
+        ? values.applyDate[0].format("YYYY/MM/DD")
+        : undefined,
+      applyDateEnd: values.applyDate
+        ? values.applyDate[1].format("YYYY/MM/DD")
+        : undefined,
+      applyStatus: values.applyStatus,
+      itemEan: values.itemEan ? values.itemEan : undefined,
+      itemName: values.itemName ? values.itemName : undefined,
+      offset: (pagination.page - 1) * pagination.pageSize,
+      max: pagination.pageSize,
+    };
+
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/product/apply", {
-        params: {
-          applyDateStart: values.applyDateStart
-            ? dayjs(values.applyDateStart.$d).format(dateFormat)
-            : undefined,
-          applyDateEnd: values.applyDateEnd
-            ? dayjs(values.applyDateEnd.$d).format(dateFormat)
-            : undefined,
-          applyStatus: values.applyStatus,
-          itemEan: values.itemEan ? values.itemEan : undefined,
-          itemName: values.itemName ? values.itemName : undefined,
-          offset: (pagination.page - 1) * pagination.pageSize,
-          max: pagination.pageSize,
-        },
-      })
+      .get("v1/scm/product/apply", { params: { ...data } })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
           page: pagination.page,
           pageSize: pagination.pageSize,
+          tableQuery: { ...values },
         }));
       })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, table: false })));
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
   };
 
   const refreshTable = () => {
-    const formValues = form.getFieldsValue(true);
-    fetchList(formValues);
+    fetchList(tableInfo.tableQuery);
     setSelectedRows([]);
   };
 
@@ -191,8 +186,7 @@ const Page = () => {
 
   // 切換分頁、分頁大小
   const handleChangeTable = (page, pageSize) => {
-    const formValues = form.getFieldsValue(true);
-    fetchList(formValues, { page, pageSize });
+    fetchList(tableInfo.tableQuery, { page, pageSize });
   };
 
   // 送審
@@ -206,8 +200,12 @@ const Page = () => {
         message.success("送審成功");
         refreshTable();
       })
-      .catch((err) => message.error(err))
-      .finally(() => setLoading((state) => ({ ...state, table: false })));
+      .catch((err) => {
+        message.error(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
   };
 
   // 刪除
@@ -225,8 +223,12 @@ const Page = () => {
           refreshTable();
         }
       })
-      .catch((err) => message.error(err))
-      .finally(() => setLoading((state) => ({ ...state, table: false })));
+      .catch((err) => {
+        message.error(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
   };
 
   return (
@@ -244,65 +246,45 @@ const Page = () => {
       </LayoutHeader>
 
       <Container>
-        <Form form={form} onFinish={handleFinish}>
+        <Form
+          form={form}
+          autoComplete="off"
+          colon={false}
+          onFinish={handleFinish}
+        >
           <Card>
             <Row>
-              <Item>
-                <ItemLabel>日期</ItemLabel>
-                <Form.Item name="applyDateStart" style={{ margin: 0 }}>
-                  <DatePicker
-                    style={{ width: 203 }}
-                    placeholder="日期起"
-                    format="YYYY/MM/DD"
-                  />
-                </Form.Item>
-
-                <div style={{ width: 42, textAlign: "center" }}>-</div>
-
-                <Form.Item name="applyDateEnd" style={{ margin: 0 }}>
-                  <DatePicker
-                    style={{ width: 203 }}
-                    placeholder="日期迄"
-                    format="YYYY/MM/DD"
-                  />
-                </Form.Item>
-              </Item>
+              <Form.Item name="applyDate" label="日期">
+                <RangePicker
+                  style={{ width: 270 }}
+                  placeholder={["日期起", "日期迄"]}
+                />
+              </Form.Item>
             </Row>
 
             <Row>
-              <Item>
-                <ItemLabel>條碼</ItemLabel>
-                <Form.Item name="itemEan" style={{ margin: 0 }}>
-                  <Input style={{ width: 203 }} placeholder="請輸入條碼" />
-                </Form.Item>
-              </Item>
+              <Form.Item name="itemEan" label="條碼">
+                <Input style={{ width: 270 }} placeholder="請輸入條碼" />
+              </Form.Item>
 
-              <Item>
-                <ItemLabel>品名</ItemLabel>
-                <Form.Item name="itemName" style={{ margin: 0 }}>
-                  <Input style={{ width: 203 }} placeholder="請輸入商品名稱" />
-                </Form.Item>
-              </Item>
+              <Form.Item name="itemName" label="品名">
+                <Input style={{ width: 270 }} placeholder="請輸入品名" />
+              </Form.Item>
 
-              <Item>
-                <ItemLabel>狀態</ItemLabel>
-                <Form.Item name="applyStatus" style={{ margin: 0 }}>
-                  <Select style={{ width: 203 }} placeholder="請選擇狀態">
-                    {applyStatusOptions.map((opt, idx) => {
-                      return (
-                        <SelectOption key={idx} value={opt.value}>
-                          {opt.name}
-                        </SelectOption>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
-              </Item>
+              <Form.Item name="applyStatus" label="狀態">
+                <Select
+                  style={{ width: 270 }}
+                  placeholder="請選擇狀態"
+                  showSearch
+                  allowClear
+                  options={applyStatusOptions.map((opt) => ({
+                    ...opt,
+                    label: opt.name,
+                  }))}
+                />
+              </Form.Item>
 
-              <BtnGroup
-                style={{ marginLeft: "auto" }}
-                justifyContent="flex-end"
-              >
+              <BtnGroup style={{ marginLeft: "auto" }}>
                 <Button type="secondary" htmlType="submit">
                   查詢
                 </Button>
