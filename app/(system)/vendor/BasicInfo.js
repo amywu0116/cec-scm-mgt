@@ -148,11 +148,11 @@ const BasicInfo = () => {
           <Row>
             <Item>
               <ItemLabel>
-                供應商
+                P4供應商
                 <br />
                 代碼
               </ItemLabel>
-              <Input disabled value={info.vendorCode} />
+              <Input disabled value={info.p4VendorCode} />
             </Item>
 
             <Item>
