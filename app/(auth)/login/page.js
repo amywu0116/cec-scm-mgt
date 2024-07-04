@@ -66,7 +66,7 @@ const Page = () => {
         router.push("/");
 
         const lastLoginTime = dayjs(res.data.lastLoginTime).format(
-          "YYYY-MM-DD hh:mm:ss"
+          "YYYY-MM-DD HH:mm:ss"
         );
         message.success(`登入成功，上次登入時間: ${lastLoginTime}`);
       })

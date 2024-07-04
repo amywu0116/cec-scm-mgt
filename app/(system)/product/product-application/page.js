@@ -1,5 +1,5 @@
 "use client";
-import { App, Form } from "antd";
+import { App, Form, Flex } from "antd";
 import Image from "next/image";
 import { useState } from "react";
 import styled from "styled-components";
@@ -264,27 +264,26 @@ const Page = () => {
           onFinish={handleFinish}
         >
           <Card>
-            <Row>
+            <Flex>
               <Form.Item name="applyDate" label="日期">
                 <RangePicker
                   style={{ width: 270 }}
                   placeholder={["日期起", "日期迄"]}
                 />
               </Form.Item>
-            </Row>
+            </Flex>
 
-            <Row>
-              <Form.Item name="itemEan" label="條碼">
-                <Input style={{ width: 270 }} placeholder="請輸入條碼" />
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
+                <Input placeholder="請輸入條碼" />
               </Form.Item>
 
-              <Form.Item name="itemName" label="品名">
-                <Input style={{ width: 270 }} placeholder="請輸入品名" />
+              <Form.Item style={{ flex: 1 }} name="itemName" label="品名">
+                <Input placeholder="請輸入品名" />
               </Form.Item>
 
-              <Form.Item name="applyStatus" label="狀態">
+              <Form.Item style={{ flex: 1 }} name="applyStatus" label="狀態">
                 <Select
-                  style={{ width: 270 }}
                   placeholder="請選擇狀態"
                   showSearch
                   allowClear
@@ -304,7 +303,7 @@ const Page = () => {
                   清除查詢條件
                 </Button>
               </BtnGroup>
-            </Row>
+            </Flex>
           </Card>
         </Form>
 
