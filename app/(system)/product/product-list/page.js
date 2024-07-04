@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import styled from "styled-components";
-import Image from "next/image";
 import { Form } from "antd";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -12,13 +12,22 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
 
-import { PATH_PRODUCT_STOCK_SETTINGS, PATH_PRODUCT } from "@/constants/paths";
 import api from "@/api";
+import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
+
+  .ant-form-item {
+    .ant-form-item-label > label {
+      width: 100%;
+      height: 100%;
+      font-size: 14px;
+      font-weight: 700;
+      color: #7b8093;
+    }
+  }
 
   .ant-btn-link {
     padding: 0;
@@ -35,27 +44,7 @@ const Container = styled.div`
 
 const Card = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Row = styled.div`
-  display: flex;
   gap: 0 16px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  width: 42px;
-  flex-shrink: 0;
 `;
 
 const BtnGroup = styled.div`
@@ -85,7 +74,7 @@ const Page = () => {
   const columns = [
     {
       title: "部門別",
-      dataIndex: "",
+      dataIndex: "scmCategoryCode",
       align: "center",
     },
     {
@@ -166,32 +155,30 @@ const Page = () => {
       </LayoutHeader>
 
       <Container>
-        <Form form={form} onFinish={handleFinish}>
+        <Form
+          form={form}
+          autoComplete="off"
+          colon={false}
+          onFinish={handleFinish}
+        >
           <Card>
-            <Row>
-              <Form.Item name="itemEan" style={{ flex: 1, margin: 0 }}>
-                <Item>
-                  <ItemLabel>條碼</ItemLabel>
-                  <Input placeholder="請輸入條碼" />
-                </Item>
-              </Form.Item>
+            <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
+              <Input placeholder="請輸入條碼" />
+            </Form.Item>
 
-              <Form.Item name="itemName" style={{ flex: 1, margin: 0 }}>
-                <Item>
-                  <ItemLabel>品名</ItemLabel>
-                  <Input placeholder="請輸入商品名稱" />
-                </Item>
-              </Form.Item>
+            <Form.Item style={{ flex: 1 }} name="itemName" label="品名">
+              <Input placeholder="請輸入商品名稱" />
+            </Form.Item>
 
-              <BtnGroup style={{ marginLeft: "auto" }}>
-                <Button type="secondary" htmlType="submit">
-                  查詢
-                </Button>
-                <Button type="link" htmlType="reset">
-                  清除查詢條件
-                </Button>
-              </BtnGroup>
-            </Row>
+            <BtnGroup style={{ marginLeft: "auto" }}>
+              <Button type="secondary" htmlType="submit">
+                查詢
+              </Button>
+
+              <Button type="link" htmlType="reset">
+                清除查詢條件
+              </Button>
+            </BtnGroup>
           </Card>
         </Form>
 

@@ -149,6 +149,7 @@ const FeeRecord = () => {
           ...res.data,
           page: pagination.page,
           pageSize: pagination.pageSize,
+          tableQuery: { ...values },
         }));
       })
       .catch((err) => {
@@ -164,17 +165,7 @@ const FeeRecord = () => {
   };
 
   const handleChangeTable = (page, pageSize) => {
-    form
-      .validateFields()
-      .then(() => {
-        fetchTableInfo(form.getFieldsValue(true), { page, pageSize });
-      })
-      .catch(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      });
+    fetchTableInfo(tableInfo.tableQuery, { page, pageSize });
   };
 
   return (
