@@ -101,17 +101,14 @@ const Page = () => {
       dataIndex: "",
       align: "center",
       render: (text, record, index) => {
-        if (index === 0) {
-          return (
-            <FunctionBtn
-              color="green"
-              onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
-            >
-              庫存設定
-            </FunctionBtn>
-          );
-        }
-        return;
+        return (
+          <FunctionBtn
+            color="green"
+            onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
+          >
+            庫存設定
+          </FunctionBtn>
+        );
       },
     },
   ];
@@ -127,16 +124,21 @@ const Page = () => {
           max: pagination.pageSize,
         },
       })
-      .then((res) =>
+      .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
           page: pagination.page,
           pageSize: pagination.pageSize,
-        }))
-      )
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, table: false })));
+          tableQuery: { ...values },
+        }));
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
   };
 
   const handleFinish = (values) => {
@@ -144,8 +146,7 @@ const Page = () => {
   };
 
   const handleChangeTable = (page, pageSize) => {
-    const formValues = form.getFieldsValue(true);
-    fetchList(formValues, { page, pageSize });
+    fetchList(tableInfo.tableQuery, { page, pageSize });
   };
 
   return (

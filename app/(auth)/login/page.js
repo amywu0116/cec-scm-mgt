@@ -1,5 +1,6 @@
 "use client";
-import { Form, Input, Typography } from "antd";
+import { App, Form, Input, Typography } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -30,6 +31,7 @@ const ForgotPasswordLink = styled(Link)`
 `;
 
 const Page = () => {
+  const { message } = App.useApp();
   const router = useRouter();
   const [form] = Form.useForm();
 
@@ -62,6 +64,11 @@ const Page = () => {
       .then((res) => {
         updateUser(res.data);
         router.push("/");
+
+        const lastLoginTime = dayjs(res.data.lastLoginTime).format(
+          "YYYY-MM-DD hh:mm:ss"
+        );
+        message.success(`登入成功，上次登入時間: ${lastLoginTime}`);
       })
       .catch((err) => {
         setErrorMsg(err.message);
