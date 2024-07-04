@@ -231,14 +231,25 @@ const Page = () => {
       });
   };
 
+  const handleDownloadFile = () => {
+    const link = document.createElement("a");
+    link.href = "/提品匯入範例.xlsx";
+    link.download = "提品匯入範例.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
         <BtnGroup style={{ marginLeft: "auto" }}>
-          <Button>提品匯入範例下載</Button>
+          <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
+
           <Button type="secondary">提品匯入</Button>
+
           <Button type="primary" onClick={() => setShowModalAddType(true)}>
             新增提品
           </Button>
