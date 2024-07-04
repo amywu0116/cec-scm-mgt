@@ -164,6 +164,7 @@ const CommissionRecord = () => {
           ...res.data,
           page: pagination.page,
           pageSize: pagination.pageSize,
+          tableQuery: { ...values },
         }));
       })
       .catch((err) => {
@@ -179,17 +180,7 @@ const CommissionRecord = () => {
   };
 
   const handleChangeTable = (page, pageSize) => {
-    form
-      .validateFields()
-      .then(() => {
-        fetchTableInfo(form.getFieldsValue(true), { page, pageSize });
-      })
-      .catch(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      });
+    fetchTableInfo(tableInfo.tableQuery, { page, pageSize });
   };
 
   useEffect(() => {
@@ -224,10 +215,7 @@ const CommissionRecord = () => {
             name="queryDate"
             label="異動日期"
             rules={[
-              {
-                required: true,
-                message: "必填",
-              },
+              { required: true, message: "必填" },
               { validator: validateDateRange },
             ]}
           >
