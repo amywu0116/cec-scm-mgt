@@ -24,22 +24,25 @@ const PageLayout = (props) => {
   const [headerHeight, setHeaderHeight] = useState(100);
   const updateOptions = useBoundStore((state) => state.updateOptions);
 
-  if (updateOptions) {
-    const fetchOptions = () => {
-      api
-        .get("v1/system/option")
-        .then((res) => updateOptions(res.data))
-        .catch((err) => console.log(err))
-        .finally(() => {});
-    };
-    fetchOptions();
-  }
+  const fetchOptions = () => {
+    api
+      .get("v1/system/option")
+      .then((res) => updateOptions(res.data))
+      .catch((err) => console.log(err))
+      .finally(() => {});
+  };
 
   useEffect(() => {
     const header = document.querySelector("header.ant-layout-header");
     const headerHeight = header.getBoundingClientRect().height;
     setHeaderHeight(headerHeight);
   }, []);
+
+  useEffect(() => {
+    if (updateOptions) {
+      fetchOptions();
+    }
+  }, [updateOptions]);
 
   return (
     <Layout hasSider>
