@@ -1,6 +1,7 @@
 "use client";
-import { App, Form, Flex } from "antd";
+import { App, Flex, Form } from "antd";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -15,6 +16,7 @@ import Table from "@/components/Table";
 import ModalAddProduct from "./ModalAddProduct";
 
 import api from "@/api";
+import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
@@ -74,6 +76,7 @@ const TableTitle = styled.div`
 const Page = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const options = useBoundStore((state) => state.options);
   const applyStatusOptions = options?.apply_status ?? [];
@@ -343,6 +346,17 @@ const Page = () => {
             columns={columns}
             dataSource={tableInfo.rows}
             onChange={handleChangeTable}
+            onRow={(record, index) => {
+              return {
+                onClick: (e) => {
+                  if (e.target.className.includes("ant-table-cell")) {
+                    router.push(
+                      `${PATH_PRODUCT_PRODUCT_APPLICATION}/edit/${record.applyId}`
+                    );
+                  }
+                },
+              };
+            }}
           />
         </TableWrapper>
       </Container>
