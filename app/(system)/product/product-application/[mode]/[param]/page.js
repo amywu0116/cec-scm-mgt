@@ -1,12 +1,12 @@
 "use client";
 import { App, Breadcrumb, Flex, Form, Radio, Spin } from "antd";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
@@ -40,18 +40,6 @@ const Title = styled.div`
   line-height: 35px;
 `;
 
-const Item = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 32px;
-`;
-
 const BtnGroup = styled.div`
   display: flex;
   gap: 0 16px;
@@ -62,9 +50,16 @@ const Page = () => {
   const [form] = Form.useForm();
   const { message } = App.useApp();
   const dateFormat = "YYYY/MM/DD";
-
   const params = useParams();
-  const isFood = params.productType === "food";
+
+  const isAdd = params.mode === "add";
+  const isEdit = params.mode === "edit";
+  const applyId = isEdit && params.param;
+
+  const isFood =
+    (isAdd && params.param === "food") ||
+    (isEdit && form.getFieldValue("isFood"));
+  const isNonFood = isAdd && params.param === "non-food";
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -105,10 +100,34 @@ const Page = () => {
       });
   };
 
+  const fetchInfo = () => {
+    api
+      .get("v1/scm/product/apply/new", {
+        params: {
+          applyId,
+          includeApplyHistory: true,
+        },
+      })
+      .then((res) => {
+        const { stockStartdate, scmCategoryCode } = res.data;
+
+        form.setFieldsValue({
+          ...res.data,
+          scmCategory: scmCategoryCode,
+          // stockStartdate: new Date(stockStartdate),
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {});
+  };
+
   const handleFinish = (values) => {
     console.log("finish", values);
     const data = {
-      isFood: isFood,
+      applyId: isEdit ? applyId : undefined,
+      isFood: isAdd ? isFood : undefined,
       cartType: values.cartType,
       scmCategoryCode: values.scmCategory?.categoryCode,
       scmCategoryName: values.scmCategory?.categoryName,
@@ -184,14 +203,20 @@ const Page = () => {
       });
   };
 
-  const handleFieldsChange = () => {};
-
   useEffect(() => {
     fetchCategory();
     fetchShipping();
   }, []);
 
-  console.log("form", Form.useWatch("itemNameEn", form));
+  useEffect(() => {
+    if (isEdit) {
+      fetchInfo();
+    }
+  }, []);
+
+  console.log("form", form.getFieldsValue(true));
+  console.log("shippingList", shippingList);
+  console.log("categoryList", categoryList);
 
   return (
     <Spin spinning={loading.page}>
@@ -201,7 +226,11 @@ const Page = () => {
         <Breadcrumb
           separator=">"
           items={[
-            { title: "提品申請" },
+            {
+              title: (
+                <Link href={PATH_PRODUCT_PRODUCT_APPLICATION}>提品申請</Link>
+              ),
+            },
             { title: isFood ? "新增提品資料_食品" : "新增提品資料_非食品" },
           ]}
         />
@@ -225,7 +254,6 @@ const Page = () => {
         labelWrap
         labelAlign="left"
         onFinish={handleFinish}
-        onFieldsChange={handleFieldsChange}
       >
         <Container>
           <Wrapper>
@@ -258,7 +286,7 @@ const Page = () => {
                     return {
                       ...c,
                       label: c.categoryName,
-                      value: c.categoryName,
+                      value: c.categoryCode,
                     };
                   })}
                   onSelect={(value, option) => {
@@ -405,11 +433,17 @@ const Page = () => {
                 style={{ flex: 1 }}
                 name="grossWeight"
                 label="重量-毛重"
+                rules={[{ required: true, message: "必填" }]}
               >
                 <Input placeholder="請輸入重量-毛重" />
               </Form.Item>
 
-              <Form.Item style={{ flex: 1 }} name="netWeight" label="重量-淨重">
+              <Form.Item
+                style={{ flex: 1 }}
+                name="netWeight"
+                label="重量-淨重"
+                rules={[{ required: true, message: "必填" }]}
+              >
                 <Input placeholder="請輸入重量-淨重" />
               </Form.Item>
             </Flex>
@@ -459,9 +493,9 @@ const Page = () => {
             </Flex>
 
             <Flex gap={16}>
-              <Form.Item style={{ flex: 1 }} name="4" label="等級">
+              {/* <Form.Item style={{ flex: 1 }} name="4" label="等級">
                 <Input placeholder="請輸入等級" />
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item
                 style={{ flex: 1 }}
@@ -493,9 +527,9 @@ const Page = () => {
                 <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
               </Form.Item> */}
 
-              <Form.Item name="stockStartdate">
+              {/* <Form.Item name="stockStartdate">
                 <DatePicker placeholder="起始日期" format="YYYY/MM/DD" />
-              </Form.Item>
+              </Form.Item> */}
             </Flex>
 
             <Flex gap={16}>
