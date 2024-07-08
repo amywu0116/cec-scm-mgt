@@ -11,7 +11,7 @@ import {
   PATH_BILLING_COLLECTION_REPORT,
   PATH_BILLING_RECONCILIATION_REPORT,
   PATH_LOGIN,
-  PATH_ORDER_MANAGEMENT,
+  PATH_ORDER_LIST,
   PATH_PRODUCT_PRODUCT_APPLICATION,
   PATH_PRODUCT_PRODUCT_LIST,
   PATH_SHIPPING_COMPANY,
@@ -125,7 +125,7 @@ const items = [
     icon: <Image src="/order.svg" alt="" width={30} height={30} />,
     children: [
       {
-        key: PATH_ORDER_MANAGEMENT,
+        key: PATH_ORDER_LIST,
         label: "訂單管理",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
