@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Breadcrumb, Radio, Spin } from "antd";
+import { Breadcrumb, Radio, Spin, Form, Flex } from "antd";
 import styled from "styled-components";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -9,6 +9,8 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import TextArea from "@/components/TextArea";
+import Select from "@/components/Select";
+import DatePicker from "@/components/DatePicker";
 
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 import api from "@/api";
@@ -17,9 +19,18 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
+
+  .ant-form-item {
+    .ant-form-item-label > label {
+      height: 100%;
+      font-size: 14px;
+      font-weight: 700;
+      color: #7b8093;
+    }
+  }
 `;
 
-const ButtonGroup = styled.div`
+const BtnGroup = styled.div`
   display: flex;
   gap: 0 16px;
 `;
@@ -27,7 +38,6 @@ const ButtonGroup = styled.div`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px 0;
 `;
 
 const Title = styled.div`
@@ -35,26 +45,6 @@ const Title = styled.div`
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 32px;
-`;
-
-const Item = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  width: 64px;
-  flex-shrink: 0;
 `;
 
 const CategoryLabel = styled.div`
@@ -66,23 +56,53 @@ const CategoryLabel = styled.div`
 const Page = () => {
   const router = useRouter();
   const params = useParams();
+  const [form] = Form.useForm();
 
   const [loading, setLoading] = useState({ page: false });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [shippingList, setShippingList] = useState([]);
 
-  const [info, setInfo] = useState({});
+  const scmCategoryCode = form.getFieldValue("scmCategoryCode");
+  const scmCategoryName = form.getFieldValue("scmCategoryName");
 
   const fetchInfo = () => {
+    setLoading((state) => ({ ...state, page: true }));
     api
       .get(`v1/scm/product/${params.productId}`)
-      .then((res) => setInfo(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => {});
+      .then((res) => {
+        form.setFieldsValue({
+          ...res.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
+
+  const fetchShipping = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .get("v1/scm/vendor/shipping")
+      .then((res) => {
+        setShippingList(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
+  };
+
+  const handleFinish = (values) => {};
 
   useEffect(() => {
     fetchInfo();
+    fetchShipping();
   }, []);
 
   return (
@@ -93,16 +113,12 @@ const Page = () => {
         <Breadcrumb
           separator=">"
           items={[
-            {
-              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
-            },
-            {
-              title: "商品資料",
-            },
+            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
+            { title: "商品資料" },
           ]}
         />
 
-        <ButtonGroup style={{ marginLeft: "auto" }}>
+        <BtnGroup style={{ marginLeft: "auto" }}>
           {isEditing ? (
             <>
               <Button type="default" onClick={() => setIsEditing(false)}>
@@ -129,351 +145,415 @@ const Page = () => {
           )}
 
           <Button type="secondary">PDF預覽</Button>
-        </ButtonGroup>
+        </BtnGroup>
       </LayoutHeader>
 
-      <Container>
-        <Wrapper>
-          <Title>基本設定</Title>
+      <Form
+        form={form}
+        autoComplete="off"
+        colon={false}
+        labelCol={{ flex: "80px" }}
+        labelWrap
+        labelAlign="left"
+        disabled={!isEditing}
+        onFinish={handleFinish}
+      >
+        <Container>
+          <Wrapper>
+            <Title>基本設定</Title>
 
-          <Row>
-            <Item>
-              <ItemLabel>內部分類</ItemLabel>
-              <CategoryLabel>
-                {info.scmCategoryCode} / {info.scmCategoryName}
-              </CategoryLabel>
-            </Item>
-          </Row>
+            <Flex gap={16}>
+              <Form.Item name="cartType" label="分車類型">
+                <Select
+                  style={{ width: 350 }}
+                  placeholder="請選擇分車類型"
+                  showSearch
+                  allowClear
+                  options={shippingList.map((opt) => ({
+                    ...opt,
+                    label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
+                    value: opt.cartType,
+                  }))}
+                />
+              </Form.Item>
+            </Flex>
 
-          <Row>
-            <Item>
-              <ItemLabel>品名</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
+            <Flex gap={16}>
+              <Form.Item label="商品分類">
+                <CategoryLabel style={{ width: 350 }}>
+                  {scmCategoryCode} / {scmCategoryName}
+                </CategoryLabel>
+              </Form.Item>
+            </Flex>
 
-            <Item>
-              <ItemLabel>生產國家</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemCountry} />
-            </Item>
-          </Row>
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="itemName" label="品牌">
+                <Input />
+              </Form.Item>
 
-          <Row>
-            <Item>
-              <ItemLabel>中文品名</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemName} />
-            </Item>
-
-            <Item>
-              <ItemLabel>英文品名</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemNameEn} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>供應商商品編號</ItemLabel>
-              <Input disabled={!isEditing} value={info.vendorProdCode} />
-            </Item>
-
-            <Item>
-              <ItemLabel>規格</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemSpec} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>條碼</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemEan} />
-            </Item>
-
-            <Item>
-              <ItemLabel>應/免稅</ItemLabel>
-              <Input
-                disabled={!isEditing}
-                value={info.isTax ? "應稅" : "免稅"}
-              />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>原價</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-
-            <Item>
-              <ItemLabel>促銷價</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-          </Row>
-        </Wrapper>
-
-        <Wrapper>
-          <Title>容量和重量</Title>
-
-          {/* <Row>
-            <Item>
-              <ItemLabel>容量</ItemLabel>
-              <Input disabled={!isEditing} value={info.v_capacity} />
-            </Item>
-
-            <Item>
-              <ItemLabel>容量單位</ItemLabel>
-              <Input disabled={!isEditing} value={info.vunit} />
-            </Item>
-
-            <Item>
-              <ItemLabel>庫存單位</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-          </Row> */}
-
-          {/* <Row>
-            <Item>
-              <ItemLabel>陳列單位(數字)</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-
-            <Item>
-              <ItemLabel>陳列容量</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-
-            <Item></Item>
-          </Row> */}
-
-          <Row>
-            <Item>
-              <ItemLabel>商品高度(cm)</ItemLabel>
-              <Input disabled={!isEditing} value={info.productHeight} />
-            </Item>
-
-            <Item>
-              <ItemLabel>商品寬度(cm)</ItemLabel>
-              <Input disabled={!isEditing} value={info.productWidth} />
-            </Item>
-
-            <Item>
-              <ItemLabel>商品長度(cm)</ItemLabel>
-              <Input disabled={!isEditing} value={info.productLength} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>重量-淨重</ItemLabel>
-              <Input disabled={!isEditing} value={info.netWeight} />
-            </Item>
-
-            <Item>
-              <ItemLabel>重量-毛重</ItemLabel>
-              <Input disabled={!isEditing} value={info.grossWeight} />
-            </Item>
-
-            <Item></Item>
-          </Row>
-        </Wrapper>
-
-        <Wrapper>
-          <Title>其他資訊</Title>
-
-          <Row>
-            <Item>
-              <ItemLabel>保存日期</ItemLabel>
-              <Input disabled={!isEditing} value={info.expDateValue} />
-            </Item>
-
-            <Item>
-              <ItemLabel>保存日期單位</ItemLabel>
-              <Input disabled={!isEditing} value={info.expDateUnit} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>電源規格</ItemLabel>
-              <Input disabled={!isEditing} value={info.powerSpec} />
-            </Item>
-
-            <Item>
-              <ItemLabel>保存方式(文字)</ItemLabel>
-              <Input disabled={!isEditing} value={info.itemStoreway} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>顏色</ItemLabel>
-              <Input disabled={!isEditing} value={info.vcolor} />
-            </Item>
-
-            <Item>
-              <ItemLabel>尺寸</ItemLabel>
-              <Input disabled={!isEditing} value={info.vsize} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>容量</ItemLabel>
-              <Input disabled={!isEditing} value={info.v_capacity} />
-            </Item>
-
-            <Item>
-              <ItemLabel>入數</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>款式</ItemLabel>
-              <Input disabled={!isEditing} />
-            </Item>
-
-            <Item></Item>
-          </Row>
-
-          <Row>
-            <Item>
-              <ItemLabel>庫存</ItemLabel>
-              <Radio.Group
-                style={{ display: "flex", flex: 1, alignItems: "center" }}
-                disabled={!isEditing}
-                defaultValue={1}
-                // onChange={() => {}}
-                // value={1}
+              <Form.Item
+                style={{ flex: 1 }}
+                name="itemCountry"
+                label="生產國家"
               >
-                <Radio value={1}>不庫控</Radio>
-                <Radio value={2}>
-                  活動庫存{" "}
-                  <Input
-                    style={{ width: 102, marginLeft: 8 }}
-                    placeholder="數量"
-                    disabled={!isEditing}
-                  />
-                  <Input
-                    style={{ width: 102, marginLeft: 8 }}
-                    placeholder="起始日期"
-                    disabled={!isEditing}
-                  />
-                </Radio>
-              </Radio.Group>
-            </Item>
-          </Row>
+                <Input />
+              </Form.Item>
+            </Flex>
 
-          <Row>
-            <Item>
-              <ItemLabel>商品特色說明</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品特色說明"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-              />
-            </Item>
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="itemName" label="中文品名">
+                <Input />
+              </Form.Item>
 
-            <Item>
-              <ItemLabel>商品完整說明(文字)</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品完整說明(文字)"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.itemDetail}
-              />
-            </Item>
-          </Row>
+              <Form.Item style={{ flex: 1 }} name="itemNameEn" label="英文品名">
+                <Input />
+              </Form.Item>
+            </Flex>
 
-          <Row>
-            <Item>
-              <ItemLabel>產品成份及食品添加物(文字)</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品特色說明"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.ingredients}
-              />
-            </Item>
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="vendorProdCode"
+                label="供應商商品編號"
+              >
+                <Input />
+              </Form.Item>
 
-            <Item>
-              <ItemLabel>營養標示(文字)</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品完整說明(文字)"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.nutrition}
-              />
-            </Item>
-          </Row>
+              <Form.Item style={{ flex: 1 }} name="itemSpec" label="規格">
+                <Input />
+              </Form.Item>
+            </Flex>
 
-          <Row>
-            <Item>
-              <ItemLabel>產品責任險</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品特色說明"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.dutyInsurance}
-              />
-            </Item>
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
+                <Input />
+              </Form.Item>
 
-            <Item>
-              <ItemLabel>產品核准字號</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品完整說明(文字)"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.approvalId}
-              />
-            </Item>
-          </Row>
+              <Form.Item style={{ flex: 1 }} name="isTax" label="應/免稅">
+                <Select
+                  placeholder="請輸入應/免稅"
+                  showSearch
+                  allowClear
+                  options={[
+                    { label: "應稅", value: true },
+                    { label: "未稅", value: false },
+                  ]}
+                />
+              </Form.Item>
+            </Flex>
 
-          <Row>
-            <Item>
-              <ItemLabel>保固範圍(文字)</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品特色說明"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-                value={info.warrantyScope}
-              />
-            </Item>
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="price" label="原價">
+                <Input />
+              </Form.Item>
 
-            <Item>
-              <ItemLabel>其他證明(文字)</ItemLabel>
-              <TextArea
-                placeholder="請輸入商品完整說明(文字)"
-                autoSize={{
-                  minRows: 3,
-                  maxRows: 3,
-                }}
-                disabled={!isEditing}
-              />
-            </Item>
-          </Row>
-        </Wrapper>
-      </Container>
+              <Form.Item style={{ flex: 1 }} name="specialPrice" label="促銷價">
+                <Input />
+              </Form.Item>
+            </Flex>
+          </Wrapper>
+
+          <Wrapper>
+            <Title>容量和重量</Title>
+
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="vCapacity" label="容量">
+                <Input />
+              </Form.Item>
+
+              <Form.Item style={{ flex: 1 }} name="vUnit" label="容量單位">
+                <Input />
+              </Form.Item>
+
+              {/* <Form.Item name="" label="庫存單位">
+                <Input />
+              </Form.Item> */}
+            </Flex>
+
+            {/* <Flex gap={16}>
+            <Form.Item name="" label="陳列單位(數字)">
+                <Input />
+              </Form.Item>
+
+              <Form.Item name="" label="陳列容量">
+                <Input />
+              </Form.Item>
+            </Flex> */}
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="productHeight"
+                label="商品高度(cm)"
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="productWidth"
+                label="商品寬度(cm)"
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="productLength"
+                label="商品長度(cm)"
+              >
+                <Input />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="grossWeight"
+                label="重量-毛重"
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item style={{ flex: 1 }} name="netWeight" label="重量-淨重">
+                <Input />
+              </Form.Item>
+            </Flex>
+          </Wrapper>
+
+          <Wrapper>
+            <Title>其他資訊</Title>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="expDateValue"
+                label="保存日期"
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="expDateUnit"
+                label="保存日期單位"
+              >
+                <Input />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="powerSpec" label="電源規格">
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="itemStoreway"
+                label="保存方式(文字)"
+              >
+                <Input />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="vColor" label="顏色">
+                <Input />
+              </Form.Item>
+
+              <Form.Item style={{ flex: 1 }} name="vSize" label="尺寸">
+                <Input />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              {/* <Form.Item name="" label="入數">
+                <Input />
+              </Form.Item> */}
+            </Flex>
+
+            {/* <Flex gap={16}>
+              <Form.Item name="" label="款式">
+                <Input />
+              </Form.Item>
+            </Flex> */}
+
+            <Flex gap={16}>
+              <Form.Item name="perpetual" label="庫存">
+                <Radio.Group
+                  // style={{ width: 250 }}
+                  disabled
+                  options={[
+                    { label: "不庫控", value: false },
+                    { label: "活動庫存", value: true },
+                  ]}
+                />
+              </Form.Item>
+
+              <Form.Item name="">
+                <Input placeholder="數量" disabled />
+              </Form.Item>
+
+              <Form.Item name="">
+                <DatePicker
+                  placeholder="起始日期"
+                  format="YYYY/MM/DD"
+                  disabled
+                />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="itemShortdescription"
+                label="商品特色說明"
+              >
+                <TextArea
+                  placeholder="請輸入商品特色說明"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="itemDetail"
+                label="商品完整說明(文字)"
+              >
+                <TextArea
+                  placeholder="請輸入商品完整說明(文字)"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="ingredients"
+                label="產品成份及食品添加物(文字)"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <TextArea
+                  placeholder="請輸入產品成份及食品添加物(文字)"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="nutrition"
+                label="營養標示(文字)"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <TextArea
+                  placeholder="請輸入營養標示(文字)"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="manufacturer"
+                label="國內負責廠商名稱"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <Input placeholder="請輸入國內負責廠商名稱" />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="manufacturerPhone"
+                label="電話"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <Input placeholder="請輸入電話" />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="manufacturerAddress"
+                label="地址"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <Input placeholder="請輸入地址" />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="dutyInsurance"
+                label="產品責任險"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <TextArea
+                  placeholder="請輸入產品責任險"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="approvalId"
+                label="產品核准字號"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <TextArea
+                  placeholder="請輸入產品核准字號"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item
+                style={{ flex: 1 }}
+                name="warrantyScope"
+                label="保固範圍(文字)"
+              >
+                <TextArea
+                  placeholder="請輸入保固範圍(文字)"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="approvalOther"
+                label="其他證明(文字)"
+              >
+                <TextArea
+                  placeholder="請輸入其他證明(文字)"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+            </Flex>
+
+            <Flex gap={16}>
+              <Form.Item style={{ flex: 1 }} name="certMark" label="標章">
+                <TextArea
+                  placeholder="請輸入標章"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                style={{ flex: 1 }}
+                name="energyEfficiency"
+                label="能源效率"
+              >
+                <TextArea
+                  placeholder="請輸入能源效率"
+                  autoSize={{ minRows: 3, maxRows: 3 }}
+                />
+              </Form.Item>
+            </Flex>
+          </Wrapper>
+        </Container>
+      </Form>
     </Spin>
   );
 };

@@ -8,9 +8,9 @@ export const PATH_ANNOUNCEMENT_MESSAGE = "/announcement/message";
 export const PATH_ORDER_MANAGEMENT = "/order/management";
 
 export const PATH_PRODUCT = "/product";
-export const PATH_PRODUCT_PRODUCT_LIST = `${PATH_PRODUCT}/product-list`;
+export const PATH_PRODUCT_PRODUCT_LIST = `${PATH_PRODUCT}/list`;
 export const PATH_PRODUCT_STOCK_SETTINGS = `${PATH_PRODUCT}/stock-settings`;
-export const PATH_PRODUCT_PRODUCT_APPLICATION = `${PATH_PRODUCT}/product-application`;
+export const PATH_PRODUCT_PRODUCT_APPLICATION = `${PATH_PRODUCT}/application`;
 
 export const PATH_SHIPPING_COMPANY = "/shipping-company";
 export const PATH_SHIPPING_COMPANY_ADD = "/shipping-company/add";
