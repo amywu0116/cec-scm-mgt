@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styled from "styled-components";
+import Link from "next/link";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -86,6 +87,9 @@ const Page = () => {
       title: "條碼",
       dataIndex: "itemEan",
       align: "center",
+      render: (text, record) => {
+        return <Link href={`${PATH_PRODUCT}/${record.productId}`}>{text}</Link>;
+      },
     },
     {
       title: "圖片",
@@ -101,6 +105,7 @@ const Page = () => {
       dataIndex: "",
       align: "center",
       render: (text, record, index) => {
+        if (record.perpetual) return "-";
         return (
           <FunctionBtn
             color="green"
@@ -118,6 +123,9 @@ const Page = () => {
     api
       .get("v1/scm/product", {
         params: {
+          productnumber: values.productnumber
+            ? values.productnumber
+            : undefined,
           itemEan: values.itemEan ? values.itemEan : undefined,
           itemName: values.itemName ? values.itemName : undefined,
           offset: (pagination.page - 1) * pagination.pageSize,
@@ -163,8 +171,12 @@ const Page = () => {
           onFinish={handleFinish}
         >
           <Card>
+            <Form.Item style={{ flex: 1 }} name="productnumber" label="商品ID">
+              <Input placeholder="請輸入商品ID" />
+            </Form.Item>
+
             <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
-              <Input placeholder="請輸入條碼" />
+              <Input placeholder="請輸入條碼" maxLength={13} />
             </Form.Item>
 
             <Form.Item style={{ flex: 1 }} name="itemName" label="品名">
@@ -195,15 +207,6 @@ const Page = () => {
                     loading={loading.table}
                     columns={columns}
                     dataSource={tableInfo.rows}
-                    onRow={(record, index) => {
-                      return {
-                        onClick: (e) => {
-                          if (e.target.className.includes("ant-table-cell")) {
-                            router.push(`${PATH_PRODUCT}/${record.productId}`);
-                          }
-                        },
-                      };
-                    }}
                     pageInfo={{
                       total: tableInfo.total,
                       page: tableInfo.page,
