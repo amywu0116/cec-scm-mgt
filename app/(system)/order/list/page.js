@@ -147,7 +147,7 @@ const Page = () => {
   const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
 
   const processedStatus = Form.useWatch("processedStatus", form);
-  const logisticsStatus = statusMapping[processedStatus];
+  const logisticsStatus = statusMapping[processedStatus] ?? [];
   const lsOptions = [...psOptions, ...osOptions, ...bsOptions].map((item) => ({
     ...item,
     label: item.name,
@@ -318,9 +318,7 @@ const Page = () => {
 
   // 設定初始 "訂單物流狀態" 後才能進行第一次查詢
   useEffect(() => {
-    if (lsOptions.length > 0) {
-      fetchList(form.getFieldsValue(true));
-    }
+    form.submit();
   }, [options]);
 
   // 選擇 "處理狀態" 後會更新 "訂單物流狀態" 列表
