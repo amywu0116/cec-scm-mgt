@@ -14,7 +14,7 @@ import {
   PATH_ORDER_LIST,
   PATH_PRODUCT_PRODUCT_APPLICATION,
   PATH_PRODUCT_PRODUCT_LIST,
-  PATH_SHIPPING_COMPANY,
+  PATH_LOGISTICS,
   PATH_SUPPLIER,
 } from "@/constants/paths";
 
@@ -132,7 +132,7 @@ const items = [
     ],
   },
   {
-    key: PATH_SHIPPING_COMPANY,
+    key: PATH_LOGISTICS,
     label: "貨運公司維護",
     icon: <Image src="/logistics.svg" alt="" width={30} height={30} />,
   },
