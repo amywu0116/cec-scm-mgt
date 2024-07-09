@@ -90,7 +90,7 @@ const Page = () => {
     api
       .get("v1/scm/vendor/shipping")
       .then((res) => {
-        setShippingList(res.data);
+        setShippingList(res.data ?? []);
       })
       .catch((err) => {
         console.log(err);
