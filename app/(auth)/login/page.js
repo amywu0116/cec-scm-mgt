@@ -65,10 +65,13 @@ const Page = () => {
         updateUser(res.data);
         router.push("/");
 
-        const lastLoginTime = dayjs(res.data.lastLoginTime).format(
-          "YYYY-MM-DD HH:mm:ss"
-        );
-        message.success(`登入成功，上次登入時間: ${lastLoginTime}`);
+        const lastLoginTime = res.data.lastLoginTime;
+        if (lastLoginTime) {
+          const date = dayjs(lastLoginTime).format("YYYY-MM-DD HH:mm:ss");
+          message.success(`登入成功，上次登入時間: ${date}`);
+        } else {
+          message.success(`登入成功`);
+        }
       })
       .catch((err) => {
         setErrorMsg(err.message);
