@@ -11,7 +11,7 @@ const StyledSelect = styled(AntdSelect)`
 `;
 
 const Select = (props) => {
-  return <StyledSelect {...props} />;
+  return <StyledSelect showSearch allowClear {...props} />;
 };
 
 export default Select;

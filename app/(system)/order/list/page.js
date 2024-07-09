@@ -1,7 +1,7 @@
 "use client";
 import { Badge, Breadcrumb, Checkbox, Divider, Flex, Form, Radio } from "antd";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
@@ -125,21 +125,34 @@ const Tag = styled.div`
     `};
 `;
 
+// key 為處理狀態，value 為訂單物流狀態
+const statusMapping = {
+  0: ["1", "8", "11", "401", "402", "403", "405"],
+  1: ["404", "406"],
+};
+
 const Page = () => {
   const [form] = Form.useForm();
 
-  const options = useBoundStore((state) => state.options);
-  const pickingStatus = options?.picking_status ?? [];
-  const orderStatus = options?.order_status ?? [];
-  const backStatus = options?.back_status ?? [];
+  const logisticsOptions = useBoundStore((state) => state.logistics) ?? [];
 
-  const logisticsStatus = [...pickingStatus, ...orderStatus, ...backStatus].map(
-    (item) => {
-      return { ...item, label: item.name };
-    }
-  );
+  const options = useBoundStore((state) => state.options);
+  const psOptions = options?.picking_status ?? [];
+  const osOptions = options?.order_status ?? [];
+  const bsOptions = options?.back_status ?? [];
 
   const [loading, setLoading] = useState({ table: false });
+
+  const tabActiveKeyDefault = "1";
+  const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
+
+  const processedStatus = Form.useWatch("processedStatus", form);
+  const logisticsStatus = statusMapping[processedStatus];
+  const lsOptions = [...psOptions, ...osOptions, ...bsOptions].map((item) => ({
+    ...item,
+    label: item.name,
+    disabled: !logisticsStatus.includes(item.value),
+  }));
 
   const [selectedRows, setSelectedRows] = useState([]);
   const shippingList = selectedRows.filter((r) => r.status === "配送中");
@@ -149,6 +162,7 @@ const Page = () => {
     total: 0,
     page: 1,
     pageSize: 10,
+    tableQuery: {},
   });
 
   const columns = [
@@ -216,21 +230,19 @@ const Page = () => {
   ];
 
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
-    console.log("values", values);
-
     const orderStatusList = [];
     const pickingStatusList = [];
     const backStatusList = [];
 
     if (values.logisticsStatus) {
       values.logisticsStatus.forEach((a) => {
-        const isOrderStatus = orderStatus.some((b) => b.value === a);
+        const isOrderStatus = osOptions.some((b) => b.value === a);
         if (isOrderStatus) orderStatusList.push(a);
 
-        const isPickingStatus = pickingStatus.some((b) => b.value === a);
+        const isPickingStatus = psOptions.some((b) => b.value === a);
         if (isPickingStatus) pickingStatusList.push(a);
 
-        const isBackStatus = backStatus.some((b) => b.value === a);
+        const isBackStatus = bsOptions.some((b) => b.value === a);
         if (isBackStatus) backStatusList.push(a);
       });
     }
@@ -243,18 +255,17 @@ const Page = () => {
       ecorderDateEnd: values.ecorderDate
         ? values.ecorderDate[1].format("YYYY-MM-DD")
         : undefined,
-      processedStatus: values.processedStatus,
+      processedStatus,
       ecorderStatus:
         orderStatusList.length > 0 ? orderStatusList.join(",") : undefined,
       pickingStatus:
         pickingStatusList.length > 0 ? pickingStatusList.join(",") : undefined,
       backStatus:
         backStatusList.length > 0 ? backStatusList.join(",") : undefined,
+      logisticsId: values.logisticsId,
       offset: (pagination.page - 1) * pagination.pageSize,
       max: pagination.pageSize,
     };
-
-    console.log("data", data);
 
     setLoading((state) => ({ ...state, table: true }));
     api
@@ -284,11 +295,39 @@ const Page = () => {
     fetchList(tableInfo.tableQuery, { page, pageSize });
   };
 
-  console.log(
-    "selectedRows",
-    selectedRows,
-    selectedRows.some((r) => r.status === "配送中")
-  );
+  const handleChangeTab = (activeKey) => {
+    if (activeKey === "2") {
+      form.setFieldsValue({
+        processedStatus: "0",
+        logisticsStatus: logisticsStatus.filter((l) => l === "11"),
+      });
+    }
+
+    if (activeKey === "3") {
+      form.setFieldValue("processedStatus", "0");
+    }
+
+    form.submit();
+    setTabActiveKey(activeKey);
+  };
+
+  const handleSearch = () => {
+    setTabActiveKey(tabActiveKeyDefault);
+    form.submit();
+  };
+
+  // 設定初始 "訂單物流狀態" 後才能進行第一次查詢
+  useEffect(() => {
+    if (lsOptions.length > 0) {
+      fetchList(form.getFieldsValue(true));
+    }
+  }, [options]);
+
+  // 選擇 "處理狀態" 後會更新 "訂單物流狀態" 列表
+  useEffect(() => {
+    const lsList = statusMapping[processedStatus];
+    form.setFieldValue("logisticsStatus", lsList);
+  }, [processedStatus]);
 
   return (
     <>
@@ -308,6 +347,7 @@ const Page = () => {
           colon={false}
           initialValues={{
             processedStatus: "0",
+            logisticsStatus,
           }}
           onFinish={handleFinish}
         >
@@ -330,7 +370,11 @@ const Page = () => {
                 <Select
                   style={{ width: 250 }}
                   placeholder="選擇貨運公司"
-                  options={[{ value: "lucy", label: "Lucy" }]}
+                  options={logisticsOptions.map((opt) => ({
+                    ...opt,
+                    label: opt.logisticsName,
+                    value: opt.logisticsId,
+                  }))}
                 />
               </Form.Item>
 
@@ -346,7 +390,7 @@ const Page = () => {
 
             <Flex gap={16}>
               <Form.Item name="logisticsStatus" label="訂單物流狀態">
-                <Checkbox.Group options={logisticsStatus} />
+                <Checkbox.Group options={lsOptions} />
               </Form.Item>
             </Flex>
 
@@ -355,7 +399,7 @@ const Page = () => {
             <BtnGroup style={{ margin: "16px 0 0 auto" }}>
               <Button>出貨狀態匯入</Button>
 
-              <Button type="secondary" htmlType="submit">
+              <Button type="secondary" onClick={handleSearch}>
                 查詢
               </Button>
 
@@ -382,7 +426,6 @@ const Page = () => {
           </BtnGroup>
 
           <Tabs
-            defaultActiveKey="1"
             items={[
               {
                 label: "全部",
@@ -483,6 +526,8 @@ const Page = () => {
                 ),
               },
             ]}
+            activeKey={tabActiveKey}
+            onChange={handleChangeTab}
           />
         </TableWrapper>
       </Container>
