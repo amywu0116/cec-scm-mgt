@@ -1,6 +1,7 @@
 const initialState = {
-  zipCity: [],
+  logistics: [],
   options: {},
+  zipCity: [],
 };
 
 export const createOptionsSlice = (set) => ({
