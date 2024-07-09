@@ -13,8 +13,8 @@ export const PATH_PRODUCT_PRODUCT_LIST = `${PATH_PRODUCT}/list`;
 export const PATH_PRODUCT_STOCK_SETTINGS = `${PATH_PRODUCT}/stock-settings`;
 export const PATH_PRODUCT_PRODUCT_APPLICATION = `${PATH_PRODUCT}/application`;
 
-export const PATH_SHIPPING_COMPANY = "/shipping-company";
-export const PATH_SHIPPING_COMPANY_ADD = "/shipping-company/add";
+export const PATH_LOGISTICS = "/logistics";
+export const PATH_PATH_LOGISTICS_ADD = `${PATH_LOGISTICS}/add`;
 
 export const PATH_SUPPLIER = "/vendor";
 
