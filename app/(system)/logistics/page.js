@@ -1,8 +1,7 @@
 "use client";
-import { Breadcrumb, Checkbox, Spin } from "antd";
+import { App, Breadcrumb, Checkbox, Col, Row, Spin } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 
 import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
@@ -11,18 +10,9 @@ import Table from "@/components/Table";
 import api from "@/api";
 import { PATH_LOGISTICS, PATH_PATH_LOGISTICS_ADD } from "@/constants/paths";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
+export default function Page() {
+  const { message } = App.useApp();
 
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Page = (props) => {
   const [loading, setLoading] = useState({ page: false });
 
   const [tableInfo, setTableInfo] = useState({
@@ -39,7 +29,7 @@ const Page = (props) => {
       dataIndex: "code",
       align: "center",
       render: (text, record, index) => {
-        return <Link href={`${PATH_LOGISTICS}/${record.id}`}>{text}</Link>;
+        return <Link href={`${PATH_LOGISTICS}/edit/${record.id}`}>{text}</Link>;
       },
     },
     {
@@ -99,7 +89,7 @@ const Page = (props) => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
@@ -119,31 +109,32 @@ const Page = (props) => {
       <Spin spinning={loading.page}>
         <LayoutHeader>
           <LayoutHeaderTitle>貨運公司維護</LayoutHeaderTitle>
-
           <Breadcrumb separator=">" items={[{ title: "貨運公司維護" }]} />
         </LayoutHeader>
 
-        <Container>
-          <Row style={{ justifyContent: "flex-end" }}>
-            <Link href={PATH_PATH_LOGISTICS_ADD}>
-              <Button type="primary">新增</Button>
-            </Link>
-          </Row>
+        <Row gutter={[0, 16]}>
+          <Col span={24}>
+            <Row justify="end">
+              <Link href={PATH_PATH_LOGISTICS_ADD}>
+                <Button type="primary">新增</Button>
+              </Link>
+            </Row>
+          </Col>
 
-          <Table
-            columns={columns}
-            dataSource={tableInfo.rows}
-            pageInfo={{
-              total: tableInfo.total,
-              page: tableInfo.page,
-              pageSize: tableInfo.pageSize,
-            }}
-            onChange={handleChangeTable}
-          />
-        </Container>
+          <Col span={24}>
+            <Table
+              columns={columns}
+              dataSource={tableInfo.rows}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              onChange={handleChangeTable}
+            />
+          </Col>
+        </Row>
       </Spin>
     </>
   );
-};
-
-export default Page;
+}
