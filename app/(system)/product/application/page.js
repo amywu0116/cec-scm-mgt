@@ -1,7 +1,7 @@
 "use client";
-import { App, Flex, Form } from "antd";
+import { App, Col, Form, Row } from "antd";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -22,15 +22,6 @@ import { useBoundStore } from "@/store";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-
-  .ant-form-item {
-    .ant-form-item-label > label {
-      height: 100%;
-      font-size: 14px;
-      font-weight: 700;
-      color: #7b8093;
-    }
-  }
 
   .ant-btn-link {
     padding: 0;
@@ -55,11 +46,6 @@ const Card = styled.div`
   flex-direction: column;
 `;
 
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
 const TableWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -73,10 +59,9 @@ const TableTitle = styled.div`
   line-height: 36px;
 `;
 
-const Page = () => {
+export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
-  const router = useRouter();
 
   const options = useBoundStore((state) => state.options);
   const applyStatusOptions = options?.apply_status ?? [];
@@ -90,6 +75,7 @@ const Page = () => {
     total: 0,
     page: 1,
     pageSize: 10,
+    tableQuery: {},
   });
 
   const columns = [
@@ -117,6 +103,16 @@ const Page = () => {
       title: "條碼",
       dataIndex: "itemEan",
       align: "center",
+      render: (text, record) => {
+        if (!text) return "-";
+        return (
+          <Link
+            href={`${PATH_PRODUCT_PRODUCT_APPLICATION}/edit/${record.applyId}`}
+          >
+            {text}
+          </Link>
+        );
+      },
     },
     {
       title: "圖片",
@@ -145,10 +141,10 @@ const Page = () => {
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
     const data = {
       applyDateStart: values.applyDate
-        ? values.applyDate[0].format("YYYY/MM/DD")
+        ? values.applyDate[0].format("YYYY-MM-DD")
         : undefined,
       applyDateEnd: values.applyDate
-        ? values.applyDate[1].format("YYYY/MM/DD")
+        ? values.applyDate[1].format("YYYY-MM-DD")
         : undefined,
       applyStatus: values.applyStatus,
       itemEan: values.itemEan ? values.itemEan : undefined,
@@ -171,7 +167,7 @@ const Page = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -187,7 +183,6 @@ const Page = () => {
     fetchList(values);
   };
 
-  // 切換分頁、分頁大小
   const handleChangeTable = (page, pageSize) => {
     fetchList(tableInfo.tableQuery, { page, pageSize });
   };
@@ -204,7 +199,7 @@ const Page = () => {
         refreshTable();
       })
       .catch((err) => {
-        message.error(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -227,7 +222,7 @@ const Page = () => {
         }
       })
       .catch((err) => {
-        message.error(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -267,46 +262,57 @@ const Page = () => {
           onFinish={handleFinish}
         >
           <Card>
-            <Flex>
-              <Form.Item name="applyDate" label="日期">
-                <RangePicker
-                  style={{ width: 270 }}
-                  placeholder={["日期起", "日期迄"]}
-                />
-              </Form.Item>
-            </Flex>
+            <Row>
+              <Col span={12}>
+                <Form.Item name="applyDate" label="日期">
+                  <RangePicker placeholder={["日期起", "日期迄"]} />
+                </Form.Item>
+              </Col>
+            </Row>
 
-            <Flex gap={16}>
-              <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
-                <Input placeholder="請輸入條碼" />
-              </Form.Item>
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item name="itemEan" label="條碼">
+                  <Input placeholder="請輸入條碼" />
+                </Form.Item>
+              </Col>
 
-              <Form.Item style={{ flex: 1 }} name="itemName" label="品名">
-                <Input placeholder="請輸入品名" />
-              </Form.Item>
+              <Col span={6}>
+                <Form.Item name="itemName" label="品名">
+                  <Input placeholder="請輸入品名" />
+                </Form.Item>
+              </Col>
 
-              <Form.Item style={{ flex: 1 }} name="applyStatus" label="狀態">
-                <Select
-                  placeholder="請選擇狀態"
-                  showSearch
-                  allowClear
-                  options={applyStatusOptions.map((opt) => ({
-                    ...opt,
-                    label: opt.name,
-                  }))}
-                />
-              </Form.Item>
+              <Col span={6}>
+                <Form.Item name="applyStatus" label="狀態">
+                  <Select
+                    placeholder="請選擇狀態"
+                    showSearch
+                    allowClear
+                    options={applyStatusOptions.map((opt) => ({
+                      ...opt,
+                      label: opt.name,
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
 
-              <BtnGroup style={{ marginLeft: "auto" }}>
-                <Button type="secondary" htmlType="submit">
-                  查詢
-                </Button>
+              <Col span={6}>
+                <BtnGroup>
+                  <Button
+                    style={{ marginLeft: "auto" }}
+                    type="secondary"
+                    htmlType="submit"
+                  >
+                    查詢
+                  </Button>
 
-                <Button type="link" htmlType="reset">
-                  清除查詢條件
-                </Button>
-              </BtnGroup>
-            </Flex>
+                  <Button type="link" htmlType="reset">
+                    清除查詢條件
+                  </Button>
+                </BtnGroup>
+              </Col>
+            </Row>
           </Card>
         </Form>
 
@@ -333,10 +339,6 @@ const Page = () => {
               onChange: (selectedRowKeys, selectedRows) => {
                 setSelectedRows(selectedRows);
               },
-              getCheckboxProps: (record) => ({
-                disabled: record.name === "Disabled User",
-                name: record.name,
-              }),
             }}
             pageInfo={{
               total: tableInfo.total,
@@ -346,17 +348,6 @@ const Page = () => {
             columns={columns}
             dataSource={tableInfo.rows}
             onChange={handleChangeTable}
-            onRow={(record, index) => {
-              return {
-                onClick: (e) => {
-                  if (e.target.className.includes("ant-table-cell")) {
-                    router.push(
-                      `${PATH_PRODUCT_PRODUCT_APPLICATION}/edit/${record.applyId}`
-                    );
-                  }
-                },
-              };
-            }}
           />
         </TableWrapper>
       </Container>
@@ -367,6 +358,4 @@ const Page = () => {
       />
     </>
   );
-};
-
-export default Page;
+}
