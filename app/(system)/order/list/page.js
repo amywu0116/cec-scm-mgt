@@ -184,7 +184,7 @@ const Page = () => {
       dataIndex: "",
       align: "center",
       render: (text, record, index) => {
-        return `${record.shipDateStart} - ${record.shipDateEnd}`;
+        return `${record.shipDateStart} ~ ${record.shipDateEnd}`;
       },
     },
     {
@@ -217,15 +217,6 @@ const Page = () => {
       title: "狀態",
       dataIndex: "status",
       align: "center",
-    },
-    {
-      title: "備註",
-      dataIndex: "remark",
-      align: "center",
-      render: (text, record, index) => {
-        if (!text) return "-";
-        return text;
-      },
     },
   ];
 
