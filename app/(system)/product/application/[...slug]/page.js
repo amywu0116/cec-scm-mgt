@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
+import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
@@ -21,6 +22,7 @@ const Title = styled.div`
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  margin-bottom: 16px;
 `;
 
 const BtnGroup = styled.div`
@@ -32,17 +34,16 @@ export default function Page() {
   const router = useRouter();
   const [form] = Form.useForm();
   const { message } = App.useApp();
-  const dateFormat = "YYYY/MM/DD";
   const params = useParams();
 
-  const isAdd = params.mode === "add";
-  const isEdit = params.mode === "edit";
-  const applyId = isEdit && params.param;
+  const isAdd = params.slug[0] === "add";
+  const isEdit = params.slug[0] === "edit";
+  const applyId = isEdit && params.slug[1];
 
   const isFood =
-    (isAdd && params.param === "food") ||
+    (isAdd && params.slug[1] === "food") ||
     (isEdit && form.getFieldValue("isFood"));
-  const isNonFood = isAdd && params.param === "non-food";
+  const isNonFood = isAdd && params.slug[1] === "non-food";
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -50,7 +51,7 @@ export default function Page() {
   const [loading, setLoading] = useState({ page: true });
 
   const [categoryList, setCategoryList] = useState([]);
-  const [shippingList, setShippingList] = useState([]);
+  const [shippingList, setShippingList] = useState();
 
   const validateCartType = () => {
     if (shippingList.length === 0) {
@@ -100,6 +101,7 @@ export default function Page() {
   };
 
   const fetchInfo = () => {
+    setLoading((state) => ({ ...state, page: true }));
     api
       .get("v1/scm/product/apply/new", {
         params: {
@@ -113,27 +115,31 @@ export default function Page() {
         form.setFieldsValue({
           ...res.data,
           scmCategory: scmCategoryCode,
-          // stockStartdate: new Date(stockStartdate),
+          stockStartdate: dayjs(stockStartdate),
         });
       })
       .catch((err) => {
         message.error(err.message);
       })
-      .finally(() => {});
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
 
   const handleFinish = (values) => {
-    console.log("finish", values);
+    const scmCategoryName = categoryList.find(
+      (c) => c.categoryCode === values.scmCategoryCode
+    )?.categoryName;
+
     const data = {
       applyId: isEdit ? applyId : undefined,
-      isFood: isAdd ? isFood : undefined,
+      scmCategoryCode: values.scmCategoryCode,
+      scmCategoryName: scmCategoryName,
+      isFood: isAdd && isFood ? true : isAdd && isNonFood ? false : undefined,
       cartType: values.cartType,
-      scmCategoryCode: values.scmCategory?.categoryCode,
-      scmCategoryName: values.scmCategory?.categoryName,
       itemName: values.itemName,
       itemNameEn: values.itemNameEn,
       vendorProdCode: values.vendorProdCode,
-      itemCountry: values.itemCountry,
       itemEan: values.itemEan,
       itemSpec: values.itemSpec,
       isTax: values.isTax,
@@ -141,8 +147,15 @@ export default function Page() {
       specialPrice: values.specialPrice
         ? Number(values.specialPrice)
         : undefined,
+      itemCountry: values.itemCountry,
+      brand: values.brand,
+      vColor: values.vColor,
+      vSize: values.vSize,
       vCapacity: values.vCapacity,
       vUnit: values.vUnit,
+      vStyle: values.vStyle,
+      certMark: values.certMark,
+      energyEfficiency: values.energyEfficiency,
       productHeight: values.productHeight
         ? Number(values.productHeight)
         : undefined,
@@ -158,11 +171,6 @@ export default function Page() {
         ? Number(values.expDateValue)
         : undefined,
       expDateUnit: values.expDateUnit,
-      vColor: values.vColor,
-      vSize: values.vSize,
-      vStyle: values.vStyle,
-      certMark: values.certMark,
-      energyEfficiency: values.energyEfficiency,
       itemStoreway: values.itemStoreway,
       itemShortdescription: values.itemShortdescription,
       itemDetail: values.itemDetail,
@@ -178,24 +186,19 @@ export default function Page() {
       manufacturerAddress: values.manufacturerAddress,
       perpetual: values.perpetual,
       stockStartdate: values.stockStartdate
-        ? dayjs(values.stockStartdate.$d).format(dateFormat)
+        ? values.stockStartdate.format("YYYY-MM-DD")
         : undefined,
     };
 
-    console.log("data", data);
     setLoading((state) => ({ ...state, page: true }));
     api
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
-        if (res.code !== "200") {
-          message.error(res.data);
-        } else {
-          message.success("新增成功");
-          router.push(PATH_PRODUCT_PRODUCT_APPLICATION);
-        }
+        message.success(res.message);
+        router.push(PATH_PRODUCT_PRODUCT_APPLICATION);
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
@@ -213,17 +216,17 @@ export default function Page() {
     }
   }, []);
 
-  // 進頁面後要先對分車類型做檢核，檢查是否有設定
   useEffect(() => {
-    if (options && Object.keys(options).length > 0) {
-      form.validateFields(["cartType"]);
-    }
-  }, [options]);
+    if (!shippingList) return;
+    form.validateFields(["cartType"]);
+  }, [shippingList]);
 
   return (
     <Spin spinning={loading.page}>
       <LayoutHeader>
-        <LayoutHeaderTitle>新增提品資料</LayoutHeaderTitle>
+        <LayoutHeaderTitle>
+          {isAdd ? "新增提品資料" : isEdit ? "編輯提品資料" : ""}
+        </LayoutHeaderTitle>
 
         <Breadcrumb
           separator=">"
@@ -233,7 +236,13 @@ export default function Page() {
                 <Link href={PATH_PRODUCT_PRODUCT_APPLICATION}>提品申請</Link>
               ),
             },
-            { title: isFood ? "新增提品資料_食品" : "新增提品資料_非食品" },
+            {
+              title: isEdit
+                ? "編輯提品資料"
+                : isFood
+                  ? "新增提品資料_食品"
+                  : "新增提品資料_非食品",
+            },
           ]}
         />
 
@@ -272,11 +281,13 @@ export default function Page() {
                     placeholder="請選擇分車類型"
                     showSearch
                     allowClear
-                    options={shippingList.map((opt) => ({
-                      ...opt,
-                      label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
-                      value: opt.cartType,
-                    }))}
+                    options={
+                      shippingList?.map((opt) => ({
+                        ...opt,
+                        label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
+                        value: opt.cartType,
+                      })) ?? []
+                    }
                   />
                 </Form.Item>
               </Col>
@@ -284,7 +295,7 @@ export default function Page() {
 
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="scmCategory" label="分類">
+                <Form.Item name="scmCategoryCode" label="分類">
                   <Select
                     placeholder="選擇分類"
                     showSearch
@@ -296,9 +307,6 @@ export default function Page() {
                         value: c.categoryCode,
                       };
                     })}
-                    onSelect={(value, option) => {
-                      form.setFieldValue("scmCategory", option);
-                    }}
                   />
                 </Form.Item>
               </Col>
@@ -528,22 +536,28 @@ export default function Page() {
 
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="perpetual" label="庫存">
-                  <Radio.Group
-                    options={[
-                      { label: "不庫控", value: false },
-                      { label: "活動庫存", value: true },
-                    ]}
-                  />
-                </Form.Item>
+                <Row>
+                  <Col span={14}>
+                    <Form.Item name="perpetual" label="庫存">
+                      <Radio.Group
+                        options={[
+                          { label: "不庫控", value: false },
+                          { label: "活動庫存", value: true },
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={10}>
+                    <Form.Item name="stockStartdate">
+                      <DatePicker placeholder="起始日期" />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </Col>
 
               {/* <Form.Item name="5">
                 <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
-              </Form.Item> */}
-
-              {/* <Form.Item name="stockStartdate">
-                <DatePicker placeholder="起始日期" format="YYYY/MM/DD" />
               </Form.Item> */}
             </Row>
 
