@@ -81,7 +81,7 @@ export default function Page(props) {
 
   const handleFinish = (values) => {
     const data = {
-      code: values.code,
+      code: isAdd ? values.code : undefined,
       logisticsName: values.logisticsName,
       address: values.address,
       contact: values.contact,
@@ -92,7 +92,7 @@ export default function Page(props) {
 
     setLoading((state) => ({ ...state, page: true }));
     api
-      .post("v1/scm/logistics", data)
+      .post(`v1/scm/logistics/${isEdit ? logisticsId : ""}`, data)
       .then((res) => {
         message.success(res.message);
         router.push(PATH_LOGISTICS);
@@ -154,7 +154,9 @@ export default function Page(props) {
                 刪除貨運公司
               </Button>
 
-              <Button type="primary">保存</Button>
+              <Button type="primary" onClick={() => form.submit()}>
+                保存
+              </Button>
             </>
           )}
         </BtnGroup>
