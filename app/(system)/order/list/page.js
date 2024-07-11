@@ -1,10 +1,22 @@
 "use client";
-import { Badge, Breadcrumb, Checkbox, Divider, Flex, Form, Radio } from "antd";
+import {
+  App,
+  Badge,
+  Breadcrumb,
+  Checkbox,
+  Col,
+  Divider,
+  Flex,
+  Form,
+  Radio,
+  Row,
+} from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
+import ResetBtn from "@/components/Button/ResetBtn";
 import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
@@ -20,30 +32,9 @@ const Container = styled.div`
   flex-direction: column;
   gap: 16px 0;
 
-  .ant-form-item {
-    .ant-form-item-label > label {
-      height: 100%;
-      font-size: 14px;
-      font-weight: 700;
-      color: #7b8093;
-    }
-  }
-
   .ant-checkbox-group {
     gap: 20px 18px;
     padding: 0 16px;
-  }
-
-  .ant-btn-link {
-    padding: 0;
-    min-width: 0;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: #212b36;
-      text-decoration: underline;
-    }
   }
 
   .ant-table-wrapper .ant-table-tbody {
@@ -75,23 +66,6 @@ const Card = styled.div`
   padding: 16px;
   display: flex;
   flex-direction: column;
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-
-  ${(props) =>
-    props.justifyContent &&
-    css`
-      justify-content: ${props.justifyContent};
-    `}
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
 `;
 
 const TabLabelWrapper = styled.div`
@@ -131,7 +105,8 @@ const statusMapping = {
   1: ["10", "12", "40", "404", "406"], // 已結案
 };
 
-const Page = () => {
+export default function Page() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
 
   const logisticsOptions = useBoundStore((state) => state.logistics) ?? [];
@@ -271,7 +246,7 @@ const Page = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -385,143 +360,163 @@ const Page = () => {
 
             <Divider style={{ margin: 0 }} />
 
-            <BtnGroup style={{ margin: "16px 0 0 auto" }}>
-              <Button>出貨狀態匯入</Button>
+            <Row
+              style={{ marginTop: 16 }}
+              gutter={16}
+              justify="end"
+              align="middle"
+            >
+              <Col>
+                <Button>出貨狀態匯入</Button>
+              </Col>
 
-              <Button type="secondary" onClick={handleSearch}>
-                查詢
-              </Button>
+              <Col>
+                <Button type="secondary" onClick={handleSearch}>
+                  查詢
+                </Button>
+              </Col>
 
-              <Button type="link" htmlType="reset">
-                清除查詢條件
-              </Button>
-            </BtnGroup>
+              <Col>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Col>
+            </Row>
           </Card>
         </Form>
 
-        <TableWrapper>
-          <TableTitle>訂單列表</TableTitle>
+        <Row gutter={[0, 16]}>
+          <Col span={24}>
+            <TableTitle>訂單列表</TableTitle>
+          </Col>
 
-          <BtnGroup>
-            <Button type="secondary" onClick={() => {}}>
-              導出客戶清單
-            </Button>
+          <Col span={24}>
+            <Row gutter={16}>
+              <Col>
+                <Button type="secondary" onClick={() => {}}>
+                  導出客戶清單
+                </Button>
+              </Col>
 
-            <Badge count={shippingList.length}>
-              <Button disabled={shippingList.length === 0} onClick={() => {}}>
-                批次維護物流狀態為已送達
-              </Button>
-            </Badge>
-          </BtnGroup>
+              <Col>
+                <Badge count={shippingList.length}>
+                  <Button
+                    disabled={shippingList.length === 0}
+                    onClick={() => {}}
+                  >
+                    批次維護物流狀態為已送達
+                  </Button>
+                </Badge>
+              </Col>
+            </Row>
+          </Col>
 
-          <Tabs
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <>
-                    <Table
-                      rowKey="ecorderId"
-                      loading={loading.table}
-                      rowClassName={(record, index) => {
-                        if (record.processedStatus === "已結案") {
-                          return "closed";
-                        }
-                      }}
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {
-                          setSelectedRows(selectedRows);
-                        },
-                      }}
-                      pageInfo={{
-                        total: tableInfo.total,
-                        page: tableInfo.page,
-                        pageSize: tableInfo.pageSize,
-                      }}
-                      columns={columns}
-                      dataSource={tableInfo.rows}
-                      onChange={handleChangeTable}
-                    />
-                  </>
-                ),
-              },
-              {
-                label: (
-                  <TabLabelWrapper>
-                    異常 <Tag>5</Tag>
-                  </TabLabelWrapper>
-                ),
-                key: "2",
-                children: (
-                  <>
-                    <Table
-                      rowKey="ecorderId"
-                      loading={loading.table}
-                      rowClassName={(record, index) => {
-                        if (record.processedStatus === "已結案") {
-                          return "closed";
-                        }
-                      }}
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {
-                          setSelectedRows(selectedRows);
-                        },
-                      }}
-                      pageInfo={{
-                        total: tableInfo.total,
-                        page: tableInfo.page,
-                        pageSize: tableInfo.pageSize,
-                      }}
-                      columns={columns}
-                      dataSource={tableInfo.rows}
-                      onChange={handleChangeTable}
-                    />
-                  </>
-                ),
-              },
-              {
-                label: (
-                  <TabLabelWrapper>
-                    待處理 <Tag>12</Tag>
-                  </TabLabelWrapper>
-                ),
-                key: "3",
-                children: (
-                  <>
-                    <Table
-                      rowKey="ecorderId"
-                      loading={loading.table}
-                      rowClassName={(record, index) => {
-                        if (record.processedStatus === "已結案") {
-                          return "closed";
-                        }
-                      }}
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {
-                          setSelectedRows(selectedRows);
-                        },
-                      }}
-                      pageInfo={{
-                        total: tableInfo.total,
-                        page: tableInfo.page,
-                        pageSize: tableInfo.pageSize,
-                      }}
-                      columns={columns}
-                      dataSource={tableInfo.rows}
-                      onChange={handleChangeTable}
-                    />
-                  </>
-                ),
-              },
-            ]}
-            activeKey={tabActiveKey}
-            onChange={handleChangeTab}
-          />
-        </TableWrapper>
+          <Col span={24}>
+            <Tabs
+              items={[
+                {
+                  label: "全部",
+                  key: "1",
+                  children: (
+                    <>
+                      <Table
+                        rowKey="ecorderId"
+                        loading={loading.table}
+                        rowClassName={(record, index) => {
+                          if (record.processedStatus === "已結案") {
+                            return "closed";
+                          }
+                        }}
+                        rowSelection={{
+                          onChange: (selectedRowKeys, selectedRows) => {
+                            setSelectedRows(selectedRows);
+                          },
+                        }}
+                        pageInfo={{
+                          total: tableInfo.total,
+                          page: tableInfo.page,
+                          pageSize: tableInfo.pageSize,
+                        }}
+                        columns={columns}
+                        dataSource={tableInfo.rows}
+                        onChange={handleChangeTable}
+                      />
+                    </>
+                  ),
+                },
+                {
+                  label: (
+                    <TabLabelWrapper>
+                      異常 <Tag>5</Tag>
+                    </TabLabelWrapper>
+                  ),
+                  key: "2",
+                  children: (
+                    <>
+                      <Table
+                        rowKey="ecorderId"
+                        loading={loading.table}
+                        rowClassName={(record, index) => {
+                          if (record.processedStatus === "已結案") {
+                            return "closed";
+                          }
+                        }}
+                        rowSelection={{
+                          onChange: (selectedRowKeys, selectedRows) => {
+                            setSelectedRows(selectedRows);
+                          },
+                        }}
+                        pageInfo={{
+                          total: tableInfo.total,
+                          page: tableInfo.page,
+                          pageSize: tableInfo.pageSize,
+                        }}
+                        columns={columns}
+                        dataSource={tableInfo.rows}
+                        onChange={handleChangeTable}
+                      />
+                    </>
+                  ),
+                },
+                {
+                  label: (
+                    <TabLabelWrapper>
+                      待處理 <Tag>12</Tag>
+                    </TabLabelWrapper>
+                  ),
+                  key: "3",
+                  children: (
+                    <>
+                      <Table
+                        rowKey="ecorderId"
+                        loading={loading.table}
+                        rowClassName={(record, index) => {
+                          if (record.processedStatus === "已結案") {
+                            return "closed";
+                          }
+                        }}
+                        rowSelection={{
+                          onChange: (selectedRowKeys, selectedRows) => {
+                            setSelectedRows(selectedRows);
+                          },
+                        }}
+                        pageInfo={{
+                          total: tableInfo.total,
+                          page: tableInfo.page,
+                          pageSize: tableInfo.pageSize,
+                        }}
+                        columns={columns}
+                        dataSource={tableInfo.rows}
+                        onChange={handleChangeTable}
+                      />
+                    </>
+                  ),
+                },
+              ]}
+              activeKey={tabActiveKey}
+              onChange={handleChangeTab}
+            />
+          </Col>
+        </Row>
       </Container>
     </>
   );
-};
-
-export default Page;
+}

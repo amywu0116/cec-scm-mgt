@@ -185,8 +185,8 @@ export default function ShippingFeeSettings() {
               }
 
               return (
-                <Col span={24}>
-                  <Row key={idx} gutter={[32]}>
+                <Col key={idx} span={24}>
+                  <Row gutter={[32]}>
                     <Col span={8}>
                       <Item>
                         <ItemLabel>{a.name}</ItemLabel>

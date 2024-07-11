@@ -36,7 +36,7 @@ const ItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ModalReturnResult = (props) => {
+export default function ModalReturnResult(props) {
   const { open, onOk, onCancel } = props;
 
   const [status, setStatus] = useState(1);
@@ -100,6 +100,4 @@ const ModalReturnResult = (props) => {
       </Content>
     </Modal>
   );
-};
-
-export default ModalReturnResult;
+}

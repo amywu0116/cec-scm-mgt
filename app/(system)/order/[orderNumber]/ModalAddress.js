@@ -35,7 +35,7 @@ const ItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ModalAddress = (props) => {
+export default function ModalAddress(props) {
   const { open, onOk, onCancel } = props;
 
   return (
@@ -54,41 +54,17 @@ const ModalAddress = (props) => {
         <Row style={{ height: 42 }}>
           <Item>
             <ItemLabel>縣市</ItemLabel>
-            <Select
-              style={{ width: 150 }}
-              options={[
-                {
-                  value: "lucy",
-                  label: "Lucy",
-                },
-              ]}
-            />
+            <Select style={{ width: 150 }} options={[]} />
           </Item>
 
           <Item>
             <ItemLabel>郵遞區號</ItemLabel>
-            <Select
-              style={{ width: 150 }}
-              options={[
-                {
-                  value: "lucy",
-                  label: "Lucy",
-                },
-              ]}
-            />
+            <Select style={{ width: 150 }} options={[]} />
           </Item>
 
           <Item>
             <ItemLabel>區</ItemLabel>
-            <Select
-              style={{ width: 150 }}
-              options={[
-                {
-                  value: "lucy",
-                  label: "Lucy",
-                },
-              ]}
-            />
+            <Select style={{ width: 150 }} options={[]} />
           </Item>
         </Row>
 
@@ -127,6 +103,4 @@ const ModalAddress = (props) => {
       </Content>
     </Modal>
   );
-};
-
-export default ModalAddress;
+}
