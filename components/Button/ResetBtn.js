@@ -16,5 +16,5 @@ const StyledButton = styled(AntdButton)`
 `;
 
 export default function ResetBtn(props) {
-  return <StyledButton {...props} />;
+  return <StyledButton type="link" {...props} />;
 }
