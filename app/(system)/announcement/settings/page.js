@@ -32,7 +32,7 @@ const DropdownItem = styled.div`
   }
 `;
 
-const Page = () => {
+export default function Page() {
   const [openModalHistory, setOpenModalHistory] = useState(false);
   const [openDropdown, setOpenDropdown] = useState({});
 
@@ -168,6 +168,4 @@ const Page = () => {
       />
     </>
   );
-};
-
-export default Page;
+}

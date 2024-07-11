@@ -44,7 +44,7 @@ const ItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ModalMessageContent = (props) => {
+export default function ModalMessageContent(props) {
   const { open, onCancel } = props;
 
   return (
@@ -111,6 +111,4 @@ const ModalMessageContent = (props) => {
       </Content>
     </Modal>
   );
-};
-
-export default ModalMessageContent;
+}

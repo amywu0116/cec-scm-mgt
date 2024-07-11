@@ -7,9 +7,7 @@ const Container = styled.div`
   margin-bottom: 40px;
 `;
 
-const Title = (props) => {
+export default function Title(props) {
   const { children } = props;
   return <Container>{children}</Container>;
-};
-
-export default Title;
+}

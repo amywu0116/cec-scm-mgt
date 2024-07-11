@@ -30,7 +30,7 @@ const ForgotPasswordLink = styled(Link)`
   text-align: right;
 `;
 
-const Page = () => {
+export default function Page() {
   const { message } = App.useApp();
   const router = useRouter();
   const [form] = Form.useForm();
@@ -181,6 +181,4 @@ const Page = () => {
       </Form>
     </Container>
   );
-};
-
-export default Page;
+}

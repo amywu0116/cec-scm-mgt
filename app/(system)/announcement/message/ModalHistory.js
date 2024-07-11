@@ -32,7 +32,7 @@ const ItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ModalHistory = (props) => {
+export default function ModalHistory(props) {
   const { open, onCancel } = props;
 
   const columns = [
@@ -120,6 +120,4 @@ const ModalHistory = (props) => {
       </Content>
     </Modal>
   );
-};
-
-export default ModalHistory;
+}

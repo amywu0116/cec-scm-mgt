@@ -10,8 +10,6 @@ const StyledInputPassword = styled(AntdInput.Password)`
   }
 `;
 
-const InputPassword = (props) => {
+export default function InputPassword(props) {
   return <StyledInputPassword {...props} />;
-};
-
-export default InputPassword;
+}

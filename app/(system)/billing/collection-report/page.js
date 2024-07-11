@@ -65,7 +65,7 @@ const TableWrapper = styled.div`
   gap: 16px 0;
 `;
 
-const Page = () => {
+export default function Page() {
   const columns = [
     {
       title: "帳款年月",
@@ -260,6 +260,4 @@ const Page = () => {
       </Container>
     </>
   );
-};
-
-export default Page;
+}

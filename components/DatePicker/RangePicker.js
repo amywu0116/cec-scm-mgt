@@ -10,8 +10,6 @@ const StyledRangePicker = styled(AntdDatePicker.RangePicker)`
   }
 `;
 
-const RangePicker = (props) => {
+export default function RangePicker(props) {
   return <StyledRangePicker {...props} />;
-};
-
-export default RangePicker;
+}

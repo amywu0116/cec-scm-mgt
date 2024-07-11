@@ -45,7 +45,7 @@ const PaginationWrapper = styled.div`
   }
 `;
 
-const Table = (props) => {
+export default function Table(props) {
   const {
     pagination = true,
     size = "middle",
@@ -79,6 +79,4 @@ const Table = (props) => {
       )}
     </TableWrapper>
   );
-};
-
-export default Table;
+}
