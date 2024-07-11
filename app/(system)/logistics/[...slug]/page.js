@@ -21,12 +21,6 @@ const Title = styled.div`
   line-height: 35px;
 `;
 
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-  margin-left: auto;
-`;
-
 export default function Page(props) {
   const { params } = props;
   const { message } = App.useApp();
@@ -139,27 +133,35 @@ export default function Page(props) {
           ]}
         />
 
-        <BtnGroup>
-          <Button onClick={() => router.push(PATH_LOGISTICS)}>取消</Button>
+        <Row style={{ marginLeft: "auto" }} gutter={16}>
+          <Col>
+            <Button onClick={() => router.push(PATH_LOGISTICS)}>取消</Button>
+          </Col>
 
           {isAdd && (
-            <Button type="primary" onClick={() => form.submit()}>
-              確定新增
-            </Button>
+            <Col>
+              <Button type="primary" onClick={() => form.submit()}>
+                確定新增
+              </Button>
+            </Col>
           )}
 
           {isEdit && (
             <>
-              <Button onClick={() => setOpenModalDelete(true)}>
-                刪除貨運公司
-              </Button>
+              <Col>
+                <Button onClick={() => setOpenModalDelete(true)}>
+                  刪除貨運公司
+                </Button>
+              </Col>
 
-              <Button type="primary" onClick={() => form.submit()}>
-                保存
-              </Button>
+              <Col>
+                <Button type="primary" onClick={() => form.submit()}>
+                  保存
+                </Button>
+              </Col>
             </>
           )}
-        </BtnGroup>
+        </Row>
       </LayoutHeader>
 
       <Form
