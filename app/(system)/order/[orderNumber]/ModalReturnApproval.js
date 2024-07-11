@@ -66,7 +66,7 @@ const UploadFileName = styled.div`
   color: rgba(123, 128, 147, 1);
 `;
 
-const ModalReturnApproval = (props) => {
+export default function ModalReturnApproval(props) {
   const { open, onOk, onCancel } = props;
 
   const [status, setStatus] = useState(1);
@@ -150,6 +150,4 @@ const ModalReturnApproval = (props) => {
       </Content>
     </Modal>
   );
-};
-
-export default ModalReturnApproval;
+}
