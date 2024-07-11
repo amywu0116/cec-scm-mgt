@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
+import ResetBtn from "@/components/Button/ResetBtn";
 import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
@@ -18,39 +19,6 @@ import ModalAddProduct from "./ModalAddProduct";
 import api from "@/api";
 import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  .ant-btn-link {
-    padding: 0;
-    min-width: 0;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: #212b36;
-      text-decoration: underline;
-    }
-  }
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
 
 const TableTitle = styled.div`
   font-size: 16px;
@@ -214,12 +182,8 @@ export default function Page() {
         data: { applyIds: selectedRows.map((row) => row.applyId) },
       })
       .then((res) => {
-        if (res.message !== "200") {
-          message.error(res.data);
-        } else {
-          message.success(res.data);
-          refreshTable();
-        }
+        message.success(res.message);
+        refreshTable();
       })
       .catch((err) => {
         message.error(err.message);
@@ -243,25 +207,31 @@ export default function Page() {
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
-        <BtnGroup style={{ marginLeft: "auto" }}>
-          <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
+        <Row style={{ marginLeft: "auto" }} gutter={16} justify="end">
+          <Col>
+            <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
+          </Col>
 
-          <Button type="secondary">提品匯入</Button>
+          <Col>
+            <Button type="secondary">提品匯入</Button>
+          </Col>
 
-          <Button type="primary" onClick={() => setShowModalAddType(true)}>
-            新增提品
-          </Button>
-        </BtnGroup>
+          <Col>
+            <Button type="primary" onClick={() => setShowModalAddType(true)}>
+              新增提品
+            </Button>
+          </Col>
+        </Row>
       </LayoutHeader>
 
-      <Container>
-        <Form
-          form={form}
-          autoComplete="off"
-          colon={false}
-          onFinish={handleFinish}
-        >
-          <Card>
+      <Row>
+        <Col span={24}>
+          <Form
+            form={form}
+            autoComplete="off"
+            colon={false}
+            onFinish={handleFinish}
+          >
             <Row>
               <Col span={12}>
                 <Form.Item name="applyDate" label="日期">
@@ -298,59 +268,71 @@ export default function Page() {
               </Col>
 
               <Col span={6}>
-                <BtnGroup>
-                  <Button
-                    style={{ marginLeft: "auto" }}
-                    type="secondary"
-                    htmlType="submit"
-                  >
-                    查詢
-                  </Button>
+                <Row gutter={16} justify="end" align="middle">
+                  <Col>
+                    <Button type="secondary" htmlType="submit">
+                      查詢
+                    </Button>
+                  </Col>
 
-                  <Button type="link" htmlType="reset">
-                    清除查詢條件
-                  </Button>
-                </BtnGroup>
+                  <Col>
+                    <ResetBtn type="link" htmlType="reset">
+                      清除查詢條件
+                    </ResetBtn>
+                  </Col>
+                </Row>
               </Col>
             </Row>
-          </Card>
-        </Form>
+          </Form>
+        </Col>
 
-        <TableWrapper>
-          <TableTitle>申請列表</TableTitle>
+        <Col span={24}>
+          <Row gutter={[0, 16]}>
+            <Col span={24}>
+              <TableTitle>申請列表</TableTitle>
+            </Col>
 
-          {selectedRows.length > 0 && (
-            <BtnGroup>
-              <Button type="default" onClick={handleApply}>
-                送審
-              </Button>
+            {selectedRows.length > 0 && (
+              <Col span={24}>
+                <Row gutter={16}>
+                  <Col>
+                    <Button type="default" onClick={handleApply}>
+                      送審
+                    </Button>
+                  </Col>
 
-              <Button type="default" onClick={handleDeleteApply}>
-                刪除
-              </Button>
-            </BtnGroup>
-          )}
+                  <Col>
+                    <Button type="default" onClick={handleDeleteApply}>
+                      刪除
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            )}
 
-          <Table
-            rowKey="applyId"
-            loading={loading.table}
-            rowSelection={{
-              selectedRowKeys: selectedRows.map((row) => row.applyId),
-              onChange: (selectedRowKeys, selectedRows) => {
-                setSelectedRows(selectedRows);
-              },
-            }}
-            pageInfo={{
-              total: tableInfo.total,
-              page: tableInfo.page,
-              pageSize: tableInfo.pageSize,
-            }}
-            columns={columns}
-            dataSource={tableInfo.rows}
-            onChange={handleChangeTable}
-          />
-        </TableWrapper>
-      </Container>
+            <Col span={24}>
+              <Table
+                rowKey="applyId"
+                loading={loading.table}
+                rowSelection={{
+                  selectedRowKeys: selectedRows.map((row) => row.applyId),
+                  onChange: (selectedRowKeys, selectedRows) => {
+                    setSelectedRows(selectedRows);
+                  },
+                }}
+                pageInfo={{
+                  total: tableInfo.total,
+                  page: tableInfo.page,
+                  pageSize: tableInfo.pageSize,
+                }}
+                columns={columns}
+                dataSource={tableInfo.rows}
+                onChange={handleChangeTable}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
 
       <ModalAddProduct
         open={showModalAddType}

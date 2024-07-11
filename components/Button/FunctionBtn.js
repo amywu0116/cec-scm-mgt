@@ -38,7 +38,7 @@ const Container = styled.button`
   }
 `;
 
-const FunctionBtn = (props) => {
+export default function FunctionBtn(props) {
   const { children, color, disabled, onClick } = props;
 
   return (
@@ -46,6 +46,4 @@ const FunctionBtn = (props) => {
       {children}
     </Container>
   );
-};
-
-export default FunctionBtn;
+}

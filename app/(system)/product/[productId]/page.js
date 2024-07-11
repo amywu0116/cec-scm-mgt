@@ -1,50 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Breadcrumb, Radio, Spin, Form, Flex } from "antd";
-import styled from "styled-components";
-import { useRouter, useParams } from "next/navigation";
+import { App, Breadcrumb, Col, Flex, Form, Radio, Row, Spin } from "antd";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
+import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import TextArea from "@/components/TextArea";
 import Select from "@/components/Select";
-import DatePicker from "@/components/DatePicker";
+import TextArea from "@/components/TextArea";
 
-import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 import api from "@/api";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-
-  .ant-form-item {
-    .ant-form-item-label > label {
-      height: 100%;
-      font-size: 14px;
-      font-weight: 700;
-      color: #7b8093;
-    }
-  }
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  margin-bottom: 16px;
 `;
 
 const CategoryLabel = styled.div`
@@ -53,8 +29,8 @@ const CategoryLabel = styled.div`
   color: rgba(89, 89, 89, 1);
 `;
 
-const Page = () => {
-  const router = useRouter();
+export default function Page() {
+  const { message } = App.useApp();
   const params = useParams();
   const [form] = Form.useForm();
 
@@ -76,7 +52,7 @@ const Page = () => {
         });
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
@@ -91,7 +67,7 @@ const Page = () => {
         setShippingList(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
@@ -118,9 +94,9 @@ const Page = () => {
           ]}
         />
 
-        <BtnGroup style={{ marginLeft: "auto" }}>
+        <Row style={{ marginLeft: "auto" }} gutter={16}>
           {isEditing ? (
-            <>
+            <Col>
               <Button type="default" onClick={() => setIsEditing(false)}>
                 取消
               </Button>
@@ -128,24 +104,29 @@ const Page = () => {
               <Button type="primary" onClick={() => setIsEditing(false)}>
                 確認修改
               </Button>
-            </>
+            </Col>
           ) : (
-            <Button type="primary" onClick={() => setIsEditing(true)}>
-              編輯修改
-            </Button>
+            <Col>
+              <Row gutter={16}>
+                <Col>
+                  <Button type="primary" onClick={() => setIsEditing(true)}>
+                    編輯修改
+                  </Button>
+                </Col>
+
+                <Col>
+                  <Link href={"/product/123/image-maintenance"}>
+                    <Button type="secondary">圖片維護</Button>
+                  </Link>
+                </Col>
+              </Row>
+            </Col>
           )}
 
-          {!isEditing && (
-            <Button
-              type="secondary"
-              onClick={() => router.push("/product/123/image-maintenance")}
-            >
-              圖片維護
-            </Button>
-          )}
-
-          <Button type="secondary">PDF預覽</Button>
-        </BtnGroup>
+          <Col>
+            <Button type="secondary">PDF預覽</Button>
+          </Col>
+        </Row>
       </LayoutHeader>
 
       <Form
@@ -158,8 +139,8 @@ const Page = () => {
         disabled={!isEditing}
         onFinish={handleFinish}
       >
-        <Container>
-          <Wrapper>
+        <Row>
+          <Col span={24}>
             <Title>基本設定</Title>
 
             <Flex gap={16}>
@@ -251,9 +232,9 @@ const Page = () => {
                 <Input />
               </Form.Item>
             </Flex>
-          </Wrapper>
+          </Col>
 
-          <Wrapper>
+          <Col span={24}>
             <Title>容量和重量</Title>
 
             <Flex gap={16}>
@@ -319,9 +300,9 @@ const Page = () => {
                 <Input />
               </Form.Item>
             </Flex>
-          </Wrapper>
+          </Col>
 
-          <Wrapper>
+          <Col span={24}>
             <Title>其他資訊</Title>
 
             <Flex gap={16}>
@@ -551,11 +532,9 @@ const Page = () => {
                 />
               </Form.Item>
             </Flex>
-          </Wrapper>
-        </Container>
+          </Col>
+        </Row>
       </Form>
     </Spin>
   );
-};
-
-export default Page;
+}

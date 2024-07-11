@@ -1,13 +1,13 @@
 "use client";
-import { Form } from "antd";
+import { App, Col, Form, Row } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import styled from "styled-components";
-import Link from "next/link";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
+import ResetBtn from "@/components/Button/ResetBtn";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
@@ -16,51 +16,9 @@ import Tabs from "@/components/Tabs";
 import api from "@/api";
 import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  .ant-form-item {
-    .ant-form-item-label > label {
-      width: 100%;
-      height: 100%;
-      font-size: 14px;
-      font-weight: 700;
-      color: #7b8093;
-    }
-  }
-
-  .ant-btn-link {
-    padding: 0;
-    min-width: 0;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: #212b36;
-      text-decoration: underline;
-    }
-  }
-`;
-
-const Card = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Page = () => {
+export default function Page() {
   const router = useRouter();
+  const { message } = App.useApp();
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState({ table: false });
@@ -70,6 +28,7 @@ const Page = () => {
     total: 0,
     page: 1,
     pageSize: 10,
+    tableQuery: {},
   });
 
   const columns = [
@@ -142,7 +101,7 @@ const Page = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -163,39 +122,53 @@ const Page = () => {
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
       </LayoutHeader>
 
-      <Container>
-        <Form
-          form={form}
-          autoComplete="off"
-          colon={false}
-          onFinish={handleFinish}
-        >
-          <Card>
-            <Form.Item style={{ flex: 1 }} name="productnumber" label="商品ID">
-              <Input placeholder="請輸入商品ID" />
-            </Form.Item>
+      <Row>
+        <Col span={24}>
+          <Form
+            form={form}
+            autoComplete="off"
+            colon={false}
+            onFinish={handleFinish}
+          >
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item name="productnumber" label="商品ID">
+                  <Input placeholder="請輸入商品ID" />
+                </Form.Item>
+              </Col>
 
-            <Form.Item style={{ flex: 1 }} name="itemEan" label="條碼">
-              <Input placeholder="請輸入條碼" maxLength={13} />
-            </Form.Item>
+              <Col span={6}>
+                <Form.Item name="itemEan" label="條碼">
+                  <Input placeholder="請輸入條碼" maxLength={13} />
+                </Form.Item>
+              </Col>
 
-            <Form.Item style={{ flex: 1 }} name="itemName" label="品名">
-              <Input placeholder="請輸入商品名稱" />
-            </Form.Item>
+              <Col span={6}>
+                <Form.Item name="itemName" label="品名">
+                  <Input placeholder="請輸入商品名稱" />
+                </Form.Item>
+              </Col>
 
-            <BtnGroup style={{ marginLeft: "auto" }}>
-              <Button type="secondary" htmlType="submit">
-                查詢
-              </Button>
+              <Col span={6}>
+                <Row gutter={16} justify="end" align="middle">
+                  <Col>
+                    <Button type="secondary" htmlType="submit">
+                      查詢
+                    </Button>
+                  </Col>
 
-              <Button type="link" htmlType="reset">
-                清除查詢條件
-              </Button>
-            </BtnGroup>
-          </Card>
-        </Form>
+                  <Col>
+                    <ResetBtn type="link" htmlType="reset">
+                      清除查詢條件
+                    </ResetBtn>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Form>
+        </Col>
 
-        <TableWrapper>
+        <Col span={24}>
           <Tabs
             defaultActiveKey="1"
             items={[
@@ -218,10 +191,8 @@ const Page = () => {
               },
             ]}
           />
-        </TableWrapper>
-      </Container>
+        </Col>
+      </Row>
     </>
   );
-};
-
-export default Page;
+}
