@@ -1,5 +1,5 @@
 "use client";
-import { Spin } from "antd";
+import { App, Col, Row, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -7,27 +7,17 @@ import Table from "@/components/Table";
 
 import api from "@/api";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  padding: 16px 0;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  padding: 16px 0;
 `;
 
-const LoginRecord = () => {
+export default function LoginRecord() {
+  const { message } = App.useApp();
+
   const [loading, setLoading] = useState({ page: false });
 
   const [recordList, setRecordList] = useState([]);
@@ -95,8 +85,12 @@ const LoginRecord = () => {
           total: records.length,
         }));
       })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, page: false })));
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -115,9 +109,12 @@ const LoginRecord = () => {
 
   return (
     <Spin spinning={loading.page}>
-      <Container>
-        <Wrapper>
+      <Row>
+        <Col span={24}>
           <Title>供應商登入歷程</Title>
+        </Col>
+
+        <Col span={24}>
           <Table
             columns={columns}
             dataSource={tableInfo.rows}
@@ -128,10 +125,8 @@ const LoginRecord = () => {
             }}
             onChange={handleChangeTable}
           />
-        </Wrapper>
-      </Container>
+        </Col>
+      </Row>
     </Spin>
   );
-};
-
-export default LoginRecord;
+}

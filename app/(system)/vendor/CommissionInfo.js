@@ -1,4 +1,5 @@
 "use client";
+import { App, Col, Row } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -6,27 +7,17 @@ import Table from "@/components/Table";
 
 import api from "@/api";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  padding: 16px 0;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  padding: 16px 0;
 `;
 
-const CommissionInfo = () => {
+export default function CommissionInfo() {
+  const { message } = App.useApp();
+
   const [loading, setLoading] = useState({ table: false });
 
   const [tableInfo, setTableInfo] = useState({
@@ -75,7 +66,7 @@ const CommissionInfo = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -91,10 +82,12 @@ const CommissionInfo = () => {
   }, []);
 
   return (
-    <Container>
-      <Wrapper>
+    <Row>
+      <Col span={24}>
         <Title>商城分類佣金</Title>
+      </Col>
 
+      <Col span={24}>
         <Table
           loading={loading.table}
           columns={columns}
@@ -106,9 +99,7 @@ const CommissionInfo = () => {
           }}
           onChange={handleChangeTable}
         />
-      </Wrapper>
-    </Container>
+      </Col>
+    </Row>
   );
-};
-
-export default CommissionInfo;
+}

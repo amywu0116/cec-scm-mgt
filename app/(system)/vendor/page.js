@@ -10,7 +10,7 @@ import FeeRecord from "./FeeRecord";
 import LoginRecord from "./LoginRecord";
 import Shipping from "./Shipping";
 
-const Page = () => {
+export default function Page() {
   return (
     <>
       <LayoutHeader>
@@ -60,6 +60,4 @@ const Page = () => {
       />
     </>
   );
-};
-
-export default Page;
+}

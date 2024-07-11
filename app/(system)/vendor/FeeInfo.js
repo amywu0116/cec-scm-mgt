@@ -1,5 +1,5 @@
 "use client";
-import { Spin } from "antd";
+import { App, Col, Form, Row, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -7,49 +7,17 @@ import Input from "@/components/Input";
 
 import api from "@/api";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  padding: 16px 0;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  width: 750px;
-`;
-
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  padding: 16px 0;
 `;
 
-const Item = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  width: 64px;
-  flex-shrink: 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 32px;
-`;
-
-const FeeInfo = () => {
-  const [info, setInfo] = useState({});
+export default function FeeInfo() {
+  const { message } = App.useApp();
+  const [form] = Form.useForm();
 
   const [loading, setLoading] = useState({ page: false });
 
@@ -57,9 +25,22 @@ const FeeInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get("v1/scm/vendor/fee")
-      .then((res) => setInfo(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, page: false })));
+      .then((res) => {
+        const { maintainFee, referFee, bonusFee } = res.data;
+
+        form.setFieldsValue({
+          ...res.data,
+          maintainFee: maintainFee ? `${maintainFee}%` : "",
+          referFee: referFee ? `${referFee}%` : "",
+          bonusFee: bonusFee ? `${bonusFee}%` : "",
+        });
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
 
   useEffect(() => {
@@ -68,55 +49,39 @@ const FeeInfo = () => {
 
   return (
     <Spin spinning={loading.page}>
-      <Container>
-        <Wrapper>
-          <Title>供應商商城費用</Title>
+      <Form form={form} colon={false} disabled>
+        <Row>
+          <Col span={24}>
+            <Title>供應商商城費用</Title>
+          </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                系統
-                <br />
-                維護費
-              </ItemLabel>
-              <Input
-                disabled
-                value={info.maintainFee ? `${info.maintainFee}%` : ""}
-              />
-            </Item>
+          <Col span={24}>
+            <Row gutter={32}>
+              <Col span={8}>
+                <Form.Item name="maintainFee" label="系統維護費">
+                  <Input />
+                </Form.Item>
+              </Col>
 
-            <Item>
-              <ItemLabel>
-                行銷
-                <br />
-                導流費
-              </ItemLabel>
-              <Input
-                disabled
-                value={info.referFee ? `${info.referFee}%` : ""}
-              />
-            </Item>
-          </Row>
+              <Col span={8}>
+                <Form.Item name="referFee" label="行銷導流費">
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                會員
-                <br />
-                紅利費
-              </ItemLabel>
-              <Input
-                disabled
-                value={info.bonusFee ? `${info.bonusFee}%` : ""}
-              />
-            </Item>
-
-            <Item></Item>
-          </Row>
-        </Wrapper>
-      </Container>
+          <Col span={24}>
+            <Row gutter={32}>
+              <Col span={8}>
+                <Form.Item name="bonusFee" label="會員紅利費">
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Form>
     </Spin>
   );
-};
-
-export default FeeInfo;
+}

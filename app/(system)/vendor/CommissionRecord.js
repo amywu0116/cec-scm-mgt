@@ -1,43 +1,16 @@
 "use client";
-import { Divider, Form } from "antd";
+import { App, Col, Divider, Form, Row } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
+import ResetBtn from "@/components/Button/ResetBtn";
 import RangePicker from "@/components/DatePicker/RangePicker";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  padding: 16px 0;
-
-  .ant-form-item {
-    .ant-form-item-label > label {
-      height: 42px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #7b8093;
-    }
-  }
-
-  .ant-btn-link {
-    padding: 0;
-    min-width: 0;
-
-    span {
-      font-size: 14px;
-      font-weight: 400;
-      color: #212b36;
-      text-decoration: underline;
-    }
-  }
-`;
 
 const TableTitle = styled.div`
   font-size: 16px;
@@ -46,25 +19,16 @@ const TableTitle = styled.div`
   line-height: 35px;
 `;
 
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
   padding: 16px;
   display: flex;
   flex-direction: column;
+  margin-top: 16px;
 `;
 
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const CommissionRecord = () => {
+export default function CommissionRecord() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState({ table: false });
@@ -76,6 +40,7 @@ const CommissionRecord = () => {
     total: 0,
     page: 1,
     pageSize: 10,
+    tableQuery: {},
   });
 
   const columns = [
@@ -141,7 +106,7 @@ const CommissionRecord = () => {
         setCategoryOptions(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {});
   };
@@ -168,7 +133,7 @@ const CommissionRecord = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -188,73 +153,87 @@ const CommissionRecord = () => {
   }, []);
 
   return (
-    <Container>
-      <Form
-        form={form}
-        colon={false}
-        labelCol={{ flex: "110px" }}
-        scrollToFirstError={{ behavior: "smooth", block: "center" }}
-        onFinish={handleFinish}
-      >
-        <Card>
-          <Form.Item name="categoryCode" label="分類編碼 / 名稱">
-            <Select
-              style={{ width: 400 }}
-              placeholder="請選擇分類編碼 / 名稱"
-              showSearch
-              allowClear
-              options={categoryOptions.map((opt) => ({
-                ...opt,
-                label: `${opt.categoryCode} / ${opt.categoryName}`,
-                value: opt.categoryCode,
-              }))}
+    <Row gutter={[0, 16]}>
+      <Col span={24}>
+        <Form
+          form={form}
+          colon={false}
+          labelCol={{ flex: "110px" }}
+          scrollToFirstError={{ behavior: "smooth", block: "center" }}
+          onFinish={handleFinish}
+        >
+          <Card>
+            <Form.Item name="categoryCode" label="分類編碼 / 名稱">
+              <Select
+                style={{ width: 400 }}
+                placeholder="請選擇分類編碼 / 名稱"
+                showSearch
+                allowClear
+                options={categoryOptions.map((opt) => ({
+                  ...opt,
+                  label: `${opt.categoryCode} / ${opt.categoryName}`,
+                  value: opt.categoryCode,
+                }))}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="queryDate"
+              label="異動日期"
+              rules={[
+                { required: true, message: "必填" },
+                { validator: validateDateRange },
+              ]}
+            >
+              <RangePicker
+                style={{ width: 400 }}
+                placeholder={["異動日期起", "異動日期迄"]}
+              />
+            </Form.Item>
+
+            <Divider style={{ margin: 0 }} />
+
+            <Row
+              style={{ marginTop: 16 }}
+              gutter={16}
+              justify="end"
+              align="middle"
+            >
+              <Col>
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
+              </Col>
+
+              <Col>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Col>
+            </Row>
+          </Card>
+        </Form>
+      </Col>
+
+      <Col span={24}>
+        <Row gutter={[0, 16]}>
+          <Col span={24}>
+            <TableTitle>佣金異動歷程</TableTitle>
+          </Col>
+
+          <Col span={24}>
+            <Table
+              loading={loading.table}
+              columns={columns}
+              dataSource={tableInfo.rows}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              onChange={handleChangeTable}
             />
-          </Form.Item>
-
-          <Form.Item
-            name="queryDate"
-            label="異動日期"
-            rules={[
-              { required: true, message: "必填" },
-              { validator: validateDateRange },
-            ]}
-          >
-            <RangePicker
-              style={{ width: 400 }}
-              placeholder={["異動日期起", "異動日期迄"]}
-            />
-          </Form.Item>
-
-          <Divider style={{ margin: 0 }} />
-
-          <BtnGroup style={{ margin: "16px 0 0 auto" }}>
-            <Button type="secondary" htmlType="submit">
-              查詢
-            </Button>
-
-            <Button type="link" htmlType="reset">
-              清除查詢條件
-            </Button>
-          </BtnGroup>
-        </Card>
-      </Form>
-
-      <TableWrapper>
-        <TableTitle>佣金異動歷程</TableTitle>
-        <Table
-          loading={loading.table}
-          columns={columns}
-          dataSource={tableInfo.rows}
-          pageInfo={{
-            total: tableInfo.total,
-            page: tableInfo.page,
-            pageSize: tableInfo.pageSize,
-          }}
-          onChange={handleChangeTable}
-        />
-      </TableWrapper>
-    </Container>
+          </Col>
+        </Row>
+      </Col>
+    </Row>
   );
-};
-
-export default CommissionRecord;
+}

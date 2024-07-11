@@ -276,9 +276,7 @@ export default function Page() {
                   </Col>
 
                   <Col>
-                    <ResetBtn type="link" htmlType="reset">
-                      清除查詢條件
-                    </ResetBtn>
+                    <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
                   </Col>
                 </Row>
               </Col>

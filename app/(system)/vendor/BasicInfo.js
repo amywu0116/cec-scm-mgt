@@ -1,5 +1,5 @@
 "use client";
-import { Checkbox, Spin } from "antd";
+import { App, Checkbox, Col, Form, Row, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -8,50 +8,19 @@ import Table from "@/components/Table";
 
 import api from "@/api";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-  padding: 16px 0;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
 const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
   line-height: 35px;
+  padding: 16px 0;
 `;
 
-const Item = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
+export default function BasicInfo() {
+  const [form] = Form.useForm();
+  const { message } = App.useApp();
 
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  width: 64px;
-  flex-shrink: 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 32px;
-`;
-
-const BasicInfo = () => {
   const [loading, setLoading] = useState({ page: false, table: false });
-
-  const [info, setInfo] = useState({});
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
@@ -100,9 +69,15 @@ const BasicInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get("v1/scm/vendor")
-      .then((res) => setInfo(res.data))
-      .catch((err) => console.log(err))
-      .finally(() => setLoading((state) => ({ ...state, page: false })));
+      .then((res) => {
+        form.setFieldsValue({ ...res.data });
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
   };
 
   const fetchUsers = (pagination = { page: 1, pageSize: 10 }) => {
@@ -123,7 +98,7 @@ const BasicInfo = () => {
         }));
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       })
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
@@ -141,188 +116,166 @@ const BasicInfo = () => {
 
   return (
     <Spin spinning={loading.page}>
-      <Container>
-        <Wrapper>
-          <Title>基礎資料</Title>
+      <Form
+        form={form}
+        colon={false}
+        labelCol={{ flex: "60px" }}
+        labelWrap
+        disabled
+      >
+        <Row>
+          <Col span={24}>
+            <Row>
+              <Col span={24}>
+                <Title>基礎資料</Title>
+              </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                P4供應商
-                <br />
-                代碼
-              </ItemLabel>
-              <Input disabled value={info.p4VendorCode} />
-            </Item>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="p4VendorCode" label="P4供應商代碼">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-            <Item>
-              <ItemLabel>
-                SAP
-                <br />
-                供應商
-                <br />
-                代碼
-              </ItemLabel>
-              <Input disabled value={info.sapVendorCode} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="sapVendorCode" label="SAP供應商代碼">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
 
-            <Item></Item>
-          </Row>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="vendorName" label="供應商名稱">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                供應商
-                <br />
-                名稱
-              </ItemLabel>
-              <Input disabled value={info.vendorName} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="companyAlias" label="供應商簡稱">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-            <Item>
-              <ItemLabel>
-                供應商
-                <br />
-                簡稱
-              </ItemLabel>
-              <Input disabled value={info.companyAlias} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="taxId" label="統一編號">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
 
-            <Item>
-              <ItemLabel>統一編號</ItemLabel>
-              <Input disabled value={info.taxId} />
-            </Item>
-          </Row>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="companyContact" label="供應商代表號">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                供應商
-                <br />
-                代表號
-              </ItemLabel>
-              <Input disabled value={info.companyContact} />
-            </Item>
+                  <Col span={16}>
+                    <Form.Item name="vendorAddress" label="供應商地址">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Col>
 
-            <Item style={{ flex: "2 1 32px" }}>
-              <ItemLabel>
-                供應商
-                <br />
-                地址
-              </ItemLabel>
-              <Input disabled value={info.vendorAddress} />
-            </Item>
-          </Row>
-        </Wrapper>
+          <Col span={24}>
+            <Row>
+              <Col span={24}>
+                <Title>人員聯絡方式</Title>
+              </Col>
 
-        <Wrapper>
-          <Title>人員聯絡方式</Title>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="businessContact" label="業務承辦人">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                業務
-                <br />
-                承辦人
-              </ItemLabel>
-              <Input disabled value={info.businessContact} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="businessPhone" label="業務聯絡電話">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-            <Item>
-              <ItemLabel>
-                業務
-                <br />
-                聯絡電話
-              </ItemLabel>
-              <Input disabled value={info.businessPhone} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="businessEmail" label="業務E-mai">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
 
-            <Item>
-              <ItemLabel>
-                業務
-                <br />
-                E-mai
-              </ItemLabel>
-              <Input disabled value={info.businessEmail} />
-            </Item>
-          </Row>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="financeContact" label="財務承辦人">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                財務
-                <br />
-                承辦人
-              </ItemLabel>
-              <Input disabled value={info.financeContact} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="financePhone" label="財務聯絡電話">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-            <Item>
-              <ItemLabel>
-                財務
-                <br />
-                聯絡電話
-              </ItemLabel>
-              <Input disabled value={info.financePhone} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="financeEmail" label="財務E-mai">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
 
-            <Item>
-              <ItemLabel>
-                財務
-                <br />
-                E-mai
-              </ItemLabel>
-              <Input disabled value={info.financeEmail} />
-            </Item>
-          </Row>
+              <Col span={24}>
+                <Row gutter={32}>
+                  <Col span={8}>
+                    <Form.Item name="shipContact" label="出貨承辦人">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>
-                出貨
-                <br />
-                承辦人
-              </ItemLabel>
-              <Input disabled value={info.shipContact} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="shipPhone" label="出貨聯絡電話">
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-            <Item>
-              <ItemLabel>
-                出貨
-                <br />
-                聯絡電話
-              </ItemLabel>
-              <Input disabled value={info.shipPhone} />
-            </Item>
+                  <Col span={8}>
+                    <Form.Item name="shipEmail" label="出貨E-mail">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Col>
 
-            <Item>
-              <ItemLabel>
-                出貨
-                <br />
-                E-mai
-              </ItemLabel>
-              <Input disabled value={info.shipEmail} />
-            </Item>
-          </Row>
-        </Wrapper>
-
-        <Wrapper>
-          <Title>使用者帳號</Title>
-          <Table
-            loading={loading.table}
-            columns={columns}
-            dataSource={tableInfo.rows}
-            pageInfo={{
-              total: tableInfo.total,
-              page: tableInfo.page,
-              pageSize: tableInfo.pageSize,
-            }}
-            onChange={handleChangeTable}
-          />
-        </Wrapper>
-      </Container>
+          <Col span={24}>
+            <Title>使用者帳號</Title>
+            <Table
+              loading={loading.table}
+              columns={columns}
+              dataSource={tableInfo.rows}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              onChange={handleChangeTable}
+            />
+          </Col>
+        </Row>
+      </Form>
     </Spin>
   );
-};
-
-export default BasicInfo;
+}
