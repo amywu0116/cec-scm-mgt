@@ -1,35 +1,18 @@
 "use client";
-import React, { useState } from "react";
-import { Breadcrumb } from "antd";
-import styled from "styled-components";
+import { Breadcrumb, Col, Form, Row } from "antd";
 import Link from "next/link";
+import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
+import FunctionBtn from "@/components/Button/FunctionBtn";
 import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
-import FunctionBtn from "@/components/Button/FunctionBtn";
 import Tabs from "@/components/Tabs";
 
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
 
 const Item = styled.div`
   display: flex;
@@ -44,25 +27,14 @@ const ItemLabel = styled.div`
   flex-shrink: 0;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
 const SettingsCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
-  display: flex;
-  gap: 0 16px;
 `;
 
-const Page = () => {
+export default function Page() {
+  const [form] = Form.useForm();
+
   const [showSettings, setShowSettings] = useState(false);
 
   const columns = [
@@ -132,76 +104,81 @@ const Page = () => {
         <Breadcrumb
           separator=">"
           items={[
-            {
-              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
-            },
-            {
-              title: "庫存設定",
-            },
+            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
+            { title: "庫存設定" },
           ]}
         />
       </LayoutHeader>
 
-      <Container>
-        <Card>
-          <Row>
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>條碼</ItemLabel>
-              <Input placeholder="請輸入條碼" disabled />
-            </Item>
+      <Row gutter={[0, 16]}>
+        <Col span={24}>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Item>
+                <ItemLabel>條碼</ItemLabel>
+                <Input placeholder="請輸入條碼" disabled />
+              </Item>
+            </Col>
 
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>品名</ItemLabel>
-              <Input placeholder="請輸入商品名稱" disabled />
-            </Item>
+            <Col span={8}>
+              <Item>
+                <ItemLabel>品名</ItemLabel>
+                <Input placeholder="請輸入商品名稱" disabled />
+              </Item>
+            </Col>
 
-            <ButtonGroup
-              style={{ marginLeft: "auto" }}
-              justifyContent="flex-end"
-            >
+            <Col span={8}>
               <Button
-                style={{ width: 220 }}
                 type="primary"
                 disabled={showSettings}
                 onClick={() => setShowSettings(true)}
               >
                 新增庫存設定
               </Button>
-            </ButtonGroup>
+            </Col>
           </Row>
-        </Card>
+        </Col>
 
         {showSettings && (
-          <SettingsCard>
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>數量</ItemLabel>
-              <Input placeholder="請輸入數量" />
-            </Item>
+          <Col span={24}>
+            <SettingsCard>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Item>
+                    <ItemLabel>數量</ItemLabel>
+                    <Input placeholder="請輸入數量" />
+                  </Item>
+                </Col>
 
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>起始日期</ItemLabel>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="請選擇起始日期"
-              />
-            </Item>
+                <Col span={8}>
+                  <Item>
+                    <ItemLabel>起始日期</ItemLabel>
+                    <DatePicker
+                      style={{ width: "100%" }}
+                      placeholder="請選擇起始日期"
+                    />
+                  </Item>
+                </Col>
 
-            <ButtonGroup>
-              <Button style={{ width: 86 }} type="secondary">
-                確認
-              </Button>
+                <Col span={8}>
+                  <Row gutter={16} justify="end">
+                    <Col>
+                      <Button type="secondary">確認</Button>
+                    </Col>
 
-              <Button
-                style={{ width: 86 }}
-                onClick={() => setShowSettings(false)}
-              >
-                取消
-              </Button>
-            </ButtonGroup>
-          </SettingsCard>
+                    <Col>
+                      <Button onClick={() => setShowSettings(false)}>
+                        取消
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </SettingsCard>
+          </Col>
         )}
 
-        <TableWrapper>
+        <Col span={24}>
           <Tabs
             defaultActiveKey="1"
             items={[
@@ -220,10 +197,8 @@ const Page = () => {
               },
             ]}
           />
-        </TableWrapper>
-      </Container>
+        </Col>
+      </Row>
     </>
   );
-};
-
-export default Page;
+}

@@ -1,35 +1,18 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Image } from "antd";
-import styled from "styled-components";
+import { Breadcrumb, Col, Image, Row } from "antd";
 import Link from "next/link";
+import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
-import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import FunctionBtn from "@/components/Button/FunctionBtn";
 import Input from "@/components/Input";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import ModalDelete from "@/components/Modal/ModalDelete";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
-import FunctionBtn from "@/components/Button/FunctionBtn";
-import ModalDelete from "@/components/Modal/ModalDelete";
 
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
 
 const Item = styled.div`
   flex: 1;
@@ -49,18 +32,10 @@ const ItemLabel = styled.div`
 const ImageCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
   width: 100%;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Page = () => {
+export default function Page() {
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
@@ -127,86 +102,98 @@ const Page = () => {
         <Breadcrumb
           separator=">"
           items={[
-            {
-              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
-            },
-            {
-              title: <Link href="">商品資料</Link>,
-            },
-            {
-              title: "圖片維護",
-            },
+            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
+            { title: <Link href="">商品資料</Link> },
+            { title: "圖片維護" },
           ]}
         />
       </LayoutHeader>
 
-      <Container>
-        <Wrapper>
-          <Row>
-            <Item>
-              <ItemLabel>條碼</ItemLabel>
-              <Input />
-            </Item>
+      <Row gutter={[0, 16]}>
+        <Col span={24}>
+          <Row gutter={[0, 16]}>
+            <Col span={24}>
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Item>
+                    <ItemLabel>條碼</ItemLabel>
+                    <Input />
+                  </Item>
+                </Col>
 
-            <Item>
-              <ItemLabel>品名</ItemLabel>
-              <Input />
-            </Item>
+                <Col span={8}>
+                  <Item>
+                    <ItemLabel>品名</ItemLabel>
+                    <Input />
+                  </Item>
+                </Col>
 
-            <Button
-              style={{ width: 220 }}
-              type="primary"
-              onClick={() => setShowImageUpload(true)}
-            >
-              上傳圖片
-            </Button>
+                <Col>
+                  <Button
+                    type="primary"
+                    onClick={() => setShowImageUpload(true)}
+                  >
+                    上傳圖片
+                  </Button>
+                </Col>
+              </Row>
+            </Col>
+
+            {showImageUpload && (
+              <Col span={24}>
+                <ImageCard>
+                  <Row gutter={16}>
+                    <Col span={8}>
+                      <Item>
+                        <ItemLabel>圖片類型</ItemLabel>
+                        <Select
+                          style={{ width: "100%" }}
+                          placeholder="請選擇圖片類型"
+                          options={[]}
+                        />
+                      </Item>
+                    </Col>
+
+                    <Col>
+                      <Button type="secondary">上傳</Button>
+                    </Col>
+
+                    <Col>
+                      <Button type="default">新增</Button>
+                    </Col>
+
+                    <Col flex>
+                      <Row gutter={16} justify="end">
+                        <Col>
+                          <Button
+                            style={{ marginLeft: "auto" }}
+                            type="secondary"
+                          >
+                            確認
+                          </Button>
+                        </Col>
+
+                        <Col>
+                          <Button
+                            type="default"
+                            onClick={() => setShowImageUpload(false)}
+                          >
+                            取消
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                </ImageCard>
+              </Col>
+            )}
           </Row>
+        </Col>
 
-          {showImageUpload && (
-            <Row>
-              <ImageCard>
-                <Item>
-                  <ItemLabel>圖片類型</ItemLabel>
-                  <Select
-                    style={{ width: 342 }}
-                    placeholder="請選擇圖片類型"
-                    options={[
-                      {
-                        value: "lucy",
-                        label: "Lucy",
-                      },
-                    ]}
-                  />
-
-                  <Button style={{ width: 86 }} type="secondary">
-                    上傳
-                  </Button>
-
-                  <Button style={{ width: 86 }} type="default">
-                    新增
-                  </Button>
-
-                  <ButtonGroup style={{ marginLeft: "auto" }}>
-                    <Button style={{ width: 86 }} type="secondary">
-                      確認
-                    </Button>
-
-                    <Button
-                      style={{ width: 86 }}
-                      type="default"
-                      onClick={() => setShowImageUpload(false)}
-                    >
-                      取消
-                    </Button>
-                  </ButtonGroup>
-                </Item>
-              </ImageCard>
-            </Row>
-          )}
-        </Wrapper>
-
-        <Table columns={columns} dataSource={data} pagination={false} />
-      </Container>
+        <Col span={24}>
+          <Table columns={columns} dataSource={data} pagination={false} />
+        </Col>
+      </Row>
 
       <ModalDelete
         open={showModalDelete}
@@ -214,6 +201,4 @@ const Page = () => {
       />
     </>
   );
-};
-
-export default Page;
+}

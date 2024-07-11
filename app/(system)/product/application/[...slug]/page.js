@@ -25,11 +25,6 @@ const Title = styled.div`
   margin-bottom: 16px;
 `;
 
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
 export default function Page() {
   const router = useRouter();
   const [form] = Form.useForm();
@@ -246,15 +241,19 @@ export default function Page() {
           ]}
         />
 
-        <BtnGroup style={{ marginLeft: "auto" }}>
-          <Button onClick={() => router.push(PATH_PRODUCT_PRODUCT_APPLICATION)}>
-            關閉
-          </Button>
+        <Row style={{ marginLeft: "auto" }} gutter={16}>
+          <Col>
+            <Link href={PATH_PRODUCT_PRODUCT_APPLICATION}>
+              <Button>關閉</Button>
+            </Link>
+          </Col>
 
-          <Button type="primary" onClick={() => form.submit()}>
-            暫存
-          </Button>
-        </BtnGroup>
+          <Col>
+            <Button type="primary" onClick={() => form.submit()}>
+              暫存
+            </Button>
+          </Col>
+        </Row>
       </LayoutHeader>
 
       <Form

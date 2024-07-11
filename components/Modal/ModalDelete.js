@@ -30,7 +30,7 @@ const BtnGroup = styled.div`
 `;
 
 export default function ModalDelete(props) {
-  const { open, loading, onOk, onCancel } = props;
+  const { open, loading = false, onOk, onCancel } = props;
 
   return (
     <Modal
