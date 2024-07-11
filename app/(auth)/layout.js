@@ -31,7 +31,7 @@ const LogoWrapper = styled.div`
   height: 107px;
 `;
 
-const Layout = (props) => {
+export default function Layout(props) {
   const { children } = props;
   const router = useRouter();
 
@@ -63,6 +63,4 @@ const Layout = (props) => {
       </Container>
     </Suspense>
   );
-};
-
-export default Layout;
+}

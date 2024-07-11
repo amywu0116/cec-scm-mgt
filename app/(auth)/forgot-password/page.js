@@ -21,7 +21,7 @@ const RecaptchaWrapper = styled.div`
   height: 90px;
 `;
 
-const Page = () => {
+export default function Page() {
   const router = useRouter();
   const [form] = Form.useForm();
   const recaptchaRef = useRef();
@@ -150,6 +150,4 @@ const Page = () => {
       </Form>
     </Container>
   );
-};
-
-export default Page;
+}

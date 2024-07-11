@@ -14,7 +14,7 @@ import { PATH_LOGIN } from "@/constants/paths";
 
 const Container = styled.div``;
 
-const Page = () => {
+export default function Page() {
   const [form] = Form.useForm();
   const router = useRouter();
   const { message } = App.useApp();
@@ -108,6 +108,4 @@ const Page = () => {
       </Form>
     </Container>
   );
-};
-
-export default Page;
+}

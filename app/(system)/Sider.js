@@ -177,7 +177,7 @@ const items = [
   },
 ];
 
-const Sider = () => {
+export default function Sider() {
   const router = useRouter();
   const { message } = App.useApp();
   const pathname = usePathname();
@@ -246,6 +246,4 @@ const Sider = () => {
       />
     </StyledSider>
   );
-};
-
-export default Sider;
+}

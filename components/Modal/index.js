@@ -28,29 +28,6 @@ const StyledModal = styled(AntdModal)`
   }
 `;
 
-const Modal = (props) => {
-  const {
-    okText = "",
-    onOk = () => {},
-    okButtonProps = {},
-    cancelText = "",
-    onCancel = () => {},
-    cancelButtonProps = {},
-  } = props;
-
-  return (
-    <StyledModal
-      // footer={[
-      //   <Button key="cancel" {...cancelButtonProps} onClick={onCancel}>
-      //     {cancelText}
-      //   </Button>,
-      //   <Button key="ok" {...okButtonProps} type="primary" onClick={onOk}>
-      //     {okText}
-      //   </Button>,
-      // ]}
-      {...props}
-    />
-  );
-};
-
-export default Modal;
+export default function Modal(props) {
+  return <StyledModal {...props} />;
+}

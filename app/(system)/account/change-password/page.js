@@ -16,7 +16,7 @@ const Container = styled.div`
   width: 352px;
 `;
 
-const Page = () => {
+export default function Page() {
   const [form] = Form.useForm();
   const { message } = App.useApp();
 
@@ -130,6 +130,4 @@ const Page = () => {
       </Container>
     </>
   );
-};
-
-export default Page;
+}

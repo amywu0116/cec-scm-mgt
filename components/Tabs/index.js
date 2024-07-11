@@ -21,8 +21,6 @@ const StyledTabs = styled(AntdTabs)`
   }
 `;
 
-const Tabs = (props) => {
+export default function Tabs(props) {
   return <StyledTabs {...props} />;
-};
-
-export default Tabs;
+}

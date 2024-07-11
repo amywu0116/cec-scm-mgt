@@ -18,7 +18,7 @@ const Container = styled.div`
     `}
 `;
 
-const PageLayout = (props) => {
+export default function PageLayout(props) {
   const { children } = props;
 
   const [headerHeight, setHeaderHeight] = useState(100);
@@ -61,6 +61,4 @@ const PageLayout = (props) => {
       </Layout>
     </Layout>
   );
-};
-
-export default PageLayout;
+}
