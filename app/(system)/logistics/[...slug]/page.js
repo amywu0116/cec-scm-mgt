@@ -129,7 +129,7 @@ export default function Page(props) {
           separator=">"
           items={[
             { title: <Link href={PATH_LOGISTICS}>貨運公司維護</Link> },
-            { title: "新增" },
+            { title: isAdd ? "新增" : isEdit ? "編輯" : "" },
           ]}
         />
 
