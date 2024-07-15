@@ -118,7 +118,7 @@ export default function Page() {
 
   const [loading, setLoading] = useState({ table: false });
 
-  const tabActiveKeyDefault = "1";
+  const tabActiveKeyDefault = "全部";
   const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
 
   const processedStatus = Form.useWatch("processedStatus", form);
@@ -257,19 +257,21 @@ export default function Page() {
     fetchList(values);
   };
 
+  // 切換 Table 分頁、分頁大小
   const handleChangeTable = (page, pageSize) => {
     fetchList(tableInfo.tableQuery, { page, pageSize });
   };
 
+  // 切換 Table Tab
   const handleChangeTab = (activeKey) => {
-    if (activeKey === "2") {
+    if (activeKey === "異常") {
       form.setFieldsValue({
         processedStatus: "0",
         logisticsStatus: logisticsStatus.filter((l) => l === "11"),
       });
     }
 
-    if (activeKey === "3") {
+    if (activeKey === "待處理") {
       form.setFieldValue("processedStatus", "0");
     }
 
@@ -277,17 +279,31 @@ export default function Page() {
     setTabActiveKey(activeKey);
   };
 
+  // 查詢
   const handleSearch = () => {
     setTabActiveKey(tabActiveKeyDefault);
     form.submit();
   };
 
-  // 設定初始 "訂單物流狀態" 後才能進行第一次查詢
+  // 清除查詢條件
+  const handleReset = () => {
+    form.setFieldsValue({
+      queryString: undefined,
+      ecorderDate: undefined,
+      logisticsId: undefined,
+      logisticsStatus: undefined,
+    });
+  };
+
+  // 進頁後先自動查詢一次
   useEffect(() => {
-    form.submit();
+    // 等訂單物流狀態先設定好再查詢
+    setTimeout(() => {
+      form.submit();
+    }, 0);
   }, [options]);
 
-  // 選擇 "處理狀態" 後會更新 "訂單物流狀態" 列表
+  // 選擇 "處理狀態" 後更新 "訂單物流狀態" 列表
   useEffect(() => {
     const lsList = statusMapping[processedStatus];
     form.setFieldValue("logisticsStatus", lsList);
@@ -297,7 +313,6 @@ export default function Page() {
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>訂單管理</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
           items={[{ title: "訂單" }, { title: "訂單管理" }]}
@@ -353,7 +368,11 @@ export default function Page() {
             </Flex>
 
             <Flex gap={16}>
-              <Form.Item name="logisticsStatus" label="訂單物流狀態">
+              <Form.Item
+                name="logisticsStatus"
+                label="訂單物流狀態"
+                rules={[{ required: true, message: "必填" }]}
+              >
                 <Checkbox.Group options={lsOptions} />
               </Form.Item>
             </Flex>
@@ -377,7 +396,7 @@ export default function Page() {
               </Col>
 
               <Col>
-                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+                <ResetBtn onClick={handleReset}>清除查詢條件</ResetBtn>
               </Col>
             </Row>
           </Card>
@@ -414,7 +433,7 @@ export default function Page() {
               items={[
                 {
                   label: "全部",
-                  key: "1",
+                  key: "全部",
                   children: (
                     <>
                       <Table
@@ -448,7 +467,7 @@ export default function Page() {
                       異常 <Tag>5</Tag>
                     </TabLabelWrapper>
                   ),
-                  key: "2",
+                  key: "異常",
                   children: (
                     <>
                       <Table
@@ -482,7 +501,7 @@ export default function Page() {
                       待處理 <Tag>12</Tag>
                     </TabLabelWrapper>
                   ),
-                  key: "3",
+                  key: "待處理",
                   children: (
                     <>
                       <Table
