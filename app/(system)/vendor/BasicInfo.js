@@ -119,7 +119,8 @@ export default function BasicInfo() {
       <Form
         form={form}
         colon={false}
-        labelCol={{ flex: "60px" }}
+        labelCol={{ flex: "80px" }}
+        labelAlign="left"
         labelWrap
         disabled
       >
@@ -259,23 +260,25 @@ export default function BasicInfo() {
               </Col>
             </Row>
           </Col>
-
-          <Col span={24}>
-            <Title>使用者帳號</Title>
-            <Table
-              loading={loading.table}
-              columns={columns}
-              dataSource={tableInfo.rows}
-              pageInfo={{
-                total: tableInfo.total,
-                page: tableInfo.page,
-                pageSize: tableInfo.pageSize,
-              }}
-              onChange={handleChangeTable}
-            />
-          </Col>
         </Row>
       </Form>
+
+      <Row>
+        <Col span={24}>
+          <Title>使用者帳號</Title>
+          <Table
+            loading={loading.table}
+            columns={columns}
+            dataSource={tableInfo.rows}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
+            onChange={handleChangeTable}
+          />
+        </Col>
+      </Row>
     </Spin>
   );
 }

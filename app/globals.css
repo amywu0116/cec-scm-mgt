@@ -23,6 +23,10 @@ a {
   color: #7b8093 !important;
 }
 
+.ant-form-item .ant-form-item-label > label::after {
+  margin-inline-end: 16px !important;
+}
+
 .ant-radio-wrapper {
   > span {
     line-height: 42px !important;

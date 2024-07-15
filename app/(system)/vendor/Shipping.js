@@ -187,11 +187,11 @@ export default function ShippingFeeSettings() {
               return (
                 <Col key={idx} span={24}>
                   <Row gutter={[32]}>
-                    <Col span={8}>
+                    <Col span={6}>
                       <Item>
                         <ItemLabel>{a.name}</ItemLabel>
-
                         <Input
+                          style={{ width: 200 }}
                           disabled={
                             !isEdit ||
                             (isEdit && ["RR", "RC"].includes(a.value))
@@ -217,11 +217,11 @@ export default function ShippingFeeSettings() {
                       </Item>
                     </Col>
 
-                    <Col span={9}>
+                    <Col span={18}>
                       <Item>
                         <ItemLabel>運費備註</ItemLabel>
                         <Select
-                          style={{ width: "100%" }}
+                          style={{ width: 300 }}
                           disabled={!isEdit}
                           placeholder="選擇運費備註"
                           options={scmShippingMethod.map((a) => ({
