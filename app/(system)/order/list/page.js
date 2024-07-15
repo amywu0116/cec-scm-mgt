@@ -333,7 +333,10 @@ export default function Page() {
           <Card>
             <Flex gap={16}>
               <Form.Item name="queryString" label="訂單編號">
-                <Input style={{ width: 250 }} placeholder="輸入訂單編號" />
+                <Input
+                  style={{ width: 250 }}
+                  placeholder="輸入訂單編號/收件人手機號碼"
+                />
               </Form.Item>
 
               <Form.Item name="ecorderDate" label="訂單日期">
