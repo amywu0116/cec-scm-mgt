@@ -95,11 +95,6 @@ export default function Page() {
       align: "center",
     },
     {
-      title: "廠商科號",
-      dataIndex: "d",
-      align: "center",
-    },
-    {
       title: "單價",
       dataIndex: "e",
       align: "center",
@@ -315,7 +310,9 @@ export default function Page() {
               <Row style={{ marginLeft: "auto" }} gutter={16}>
                 {["收到訂單"].includes(status) && (
                   <Col>
-                    <Button type="secondary">銷貨明細列印</Button>
+                    <Link href="/pdf" target="_blank">
+                      <Button type="secondary">銷貨明細列印</Button>
+                    </Link>
                   </Col>
                 )}
 
