@@ -229,15 +229,24 @@ export default function Page() {
             <TitleWrapper>
               <Title>顧客配送信息</Title>
 
-              {["收到訂單"].includes(status) && (
-                <Button
-                  style={{ marginLeft: "auto" }}
-                  type="secondary"
-                  onClick={() => setShowModalAddress(true)}
-                >
-                  修改配送地址
-                </Button>
-              )}
+              <Row style={{ marginLeft: "auto" }} gutter={16}>
+                <Col>
+                  <Button type="secondary" onClick={() => {}}>
+                    修改統一編號
+                  </Button>
+                </Col>
+
+                {["收到訂單"].includes(status) && (
+                  <Col>
+                    <Button
+                      type="secondary"
+                      onClick={() => setShowModalAddress(true)}
+                    >
+                      修改配送地址
+                    </Button>
+                  </Col>
+                )}
+              </Row>
             </TitleWrapper>
 
             <Row gutter={32}>
@@ -291,6 +300,14 @@ export default function Page() {
 
               <Col span={12}>
                 <Form.Item name="" label="簽收">
+                  <Input disabled />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={32}>
+              <Col span={12}>
+                <Form.Item name="" label="統一編號">
                   <Input disabled />
                 </Form.Item>
               </Col>
