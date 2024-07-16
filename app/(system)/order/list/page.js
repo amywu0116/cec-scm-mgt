@@ -26,6 +26,7 @@ import Tabs from "@/components/Tabs";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
+import ModalExportResult from "./ModalExportResult";
 
 const Container = styled.div`
   display: flex;
@@ -117,6 +118,7 @@ export default function Page() {
   const bsOptions = options?.back_status ?? [];
 
   const [loading, setLoading] = useState({ table: false });
+  const [showModalExportResult, setShowModalExportResult] = useState(false);
 
   const tabActiveKeyDefault = "全部";
   const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
@@ -295,6 +297,15 @@ export default function Page() {
     });
   };
 
+  const handleDownloadFile = (path, name) => {
+    const link = document.createElement("a");
+    link.href = path;
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // 進頁後先自動查詢一次
   useEffect(() => {
     // 等訂單物流狀態先設定好再查詢
@@ -389,7 +400,26 @@ export default function Page() {
               align="middle"
             >
               <Col>
-                <Button>出貨狀態匯入</Button>
+                <Button
+                  onClick={() => {
+                    handleDownloadFile(
+                      "/出貨狀態匯入範本.xlsx",
+                      "出貨狀態匯入範本.xlsx"
+                    );
+                  }}
+                >
+                  出貨狀態匯入範本
+                </Button>
+              </Col>
+
+              <Col>
+                <Button
+                  onClick={() => {
+                    setShowModalExportResult(true);
+                  }}
+                >
+                  出貨狀態匯入
+                </Button>
               </Col>
 
               <Col>
@@ -467,7 +497,7 @@ export default function Page() {
                 {
                   label: (
                     <TabLabelWrapper>
-                      異常 <Tag>5</Tag>
+                      異常 <Tag>{tableInfo.countByUnusual}</Tag>
                     </TabLabelWrapper>
                   ),
                   key: "異常",
@@ -501,7 +531,7 @@ export default function Page() {
                 {
                   label: (
                     <TabLabelWrapper>
-                      待處理 <Tag>12</Tag>
+                      待處理 <Tag>{tableInfo.countByPending}</Tag>
                     </TabLabelWrapper>
                   ),
                   key: "待處理",
@@ -539,6 +569,11 @@ export default function Page() {
           </Col>
         </Row>
       </Container>
+
+      <ModalExportResult
+        open={showModalExportResult}
+        onCancel={() => setShowModalExportResult(false)}
+      />
     </>
   );
 }

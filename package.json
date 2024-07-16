@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
+    "@react-pdf/renderer": "^3.4.4",
     "antd": "^5.18.2",
     "axios": "^1.7.2",
     "dayjs": "^1.11.11",

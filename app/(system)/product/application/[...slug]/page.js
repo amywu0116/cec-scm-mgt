@@ -309,6 +309,12 @@ export default function Page() {
                   />
                 </Form.Item>
               </Col>
+
+              <Col span={12}>
+                <Form.Item name="brand" label="品牌">
+                  <Input placeholder="請輸入品牌" />
+                </Form.Item>
+              </Col>
             </Row>
 
             <Row gutter={32}>

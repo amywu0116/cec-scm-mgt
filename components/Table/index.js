@@ -48,7 +48,7 @@ const PaginationWrapper = styled.div`
 export default function Table(props) {
   const {
     pagination = true,
-    size = "middle",
+    size = "small",
     loading,
     onChange,
     showSizeChanger = true,

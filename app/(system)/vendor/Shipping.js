@@ -219,11 +219,11 @@ export default function ShippingFeeSettings() {
 
                     <Col span={18}>
                       <Item>
-                        <ItemLabel>運費備註</ItemLabel>
+                        <ItemLabel>運費促銷方式</ItemLabel>
                         <Select
                           style={{ width: 300 }}
                           disabled={!isEdit}
-                          placeholder="選擇運費備註"
+                          placeholder="選擇運費促銷方式"
                           options={scmShippingMethod.map((a) => ({
                             ...a,
                             label: a.name,
