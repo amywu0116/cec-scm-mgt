@@ -75,7 +75,7 @@ const data = [
 export default function MyDocument() {
   return (
     <Container>
-      <PDFViewer width="100%" height="100%" frameBorder="0">
+      {/* <PDFViewer width="100%" height="100%" frameBorder="0">
         <Document>
           <Page style={styles.page} size="A4">
             <View style={styles.table}>
@@ -110,7 +110,7 @@ export default function MyDocument() {
             </View>
           </Page>
         </Document>
-      </PDFViewer>
+      </PDFViewer> */}
     </Container>
   );
 }
