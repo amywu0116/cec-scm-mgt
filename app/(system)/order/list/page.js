@@ -24,15 +24,12 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
 
-import api from "@/api";
-import { useBoundStore } from "@/store";
 import ModalExportResult from "./ModalExportResult";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
+import api from "@/api";
+import { useBoundStore } from "@/store";
 
+const Container = styled.div`
   .ant-checkbox-group {
     gap: 20px 18px;
     padding: 0 16px;
@@ -274,7 +271,10 @@ export default function Page() {
     }
 
     if (activeKey === "待處理") {
-      form.setFieldValue("processedStatus", "0");
+      form.setFieldsValue({
+        processedStatus: "0",
+        logisticsStatus: statusMapping["0"],
+      });
     }
 
     form.submit();
@@ -283,8 +283,10 @@ export default function Page() {
 
   // 查詢
   const handleSearch = () => {
-    setTabActiveKey(tabActiveKeyDefault);
-    form.submit();
+    form.validateFields().then(() => {
+      form.submit();
+      setTabActiveKey(tabActiveKeyDefault);
+    });
   };
 
   // 清除查詢條件
@@ -297,6 +299,7 @@ export default function Page() {
     });
   };
 
+  // 下載檔案
   const handleDownloadFile = (path, name) => {
     const link = document.createElement("a");
     link.href = path;
@@ -331,241 +334,247 @@ export default function Page() {
       </LayoutHeader>
 
       <Container>
-        <Form
-          form={form}
-          autoComplete="off"
-          colon={false}
-          initialValues={{
-            processedStatus: "0",
-            logisticsStatus,
-          }}
-          onFinish={handleFinish}
-        >
-          <Card>
-            <Flex gap={16}>
-              <Form.Item name="queryString" label="訂單編號">
-                <Input
-                  style={{ width: 250 }}
-                  placeholder="輸入訂單編號/收件人手機號碼"
-                />
-              </Form.Item>
-
-              <Form.Item name="ecorderDate" label="訂單日期">
-                <RangePicker
-                  style={{ width: 250 }}
-                  placeholder={["日期起", "日期迄"]}
-                />
-              </Form.Item>
-            </Flex>
-
-            <Flex gap={16}>
-              <Form.Item name="logisticsId" label="貨運公司">
-                <Select
-                  style={{ width: 250 }}
-                  placeholder="選擇貨運公司"
-                  options={logisticsOptions.map((opt) => ({
-                    ...opt,
-                    label: opt.logisticsName,
-                    value: opt.logisticsId,
-                  }))}
-                />
-              </Form.Item>
-
-              <Form.Item name="processedStatus" label="處理狀態">
-                <Radio.Group
-                  options={[
-                    { label: "待處理", value: "0" },
-                    { label: "已結案", value: "1" },
-                  ]}
-                />
-              </Form.Item>
-            </Flex>
-
-            <Flex gap={16}>
-              <Form.Item
-                name="logisticsStatus"
-                label="訂單物流狀態"
-                rules={[{ required: true, message: "必填" }]}
-              >
-                <Checkbox.Group options={lsOptions} />
-              </Form.Item>
-            </Flex>
-
-            <Divider style={{ margin: 0 }} />
-
-            <Row
-              style={{ marginTop: 16 }}
-              gutter={16}
-              justify="end"
-              align="middle"
-            >
-              <Col>
-                <Button
-                  onClick={() => {
-                    handleDownloadFile(
-                      "/出貨狀態匯入範本.xlsx",
-                      "出貨狀態匯入範本.xlsx"
-                    );
-                  }}
-                >
-                  出貨狀態匯入範本
-                </Button>
-              </Col>
-
-              <Col>
-                <Button
-                  onClick={() => {
-                    setShowModalExportResult(true);
-                  }}
-                >
-                  出貨狀態匯入
-                </Button>
-              </Col>
-
-              <Col>
-                <Button type="secondary" onClick={handleSearch}>
-                  查詢
-                </Button>
-              </Col>
-
-              <Col>
-                <ResetBtn onClick={handleReset}>清除查詢條件</ResetBtn>
-              </Col>
-            </Row>
-          </Card>
-        </Form>
-
         <Row gutter={[0, 16]}>
           <Col span={24}>
-            <TableTitle>訂單列表</TableTitle>
+            <Form
+              form={form}
+              autoComplete="off"
+              colon={false}
+              initialValues={{
+                processedStatus: "0",
+                logisticsStatus,
+              }}
+              onFinish={handleFinish}
+            >
+              <Card>
+                <Flex gap={16}>
+                  <Form.Item name="queryString" label="訂單編號">
+                    <Input
+                      style={{ width: 250 }}
+                      placeholder="輸入訂單編號/收件人手機號碼"
+                    />
+                  </Form.Item>
+
+                  <Form.Item name="ecorderDate" label="訂單日期">
+                    <RangePicker
+                      style={{ width: 250 }}
+                      placeholder={["日期起", "日期迄"]}
+                    />
+                  </Form.Item>
+                </Flex>
+
+                <Flex gap={16}>
+                  <Form.Item name="logisticsId" label="貨運公司">
+                    <Select
+                      style={{ width: 250 }}
+                      placeholder="選擇貨運公司"
+                      options={logisticsOptions.map((opt) => ({
+                        ...opt,
+                        label: opt.logisticsName,
+                        value: opt.logisticsId,
+                      }))}
+                    />
+                  </Form.Item>
+
+                  <Form.Item name="processedStatus" label="處理狀態">
+                    <Radio.Group
+                      options={[
+                        { label: "待處理", value: "0" },
+                        { label: "已結案", value: "1" },
+                      ]}
+                    />
+                  </Form.Item>
+                </Flex>
+
+                <Flex gap={16}>
+                  <Form.Item
+                    name="logisticsStatus"
+                    label="訂單物流狀態"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Checkbox.Group options={lsOptions} />
+                  </Form.Item>
+                </Flex>
+
+                <Divider style={{ margin: 0 }} />
+
+                <Row
+                  style={{ marginTop: 16 }}
+                  gutter={16}
+                  justify="end"
+                  align="middle"
+                >
+                  <Col>
+                    <Button
+                      onClick={() => {
+                        handleDownloadFile(
+                          "/出貨狀態匯入範本.xlsx",
+                          "出貨狀態匯入範本.xlsx"
+                        );
+                      }}
+                    >
+                      出貨狀態匯入範本
+                    </Button>
+                  </Col>
+
+                  <Col>
+                    <Button
+                      onClick={() => {
+                        setShowModalExportResult(true);
+                      }}
+                    >
+                      出貨狀態匯入
+                    </Button>
+                  </Col>
+
+                  <Col>
+                    <Button type="secondary" onClick={handleSearch}>
+                      查詢
+                    </Button>
+                  </Col>
+
+                  <Col>
+                    <ResetBtn onClick={handleReset}>清除查詢條件</ResetBtn>
+                  </Col>
+                </Row>
+              </Card>
+            </Form>
           </Col>
 
           <Col span={24}>
-            <Row gutter={16}>
-              <Col>
-                <Button type="secondary" onClick={() => {}}>
-                  導出客戶清單
-                </Button>
+            <Row gutter={[0, 16]}>
+              <Col span={24}>
+                <TableTitle>訂單列表</TableTitle>
               </Col>
 
-              <Col>
-                <Badge count={shippingList.length}>
-                  <Button
-                    disabled={shippingList.length === 0}
-                    onClick={() => {}}
-                  >
-                    批次維護物流狀態為已送達
-                  </Button>
-                </Badge>
+              <Col span={24}>
+                <Row gutter={16}>
+                  <Col>
+                    <Button type="secondary" onClick={() => {}}>
+                      導出客戶清單
+                    </Button>
+                  </Col>
+
+                  <Col>
+                    <Badge count={shippingList.length}>
+                      <Button
+                        disabled={shippingList.length === 0}
+                        onClick={() => {}}
+                      >
+                        批次維護物流狀態為已送達
+                      </Button>
+                    </Badge>
+                  </Col>
+                </Row>
+              </Col>
+
+              <Col span={24}>
+                <Tabs
+                  items={[
+                    {
+                      label: "全部",
+                      key: "全部",
+                      children: (
+                        <>
+                          <Table
+                            rowKey="ecorderId"
+                            loading={loading.table}
+                            rowClassName={(record, index) => {
+                              if (record.processedStatus === "已結案") {
+                                return "closed";
+                              }
+                            }}
+                            rowSelection={{
+                              onChange: (selectedRowKeys, selectedRows) => {
+                                setSelectedRows(selectedRows);
+                              },
+                            }}
+                            pageInfo={{
+                              total: tableInfo.total,
+                              page: tableInfo.page,
+                              pageSize: tableInfo.pageSize,
+                            }}
+                            columns={columns}
+                            dataSource={tableInfo.rows}
+                            onChange={handleChangeTable}
+                          />
+                        </>
+                      ),
+                    },
+                    {
+                      label: (
+                        <TabLabelWrapper>
+                          異常 <Tag>{tableInfo.countByUnusual}</Tag>
+                        </TabLabelWrapper>
+                      ),
+                      key: "異常",
+                      children: (
+                        <>
+                          <Table
+                            rowKey="ecorderId"
+                            loading={loading.table}
+                            rowClassName={(record, index) => {
+                              if (record.processedStatus === "已結案") {
+                                return "closed";
+                              }
+                            }}
+                            rowSelection={{
+                              onChange: (selectedRowKeys, selectedRows) => {
+                                setSelectedRows(selectedRows);
+                              },
+                            }}
+                            pageInfo={{
+                              total: tableInfo.total,
+                              page: tableInfo.page,
+                              pageSize: tableInfo.pageSize,
+                            }}
+                            columns={columns}
+                            dataSource={tableInfo.rows}
+                            onChange={handleChangeTable}
+                          />
+                        </>
+                      ),
+                    },
+                    {
+                      label: (
+                        <TabLabelWrapper>
+                          待處理 <Tag>{tableInfo.countByPending}</Tag>
+                        </TabLabelWrapper>
+                      ),
+                      key: "待處理",
+                      children: (
+                        <>
+                          <Table
+                            rowKey="ecorderId"
+                            loading={loading.table}
+                            rowClassName={(record, index) => {
+                              if (record.processedStatus === "已結案") {
+                                return "closed";
+                              }
+                            }}
+                            rowSelection={{
+                              onChange: (selectedRowKeys, selectedRows) => {
+                                setSelectedRows(selectedRows);
+                              },
+                            }}
+                            pageInfo={{
+                              total: tableInfo.total,
+                              page: tableInfo.page,
+                              pageSize: tableInfo.pageSize,
+                            }}
+                            columns={columns}
+                            dataSource={tableInfo.rows}
+                            onChange={handleChangeTable}
+                          />
+                        </>
+                      ),
+                    },
+                  ]}
+                  activeKey={tabActiveKey}
+                  onChange={handleChangeTab}
+                />
               </Col>
             </Row>
-          </Col>
-
-          <Col span={24}>
-            <Tabs
-              items={[
-                {
-                  label: "全部",
-                  key: "全部",
-                  children: (
-                    <>
-                      <Table
-                        rowKey="ecorderId"
-                        loading={loading.table}
-                        rowClassName={(record, index) => {
-                          if (record.processedStatus === "已結案") {
-                            return "closed";
-                          }
-                        }}
-                        rowSelection={{
-                          onChange: (selectedRowKeys, selectedRows) => {
-                            setSelectedRows(selectedRows);
-                          },
-                        }}
-                        pageInfo={{
-                          total: tableInfo.total,
-                          page: tableInfo.page,
-                          pageSize: tableInfo.pageSize,
-                        }}
-                        columns={columns}
-                        dataSource={tableInfo.rows}
-                        onChange={handleChangeTable}
-                      />
-                    </>
-                  ),
-                },
-                {
-                  label: (
-                    <TabLabelWrapper>
-                      異常 <Tag>{tableInfo.countByUnusual}</Tag>
-                    </TabLabelWrapper>
-                  ),
-                  key: "異常",
-                  children: (
-                    <>
-                      <Table
-                        rowKey="ecorderId"
-                        loading={loading.table}
-                        rowClassName={(record, index) => {
-                          if (record.processedStatus === "已結案") {
-                            return "closed";
-                          }
-                        }}
-                        rowSelection={{
-                          onChange: (selectedRowKeys, selectedRows) => {
-                            setSelectedRows(selectedRows);
-                          },
-                        }}
-                        pageInfo={{
-                          total: tableInfo.total,
-                          page: tableInfo.page,
-                          pageSize: tableInfo.pageSize,
-                        }}
-                        columns={columns}
-                        dataSource={tableInfo.rows}
-                        onChange={handleChangeTable}
-                      />
-                    </>
-                  ),
-                },
-                {
-                  label: (
-                    <TabLabelWrapper>
-                      待處理 <Tag>{tableInfo.countByPending}</Tag>
-                    </TabLabelWrapper>
-                  ),
-                  key: "待處理",
-                  children: (
-                    <>
-                      <Table
-                        rowKey="ecorderId"
-                        loading={loading.table}
-                        rowClassName={(record, index) => {
-                          if (record.processedStatus === "已結案") {
-                            return "closed";
-                          }
-                        }}
-                        rowSelection={{
-                          onChange: (selectedRowKeys, selectedRows) => {
-                            setSelectedRows(selectedRows);
-                          },
-                        }}
-                        pageInfo={{
-                          total: tableInfo.total,
-                          page: tableInfo.page,
-                          pageSize: tableInfo.pageSize,
-                        }}
-                        columns={columns}
-                        dataSource={tableInfo.rows}
-                        onChange={handleChangeTable}
-                      />
-                    </>
-                  ),
-                },
-              ]}
-              activeKey={tabActiveKey}
-              onChange={handleChangeTab}
-            />
           </Col>
         </Row>
       </Container>
