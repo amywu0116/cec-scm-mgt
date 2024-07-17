@@ -146,7 +146,7 @@ export default function Page() {
       dataIndex: "ecorderNo",
       align: "center",
       render: (text, record, index) => {
-        return <Link href={`/order/${text}`}>{text}</Link>;
+        return <Link href={`/order/${record.ecorderShipId}`}>{text}</Link>;
       },
     },
     {
