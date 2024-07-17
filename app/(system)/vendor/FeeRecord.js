@@ -23,8 +23,6 @@ const Title = styled.div`
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
   padding: 16px;
-  display: flex;
-  flex-direction: column;
   margin-top: 16px;
 `;
 
@@ -139,37 +137,46 @@ export default function FeeRecord() {
         <Form
           form={form}
           colon={false}
-          labelCol={{ flex: "110px" }}
-          scrollToFirstError={{ behavior: "smooth", block: "center" }}
+          labelCol={{ flex: "80px" }}
+          labelWrap
+          labelAlign="left"
+          requiredMark={false}
           onFinish={handleFinish}
         >
           <Card>
-            <Form.Item name="feeType" label="費用名稱">
-              <Select
-                style={{ width: 400 }}
-                placeholder="請選擇費用名稱"
-                showSearch
-                allowClear
-                options={scmFeeTypeOptions.map((opt) => ({
-                  ...opt,
-                  label: opt.name,
-                }))}
-              />
-            </Form.Item>
+            <Row>
+              <Col span={8} xxl={{ span: 6 }}>
+                <Form.Item name="feeType" label="費用名稱">
+                  <Select
+                    placeholder="請選擇費用名稱"
+                    showSearch
+                    allowClear
+                    options={scmFeeTypeOptions.map((opt) => ({
+                      ...opt,
+                      label: opt.name,
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-            <Form.Item
-              name="queryDate"
-              label="異動日期"
-              rules={[
-                { required: true, message: "必填" },
-                { validator: validateDateRange },
-              ]}
-            >
-              <RangePicker
-                style={{ width: 400 }}
-                placeholder={["異動日期起", "異動日期迄"]}
-              />
-            </Form.Item>
+            <Row>
+              <Col span={8} xxl={{ span: 6 }}>
+                <Form.Item
+                  name="queryDate"
+                  label="異動日期"
+                  rules={[
+                    { required: true, message: "必填" },
+                    { validator: validateDateRange },
+                  ]}
+                >
+                  <RangePicker
+                    style={{ width: "100%" }}
+                    placeholder={["異動日期起", "異動日期迄"]}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
             <Divider style={{ margin: 0 }} />
 

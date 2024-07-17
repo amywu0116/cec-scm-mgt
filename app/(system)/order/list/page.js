@@ -110,7 +110,10 @@ export default function Page() {
   const osOptions = options?.order_status ?? [];
   const bsOptions = options?.back_status ?? [];
 
-  const [loading, setLoading] = useState({ table: false });
+  const [loading, setLoading] = useState({
+    table: false,
+    batchDelivered: false,
+  });
   const [showModalExportResult, setShowModalExportResult] = useState(false);
 
   const tabActiveKeyDefault = "全部";
@@ -146,7 +149,7 @@ export default function Page() {
       dataIndex: "ecorderNo",
       align: "center",
       render: (text, record, index) => {
-        return <Link href={`/order/${text}`}>{text}</Link>;
+        return <Link href={`/order/${record.ecorderShipId}`}>{text}</Link>;
       },
     },
     {
@@ -190,6 +193,34 @@ export default function Page() {
     },
   ];
 
+  const renderTable = () => {
+    return (
+      <Table
+        rowKey="ecorderId"
+        loading={loading.table}
+        rowClassName={(record, index) => {
+          if (record.processedStatus === "已結案") {
+            return "closed";
+          }
+        }}
+        rowSelection={{
+          selectedRowKeys: selectedRows.map((r) => r.ecorderId),
+          onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
+        pageInfo={{
+          total: tableInfo.total,
+          page: tableInfo.page,
+          pageSize: tableInfo.pageSize,
+        }}
+        columns={columns}
+        dataSource={tableInfo.rows}
+        onChange={handleChangeTable}
+      />
+    );
+  };
+
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
     const orderStatusList = [];
     const pickingStatusList = [];
@@ -228,6 +259,7 @@ export default function Page() {
       max: pagination.pageSize,
     };
 
+    setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
       .get("v1/scm/order", { params: { ...data } })
@@ -305,6 +337,31 @@ export default function Page() {
     document.body.removeChild(link);
   };
 
+  // 批次維護物流狀態為已送達
+  const handleBatchDelivered = () => {
+    const data = {
+      idList: shippingList.map((s) => s.ecorderShipId),
+    };
+
+    setLoading((state) => ({ ...state, batchDelivered: true, table: true }));
+    api
+      .post(`v1/scm/order/batch/delivered`, data)
+      .then((res) => {
+        message.success(res.message);
+        fetchList(tableInfo.tableQuery);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({
+          ...state,
+          batchDelivered: false,
+          table: false,
+        }));
+      });
+  };
+
   // 進頁後先自動查詢一次
   useEffect(() => {
     // 等訂單物流狀態先設定好再查詢
@@ -318,6 +375,9 @@ export default function Page() {
     const lsList = statusMapping[processedStatus];
     form.setFieldValue("logisticsStatus", lsList);
   }, [processedStatus]);
+
+  console.log("shippingList", shippingList);
+  console.log("selectedRows", selectedRows);
 
   return (
     <>
@@ -465,7 +525,8 @@ export default function Page() {
                     <Badge count={shippingList.length}>
                       <Button
                         disabled={shippingList.length === 0}
-                        onClick={() => {}}
+                        loading={loading.batchDelivered}
+                        onClick={handleBatchDelivered}
                       >
                         批次維護物流狀態為已送達
                       </Button>
@@ -480,32 +541,7 @@ export default function Page() {
                     {
                       label: "全部",
                       key: "全部",
-                      children: (
-                        <>
-                          <Table
-                            rowKey="ecorderId"
-                            loading={loading.table}
-                            rowClassName={(record, index) => {
-                              if (record.processedStatus === "已結案") {
-                                return "closed";
-                              }
-                            }}
-                            rowSelection={{
-                              onChange: (selectedRowKeys, selectedRows) => {
-                                setSelectedRows(selectedRows);
-                              },
-                            }}
-                            pageInfo={{
-                              total: tableInfo.total,
-                              page: tableInfo.page,
-                              pageSize: tableInfo.pageSize,
-                            }}
-                            columns={columns}
-                            dataSource={tableInfo.rows}
-                            onChange={handleChangeTable}
-                          />
-                        </>
-                      ),
+                      children: renderTable(),
                     },
                     {
                       label: (
@@ -514,32 +550,7 @@ export default function Page() {
                         </TabLabelWrapper>
                       ),
                       key: "異常",
-                      children: (
-                        <>
-                          <Table
-                            rowKey="ecorderId"
-                            loading={loading.table}
-                            rowClassName={(record, index) => {
-                              if (record.processedStatus === "已結案") {
-                                return "closed";
-                              }
-                            }}
-                            rowSelection={{
-                              onChange: (selectedRowKeys, selectedRows) => {
-                                setSelectedRows(selectedRows);
-                              },
-                            }}
-                            pageInfo={{
-                              total: tableInfo.total,
-                              page: tableInfo.page,
-                              pageSize: tableInfo.pageSize,
-                            }}
-                            columns={columns}
-                            dataSource={tableInfo.rows}
-                            onChange={handleChangeTable}
-                          />
-                        </>
-                      ),
+                      children: renderTable(),
                     },
                     {
                       label: (
@@ -548,32 +559,7 @@ export default function Page() {
                         </TabLabelWrapper>
                       ),
                       key: "待處理",
-                      children: (
-                        <>
-                          <Table
-                            rowKey="ecorderId"
-                            loading={loading.table}
-                            rowClassName={(record, index) => {
-                              if (record.processedStatus === "已結案") {
-                                return "closed";
-                              }
-                            }}
-                            rowSelection={{
-                              onChange: (selectedRowKeys, selectedRows) => {
-                                setSelectedRows(selectedRows);
-                              },
-                            }}
-                            pageInfo={{
-                              total: tableInfo.total,
-                              page: tableInfo.page,
-                              pageSize: tableInfo.pageSize,
-                            }}
-                            columns={columns}
-                            dataSource={tableInfo.rows}
-                            onChange={handleChangeTable}
-                          />
-                        </>
-                      ),
+                      children: renderTable(),
                     },
                   ]}
                   activeKey={tabActiveKey}
