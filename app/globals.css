@@ -28,7 +28,17 @@ a {
 }
 
 .ant-radio-wrapper {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(123, 128, 147, 1) !important;
+
   > span {
     line-height: 42px !important;
   }
+}
+
+.ant-checkbox-wrapper {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(123, 128, 147, 1) !important;
 }
