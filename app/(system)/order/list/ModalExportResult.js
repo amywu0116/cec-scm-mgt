@@ -1,9 +1,8 @@
-import { Col, Modal, Row, Spin } from "antd";
-import styled from "styled-components";
+import { Col, Modal, Row } from "antd";
 import { useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
-import Image from "next/image";
 import Table from "@/components/Table";
 
 const ImageWrapper = styled.div`
@@ -104,7 +103,6 @@ export default function ModalExportResult(props) {
       title="匯入結果"
       width={1200}
       closable={false}
-      maskClosable={false}
       open={open}
       centered
       footer={(_, { OkBtn, CancelBtn }) => (
