@@ -1,9 +1,9 @@
 "use client";
 import { App, Breadcrumb, Col, Form, Row, Spin } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import dayjs from "dayjs";
 
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
@@ -16,6 +16,7 @@ import TextArea from "@/components/TextArea";
 import ModalAddress from "./ModalAddress";
 import ModalReturnApproval from "./ModalReturnApproval";
 import ModalReturnResult from "./ModalReturnResult";
+import ModalTax from "./ModalTax";
 
 import api from "@/api";
 import { PATH_ORDER_LIST } from "@/constants/paths";
@@ -86,9 +87,11 @@ export default function Page(props) {
     reject: false,
     cancel: false,
   });
+
   const [showModalAddress, setShowModalAddress] = useState(false);
   const [showModalReturn, setShowModalReturn] = useState(false);
   const [showModalReturnApproval, setShowModalReturnApproval] = useState(false);
+  const [showModalTax, setShowModalTax] = useState(false);
 
   const [productTableInfo, setProductTableInfo] = useState({
     rows: [],
@@ -478,7 +481,10 @@ export default function Page(props) {
               <Row style={{ marginLeft: "auto" }} gutter={16}>
                 {actionStatus.editTaxId && (
                   <Col>
-                    <Button type="secondary" onClick={() => {}}>
+                    <Button
+                      type="secondary"
+                      onClick={() => setShowModalTax(true)}
+                    >
                       修改統一編號
                     </Button>
                   </Col>
@@ -690,6 +696,18 @@ export default function Page(props) {
         open={showModalReturnApproval}
         onOk={() => {}}
         onCancel={() => setShowModalReturnApproval(false)}
+      />
+
+      <ModalTax
+        info={form.getFieldsValue(true)}
+        open={showModalTax}
+        onOk={() => {
+          setShowModalTax(false);
+          fetchInfo();
+        }}
+        onCancel={() => {
+          setShowModalTax(false);
+        }}
       />
     </Spin>
   );

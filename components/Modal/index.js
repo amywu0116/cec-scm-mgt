@@ -1,8 +1,6 @@
 import { Modal as AntdModal } from "antd";
 import styled from "styled-components";
 
-import Button from "@/components/Button";
-
 const StyledModal = styled(AntdModal)`
   &.ant-modal .ant-modal-content {
     padding: 20px 24px 90px;
@@ -29,5 +27,5 @@ const StyledModal = styled(AntdModal)`
 `;
 
 export default function Modal(props) {
-  return <StyledModal {...props} />;
+  return <StyledModal maskClosable={false} {...props} />;
 }

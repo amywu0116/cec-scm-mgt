@@ -1,38 +1,11 @@
-import { Col, Modal, Row, Spin } from "antd";
-import styled from "styled-components";
-import { useState } from "react";
+import { Col, Modal, Row } from "antd";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button";
-import Image from "next/image";
 import Table from "@/components/Table";
 
-const ImageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const Title = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: rgba(95, 95, 95, 1);
-  text-align: center;
-`;
-
-const Subtitle = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  color: rgba(95, 95, 95, 1);
-  text-align: center;
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-export default function ModalExportResult(props) {
-  const { open, loading = false, onOk, onCancel } = props;
+export default function ModalImportShip(props) {
+  const { data, open, onCancel } = props;
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
@@ -44,70 +17,82 @@ export default function ModalExportResult(props) {
   const columns = [
     {
       title: "訂單編號",
-      dataIndex: "",
+      dataIndex: "ecorderNo",
       align: "center",
+      width: 160,
     },
     {
       title: "貨運公司代碼",
-      dataIndex: "",
-      align: "center",
-    },
-    {
-      title: "貨運公司",
-      dataIndex: "",
+      dataIndex: "logisticsCode",
       align: "center",
     },
     {
       title: "配送單號",
-      dataIndex: "",
+      dataIndex: "shippingCode",
       align: "center",
     },
     {
       title: "發票號碼",
-      dataIndex: "",
+      dataIndex: "invoiceNo",
       align: "center",
     },
     {
       title: "發票開立日期",
-      dataIndex: "",
+      dataIndex: "applyDate",
       align: "center",
     },
     {
       title: "包材重量(單位為g)",
-      dataIndex: "",
+      dataIndex: "packageStr",
       align: "center",
     },
     {
       title: "狀態",
-      dataIndex: "",
+      dataIndex: "statusName",
       align: "center",
     },
     {
       title: "處理情形",
-      dataIndex: "",
+      dataIndex: "message",
       align: "center",
     },
   ];
 
-  const handleChangeTable = (page, pageSize) => {
-    // const list = splitArrayIntoParts(recordList, pageSize);
-    // setTableInfo((state) => ({
-    //   ...state,
-    //   rows: list[page - 1],
-    //   page,
-    //   pageSize,
-    // }));
+  const splitArrayIntoParts = (array, pageSize) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += pageSize) {
+      result.push(array.slice(i, i + pageSize));
+    }
+    return result;
   };
+
+  const handleChangeTable = (page, pageSize) => {
+    const list = splitArrayIntoParts(data, pageSize);
+    setTableInfo((state) => ({
+      ...state,
+      rows: list[page - 1],
+      page,
+      pageSize,
+    }));
+  };
+
+  useEffect(() => {
+    const list = splitArrayIntoParts(data, tableInfo.pageSize);
+    setTableInfo((state) => ({
+      ...state,
+      rows: list[tableInfo.page - 1],
+      total: data.length,
+    }));
+  }, [data]);
 
   return (
     <Modal
       title="匯入結果"
       width={1200}
       closable={false}
-      maskClosable={false}
       open={open}
       centered
-      footer={(_, { OkBtn, CancelBtn }) => (
+      footer={() => (
         <Button type="primary" onClick={onCancel}>
           確認
         </Button>
@@ -115,12 +100,11 @@ export default function ModalExportResult(props) {
       onCancel={onCancel}
     >
       <Row gutter={[0, 16]}>
-        <Col span={24}>xxx</Col>
-
         <Col span={24}>
           <Table
             columns={columns}
             dataSource={tableInfo.rows}
+            scroll={{ y: 400, scrollToFirstRowOnChange: true }}
             pageInfo={{
               total: tableInfo.total,
               page: tableInfo.page,

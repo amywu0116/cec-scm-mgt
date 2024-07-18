@@ -36,7 +36,6 @@ export default function ModalDelete(props) {
     <Modal
       width={280}
       closable={false}
-      maskClosable={false}
       open={open}
       centered
       footer={null}

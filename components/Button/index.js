@@ -44,5 +44,5 @@ const StyledButton = styled(AntdButton)`
 `;
 
 export default function Button(props) {
-  return <StyledButton {...props} />;
+  return <StyledButton autoInsertSpace={false} {...props} />;
 }
