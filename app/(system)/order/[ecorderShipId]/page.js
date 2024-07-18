@@ -1,5 +1,5 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Row, Spin } from "antd";
+import { App, Breadcrumb, Col, Form, Row, Spin, Collapse } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,17 +15,26 @@ import TextArea from "@/components/TextArea";
 
 import ModalAddress from "./ModalAddress";
 import ModalReturnApproval from "./ModalReturnApproval";
-import ModalReturnResult from "./ModalReturnResult";
+import ModalRevokeResult from "./ModalRevokeResult";
 import ModalTax from "./ModalTax";
 
 import api from "@/api";
 import { PATH_ORDER_LIST } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
+const Container = styled.div`
+  .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    padding: 0;
+  }
+
+  .ant-collapse .ant-collapse-content > .ant-collapse-content-box {
+    padding: 0;
+  }
+`;
+
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  padding-bottom: 16px;
 `;
 
 const Title = styled.div`
@@ -86,10 +95,11 @@ export default function Page(props) {
     arrived: false,
     reject: false,
     cancel: false,
+    revoke: false,
   });
 
   const [showModalAddress, setShowModalAddress] = useState(false);
-  const [showModalReturn, setShowModalReturn] = useState(false);
+  const [showModalRevokeResult, setShowModalRevokeResult] = useState(false);
   const [showModalReturnApproval, setShowModalReturnApproval] = useState(false);
   const [showModalTax, setShowModalTax] = useState(false);
 
@@ -97,6 +107,7 @@ export default function Page(props) {
     rows: [],
   });
 
+  const refundId = form.getFieldValue("refundId");
   const backStatusName = form.getFieldValue("backStatusName");
   const ecorderStatusName = form.getFieldValue("ecorderStatusName");
   const pickingStatusName = form.getFieldValue("pickingStatusName");
@@ -109,8 +120,8 @@ export default function Page(props) {
   const applyDate = Form.useWatch("applyDate", form);
   const packaging = Form.useWatch("packaging", form);
 
-  // 收到訂單, 配送中, 異常, 訂單完成, 訂單取消, 退貨申請, 退貨收貨, 退貨收貨完成
-  const status = "收到訂單";
+  const backLogisticsName = Form.useWatch("backLogisticsName", form);
+  const backShippingCode = Form.useWatch("backShippingCode", form);
 
   const columns = [
     {
@@ -186,6 +197,10 @@ export default function Page(props) {
     );
   };
 
+  const isRevokeDisabled = () => {
+    return !(backLogisticsName && backShippingCode);
+  };
+
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -196,20 +211,30 @@ export default function Page(props) {
           receiverCityName,
           receiverDistrictName,
           receiverAddress,
-          remark,
-          receiverAddressRemark,
-          taxId,
           product,
           applyDate,
+          receiverName,
+          receiverPhone,
+          receiverTelephone,
+          remark,
+          receiverAddressRemark,
+          receiverElevatorName,
+          receiverReceiveName,
+          taxId,
         } = res.data;
 
         form.setFieldsValue({
           ...res.data,
+          applyDate: applyDate ? dayjs(applyDate) : null,
+          receiverName: receiverName ?? "-",
+          receiverPhone: receiverPhone ?? "-",
+          receiverTelephone: receiverTelephone ?? "-",
           fullAddress: `${receiverZip}${receiverCityName}${receiverDistrictName}${receiverAddress}`,
           remark: remark ?? "-",
           receiverAddressRemark: receiverAddressRemark ?? "-",
+          receiverElevatorName: receiverElevatorName ?? "-",
+          receiverReceiveName: receiverReceiveName ?? "-",
           taxId: taxId ?? "-",
-          applyDate: applyDate ? dayjs(applyDate) : null,
         });
 
         setProductTableInfo((state) => ({ ...state, rows: product }));
@@ -340,379 +365,481 @@ export default function Page(props) {
       });
   };
 
+  // 退貨收回
+  const handleRevoke = () => {
+    const backLogisticsId = logisticsOptions.find(
+      (opt) => opt.logisticsName === backLogisticsName
+    ).logisticsId;
+
+    const data = {
+      backLogisticsId,
+      backShippingCode,
+    };
+
+    setLoading((state) => ({ ...state, revoke: true }));
+    api
+      .post(`v1/scm/order/${refundId}/revoke`, data)
+      .then((res) => {
+        message.success(res.message);
+        fetchInfo();
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, revoke: false }));
+      });
+  };
+
   useEffect(() => {
     fetchInfo();
   }, []);
 
   return (
-    <Spin spinning={loading.page}>
-      <LayoutHeader>
-        <LayoutHeaderTitle>訂單資料</LayoutHeaderTitle>
-        <Breadcrumb
-          separator=">"
-          items={[
-            { title: "訂單" },
-            { title: <Link href={PATH_ORDER_LIST}>訂單管理</Link> },
-            { title: "訂單明細" },
-          ]}
+    <Container>
+      <Spin spinning={loading.page}>
+        <LayoutHeader>
+          <LayoutHeaderTitle>訂單資料</LayoutHeaderTitle>
+          <Breadcrumb
+            separator=">"
+            items={[
+              { title: "訂單" },
+              { title: <Link href={PATH_ORDER_LIST}>訂單管理</Link> },
+              { title: "訂單明細" },
+            ]}
+          />
+
+          <Row style={{ marginLeft: "auto" }} gutter={16}>
+            {actionStatus.reject && (
+              <Col>
+                <Button
+                  type="secondary"
+                  loading={loading.reject}
+                  onClick={handleReject}
+                >
+                  拒收
+                </Button>
+              </Col>
+            )}
+
+            {actionStatus.unusual && (
+              <Col>
+                <Button
+                  type="secondary"
+                  loading={loading.unusual}
+                  onClick={handleUnusual}
+                >
+                  異常
+                </Button>
+              </Col>
+            )}
+
+            {actionStatus.arrived && (
+              <Col>
+                <Button
+                  type="primary"
+                  loading={loading.arrived}
+                  onClick={handleArrived}
+                >
+                  已送達
+                </Button>
+              </Col>
+            )}
+
+            {actionStatus.revokeExamine && (
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={() => setShowModalReturnApproval(true)}
+                >
+                  設定退貨審核結果
+                </Button>
+              </Col>
+            )}
+
+            {actionStatus.cancel && (
+              <Col>
+                <Button
+                  type="primary"
+                  danger
+                  loading={loading.cancel}
+                  onClick={handleCancel}
+                >
+                  訂單取消
+                </Button>
+              </Col>
+            )}
+          </Row>
+        </LayoutHeader>
+
+        <Form
+          form={form}
+          colon={false}
+          labelCol={{ flex: "80px" }}
+          labelWrap
+          labelAlign="left"
+          requiredMark={false}
+          autoComplete="off"
+        >
+          <Row gutter={[0, 16]}>
+            <Col span={24}>
+              <TitleWrapper>
+                <Title>基礎資料</Title>
+              </TitleWrapper>
+
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="ecorderDate" label="訂單日期">
+                    <Input disabled />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item name="ecorderNo" label="訂單編號">
+                    <Input disabled />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="orderStatus" label="訂單狀態">
+                    {backStatusName ? (
+                      <Tag color="blue">{backStatusName}</Tag>
+                    ) : ecorderStatusName || pickingStatusName ? (
+                      <Tag color="blue">
+                        {ecorderStatusName} / {pickingStatusName}
+                      </Tag>
+                    ) : undefined}
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+
+            <Col span={24}>
+              <Collapse
+                activeKey={["1", "2"]}
+                ghost
+                bordered={false}
+                expandIconPosition="end"
+                items={[
+                  {
+                    key: "1",
+                    showArrow: false,
+                    label: (
+                      <TitleWrapper>
+                        <Title>顧客配送信息</Title>
+
+                        <Row style={{ marginLeft: "auto" }} gutter={16}>
+                          {actionStatus.editTaxId && (
+                            <Col>
+                              <Button
+                                type="secondary"
+                                onClick={() => setShowModalTax(true)}
+                              >
+                                修改統一編號
+                              </Button>
+                            </Col>
+                          )}
+
+                          {actionStatus.editAddr && (
+                            <Col>
+                              <Button
+                                type="secondary"
+                                onClick={() => setShowModalAddress(true)}
+                              >
+                                修改配送地址
+                              </Button>
+                            </Col>
+                          )}
+                        </Row>
+                      </TitleWrapper>
+                    ),
+                    children: (
+                      <>
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="receiverName" label="姓名">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item name="receiverPhone" label="手機號碼">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="receiverTelephone" label="市話">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item name="fullAddress" label="地址">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="remark" label="訂單備註">
+                              <TextArea
+                                autoSize={{ minRows: 3, maxRows: 3 }}
+                                disabled
+                              />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item
+                              name="receiverAddressRemark"
+                              label="地址備註"
+                            >
+                              <TextArea
+                                autoSize={{ minRows: 3, maxRows: 3 }}
+                                disabled
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="receiverElevatorName" label="電梯">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item name="receiverReceiveName" label="簽收">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="taxId" label="統一編號">
+                              <Input disabled />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </>
+                    ),
+                  },
+                  {
+                    key: "2",
+                    showArrow: false,
+                    label: (
+                      <TitleWrapper>
+                        <Title>出貨設定</Title>
+
+                        <Row style={{ marginLeft: "auto" }} gutter={16}>
+                          {actionStatus.printSalesDetail && (
+                            <Col>
+                              <Link href="/pdf" target="_blank">
+                                <Button type="secondary">銷貨明細列印</Button>
+                              </Link>
+                            </Col>
+                          )}
+
+                          {actionStatus.shipment && (
+                            <Col>
+                              <Button
+                                type="secondary"
+                                loading={loading.ship}
+                                disabled={isShipDisabled()}
+                                onClick={handleShip}
+                              >
+                                出貨
+                              </Button>
+                            </Col>
+                          )}
+                        </Row>
+                      </TitleWrapper>
+                    ),
+                    children: (
+                      <>
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="logisticsName" label="貨運公司">
+                              <Select
+                                style={{ width: "100%" }}
+                                placeholder="請選擇貨運公司"
+                                disabled={!actionStatus.shipment}
+                                options={logisticsOptions.map((opt) => ({
+                                  ...opt,
+                                  label: opt.logisticsName,
+                                  value: opt.logisticsName,
+                                }))}
+                              />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item name="shippingCode" label="配送單號">
+                              <Input
+                                placeholder="填寫配送單號"
+                                disabled={!actionStatus.shipment}
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="invoiceNo" label="發票號碼">
+                              <Input
+                                placeholder="填寫發票號碼"
+                                disabled={!actionStatus.shipment}
+                              />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item name="applyDate" label="發票開立日期">
+                              <DatePicker
+                                style={{ width: "100%" }}
+                                placeholder="填寫發票開立日期"
+                                disabled={!actionStatus.shipment}
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        <Row gutter={32}>
+                          <Col span={12}>
+                            <Form.Item name="packaging" label="包材重量">
+                              <Input
+                                placeholder="填寫包材重量"
+                                suffix="克"
+                                disabled={!actionStatus.shipment}
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </>
+                    ),
+                  },
+                ]}
+              />
+            </Col>
+
+            <Col span={24}>
+              <TitleWrapper>
+                <Title>收貨設定</Title>
+
+                <Row style={{ marginLeft: "auto" }} gutter={16}>
+                  {actionStatus.revoke && (
+                    <Col>
+                      <Button
+                        type="secondary"
+                        disabled={isRevokeDisabled()}
+                        loading={loading.revoke}
+                        onClick={handleRevoke}
+                      >
+                        退貨收回
+                      </Button>
+                    </Col>
+                  )}
+
+                  {actionStatus.revokeResult && (
+                    <Col>
+                      <Button
+                        type="primary"
+                        onClick={() => setShowModalRevokeResult(true)}
+                      >
+                        設定退貨結果
+                      </Button>
+                    </Col>
+                  )}
+                </Row>
+              </TitleWrapper>
+
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="backLogisticsName" label="貨運公司">
+                    <Select
+                      style={{ width: "100%" }}
+                      placeholder="請選擇貨運公司"
+                      disabled={loading.revoke || !actionStatus.revoke}
+                      options={logisticsOptions.map((opt) => ({
+                        ...opt,
+                        label: opt.logisticsName,
+                        value: opt.logisticsName,
+                      }))}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item name="backShippingCode" label="配送單號">
+                    <Input
+                      placeholder="填寫配送單號"
+                      disabled={loading.revoke || !actionStatus.revoke}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+
+            <Col span={24}>
+              <Table
+                dataSource={productTableInfo.rows}
+                columns={columns}
+                pagination={false}
+              />
+            </Col>
+          </Row>
+        </Form>
+
+        <ModalAddress
+          info={{ ...form.getFieldsValue(true) }}
+          open={showModalAddress}
+          onOk={() => {
+            setShowModalAddress(false);
+            fetchInfo();
+          }}
+          onCancel={() => {
+            setShowModalAddress(false);
+          }}
         />
 
-        <Row style={{ marginLeft: "auto" }} gutter={16}>
-          {actionStatus.reject && (
-            <Col>
-              <Button
-                type="secondary"
-                loading={loading.reject}
-                onClick={handleReject}
-              >
-                拒收
-              </Button>
-            </Col>
-          )}
+        <ModalRevokeResult
+          info={form.getFieldsValue(true)}
+          open={showModalRevokeResult}
+          onOk={() => {
+            setShowModalRevokeResult(false);
+            fetchInfo();
+          }}
+          onCancel={() => {
+            setShowModalRevokeResult(false);
+          }}
+        />
 
-          {actionStatus.unusual && (
-            <Col>
-              <Button
-                type="secondary"
-                loading={loading.unusual}
-                onClick={handleUnusual}
-              >
-                異常
-              </Button>
-            </Col>
-          )}
+        <ModalReturnApproval
+          open={showModalReturnApproval}
+          onOk={() => {}}
+          onCancel={() => setShowModalReturnApproval(false)}
+        />
 
-          {actionStatus.arrived && (
-            <Col>
-              <Button
-                type="primary"
-                loading={loading.arrived}
-                onClick={handleArrived}
-              >
-                已送達
-              </Button>
-            </Col>
-          )}
-
-          {actionStatus.revokeResult && (
-            <Col>
-              <Button type="primary" onClick={() => setShowModalReturn(true)}>
-                設定退貨收回結果
-              </Button>
-            </Col>
-          )}
-
-          {actionStatus.revokeExamine && (
-            <Col>
-              <Button
-                type="primary"
-                onClick={() => setShowModalReturnApproval(true)}
-              >
-                設定退貨審核結果
-              </Button>
-            </Col>
-          )}
-
-          {actionStatus.cancel && (
-            <Col>
-              <Button
-                type="primary"
-                danger
-                loading={loading.cancel}
-                onClick={handleCancel}
-              >
-                訂單取消
-              </Button>
-            </Col>
-          )}
-        </Row>
-      </LayoutHeader>
-
-      <Form
-        form={form}
-        colon={false}
-        labelCol={{ flex: "80px" }}
-        labelWrap
-        labelAlign="left"
-        requiredMark={false}
-        autoComplete="off"
-      >
-        <Row>
-          <Col span={24}>
-            <TitleWrapper>
-              <Title>基礎資料</Title>
-            </TitleWrapper>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="ecorderDate" label="訂單日期">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="ecorderNo" label="訂單編號">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="orderStatus" label="訂單狀態">
-                  {backStatusName ? (
-                    <Tag color="blue">{backStatusName}</Tag>
-                  ) : (
-                    <Tag color="blue">
-                      {ecorderStatusName} / {pickingStatusName}
-                    </Tag>
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-
-          <Col span={24}>
-            <TitleWrapper>
-              <Title>顧客配送信息</Title>
-
-              <Row style={{ marginLeft: "auto" }} gutter={16}>
-                {actionStatus.editTaxId && (
-                  <Col>
-                    <Button
-                      type="secondary"
-                      onClick={() => setShowModalTax(true)}
-                    >
-                      修改統一編號
-                    </Button>
-                  </Col>
-                )}
-
-                {actionStatus.editAddr && (
-                  <Col>
-                    <Button
-                      type="secondary"
-                      onClick={() => setShowModalAddress(true)}
-                    >
-                      修改配送地址
-                    </Button>
-                  </Col>
-                )}
-              </Row>
-            </TitleWrapper>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="receiverName" label="姓名">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="receiverPhone" label="手機號碼">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="receiverTelephone" label="市話">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="fullAddress" label="地址">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="remark" label="訂單備註">
-                  <TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="receiverAddressRemark" label="地址備註">
-                  <TextArea autoSize={{ minRows: 3, maxRows: 3 }} disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="receiverElevatorName" label="電梯">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="receiverReceiveName" label="簽收">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="taxId" label="統一編號">
-                  <Input disabled />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-
-          <Col span={24}>
-            <TitleWrapper>
-              <Title>出貨設定</Title>
-
-              {["訂單取消"].includes(status) && (
-                <Tag style={{ marginLeft: 16 }} color="grey">
-                  拒收
-                </Tag>
-              )}
-
-              <Row style={{ marginLeft: "auto" }} gutter={16}>
-                {actionStatus.printSalesDetail && (
-                  <Col>
-                    <Link href="/pdf" target="_blank">
-                      <Button type="secondary">銷貨明細列印</Button>
-                    </Link>
-                  </Col>
-                )}
-
-                {actionStatus.shipment && (
-                  <Col>
-                    <Button
-                      type="secondary"
-                      loading={loading.ship}
-                      disabled={isShipDisabled()}
-                      onClick={handleShip}
-                    >
-                      出貨
-                    </Button>
-                  </Col>
-                )}
-
-                {actionStatus.revoke && (
-                  <Col>
-                    <Button type="secondary">退貨收回</Button>
-                  </Col>
-                )}
-              </Row>
-            </TitleWrapper>
-          </Col>
-
-          <Col span={24}>
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="logisticsName" label="貨運公司">
-                  <Select
-                    style={{ width: "100%" }}
-                    placeholder="請選擇貨運公司"
-                    disabled={!actionStatus.shipment}
-                    options={logisticsOptions.map((opt) => ({
-                      ...opt,
-                      label: opt.logisticsName,
-                      value: opt.logisticsName,
-                    }))}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="shippingCode" label="配送單號">
-                  <Input
-                    placeholder="填寫配送單號"
-                    disabled={!actionStatus.shipment}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="invoiceNo" label="發票號碼">
-                  <Input
-                    placeholder="填寫發票號碼"
-                    disabled={!actionStatus.shipment}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="applyDate" label="發票開立日期">
-                  <DatePicker
-                    style={{ width: "100%" }}
-                    placeholder="填寫發票開立日期"
-                    disabled={!actionStatus.shipment}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="packaging" label="包材重量">
-                  <Input
-                    placeholder="填寫包材重量"
-                    suffix="克"
-                    disabled={!actionStatus.shipment}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-
-          <Col span={24}>
-            <Table
-              dataSource={productTableInfo.rows}
-              columns={columns}
-              pagination={false}
-            />
-          </Col>
-        </Row>
-      </Form>
-
-      <ModalAddress
-        info={{ ...form.getFieldsValue(true) }}
-        open={showModalAddress}
-        onOk={() => {
-          setShowModalAddress(false);
-          fetchInfo();
-        }}
-        onCancel={() => {
-          setShowModalAddress(false);
-        }}
-      />
-
-      <ModalReturnResult
-        open={showModalReturn}
-        onOk={() => {}}
-        onCancel={() => setShowModalReturn(false)}
-      />
-
-      <ModalReturnApproval
-        open={showModalReturnApproval}
-        onOk={() => {}}
-        onCancel={() => setShowModalReturnApproval(false)}
-      />
-
-      <ModalTax
-        info={form.getFieldsValue(true)}
-        open={showModalTax}
-        onOk={() => {
-          setShowModalTax(false);
-          fetchInfo();
-        }}
-        onCancel={() => {
-          setShowModalTax(false);
-        }}
-      />
-    </Spin>
+        <ModalTax
+          info={form.getFieldsValue(true)}
+          open={showModalTax}
+          onOk={() => {
+            setShowModalTax(false);
+            fetchInfo();
+          }}
+          onCancel={() => {
+            setShowModalTax(false);
+          }}
+        />
+      </Spin>
+    </Container>
   );
 }
