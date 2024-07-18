@@ -344,8 +344,6 @@ export default function Page(props) {
     fetchInfo();
   }, []);
 
-  console.log("productTableInfo", productTableInfo);
-
   return (
     <Spin spinning={loading.page}>
       <LayoutHeader>
@@ -681,9 +679,15 @@ export default function Page(props) {
       </Form>
 
       <ModalAddress
+        info={{ ...form.getFieldsValue(true) }}
         open={showModalAddress}
-        onOk={() => {}}
-        onCancel={() => setShowModalAddress(false)}
+        onOk={() => {
+          setShowModalAddress(false);
+          fetchInfo();
+        }}
+        onCancel={() => {
+          setShowModalAddress(false);
+        }}
       />
 
       <ModalReturnResult
