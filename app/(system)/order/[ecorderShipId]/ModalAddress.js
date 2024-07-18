@@ -126,11 +126,13 @@ export default function ModalAddress(props) {
             >
               <Select
                 placeholder="選擇縣市"
-                options={zipCity.map((c) => ({
-                  ...c,
-                  label: c.cityName,
-                  value: c.cityName,
-                }))}
+                options={
+                  zipCity?.map((c) => ({
+                    ...c,
+                    label: c.cityName,
+                    value: c.cityName,
+                  })) ?? []
+                }
               />
             </Form.Item>
           </Col>
