@@ -13,9 +13,10 @@ import { isValidTaxId } from "@/utils/validate";
 export default function ModalTax(props) {
   const { info, open, onOk, onCancel } = props;
   const [form] = Form.useForm();
+  const { message } = App.useApp();
+
   const params = useParams();
   const ecorderShipId = params.ecorderShipId;
-  const { message } = App.useApp();
 
   const [loading, setLoading] = useState({
     tax: false,
