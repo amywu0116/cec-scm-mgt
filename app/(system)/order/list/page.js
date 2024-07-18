@@ -9,6 +9,7 @@ import {
   Form,
   Radio,
   Row,
+  Upload,
 } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
 
-import ModalExportResult from "./ModalExportResult";
+import ModalImportShip from "./ModalImportShip";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
@@ -113,8 +114,10 @@ export default function Page() {
   const [loading, setLoading] = useState({
     table: false,
     batchDelivered: false,
+    importShip: false,
   });
-  const [showModalExportResult, setShowModalExportResult] = useState(false);
+
+  const [showModalImportShip, setShowModalImportShip] = useState(false);
 
   const tabActiveKeyDefault = "全部";
   const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
@@ -126,6 +129,8 @@ export default function Page() {
     label: item.name,
     disabled: !logisticsStatus.includes(item.value),
   }));
+
+  const [importShipData, setImportShipData] = useState([]);
 
   const [selectedRows, setSelectedRows] = useState([]);
   const shippingList = selectedRows.filter((r) => r.status === "配送中");
@@ -362,6 +367,32 @@ export default function Page() {
       });
   };
 
+  // 出貨狀態匯入
+  const handleImportShip = (info) => {
+    if (info.file.status === "done") {
+      const file = info.file.originFileObj;
+      const formData = new FormData();
+      formData.append("file", file);
+      setLoading((state) => ({ ...state, importShip: true }));
+      api
+        .post(`v1/scm/order/import/ship`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          setImportShipData(res.data);
+          setShowModalImportShip(true);
+        })
+        .catch((err) => {
+          message.error(err.message);
+          setImportShipData([]);
+          setShowModalImportShip(true);
+        })
+        .finally(() => {
+          setLoading((state) => ({ ...state, importShip: false }));
+        });
+    }
+  };
+
   // 進頁後先自動查詢一次
   useEffect(() => {
     // 等訂單物流狀態先設定好再查詢
@@ -484,13 +515,11 @@ export default function Page() {
                   </Col>
 
                   <Col>
-                    <Button
-                      onClick={() => {
-                        setShowModalExportResult(true);
-                      }}
-                    >
-                      出貨狀態匯入
-                    </Button>
+                    <Upload showUploadList={false} onChange={handleImportShip}>
+                      <Button htmlType="label" loading={loading.importShip}>
+                        出貨狀態匯入
+                      </Button>
+                    </Upload>
                   </Col>
 
                   <Col>
@@ -571,9 +600,10 @@ export default function Page() {
         </Row>
       </Container>
 
-      <ModalExportResult
-        open={showModalExportResult}
-        onCancel={() => setShowModalExportResult(false)}
+      <ModalImportShip
+        data={importShipData}
+        open={showModalImportShip}
+        onCancel={() => setShowModalImportShip(false)}
       />
     </>
   );
