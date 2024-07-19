@@ -814,6 +814,30 @@ export default function Page(props) {
               </Col>
             )}
 
+            {["退貨收貨完成", "退貨收貨失敗"].includes(info.backStatusName) && (
+              <Col span={24}>
+                <TitleWrapper>
+                  <Title>退貨資訊</Title>
+                </TitleWrapper>
+
+                <Row gutter={32}>
+                  <Col span={12}>
+                    <Form.Item name="backDate" label="退貨收貨失敗日期">
+                      <Input disabled />
+                    </Form.Item>
+                  </Col>
+
+                  {["退貨收貨失敗"].includes(info.backStatusName) && (
+                    <Col span={12}>
+                      <Form.Item name="backReason" label="失敗原因">
+                        <Input disabled />
+                      </Form.Item>
+                    </Col>
+                  )}
+                </Row>
+              </Col>
+            )}
+
             <Col span={24}>
               <Table
                 dataSource={productTableInfo.rows}
