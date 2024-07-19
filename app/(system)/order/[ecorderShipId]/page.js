@@ -1,5 +1,5 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Row, Spin, Collapse } from "antd";
+import { App, Breadcrumb, Col, Collapse, Form, Row, Spin } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
 
 import ModalAddress from "./ModalAddress";
-import ModalReturnApproval from "./ModalReturnApproval";
+import ModalRevokeExamine from "./ModalRevokeExamine";
 import ModalRevokeResult from "./ModalRevokeResult";
 import ModalTax from "./ModalTax";
 
@@ -98,21 +98,25 @@ export default function Page(props) {
     revoke: false,
   });
 
-  const [showModalAddress, setShowModalAddress] = useState(false);
-  const [showModalRevokeResult, setShowModalRevokeResult] = useState(false);
-  const [showModalReturnApproval, setShowModalReturnApproval] = useState(false);
-  const [showModalTax, setShowModalTax] = useState(false);
+  const [showModal, setShowModal] = useState({
+    address: false,
+    revokeResult: false,
+    revokeExamine: false,
+    tax: false,
+  });
+
+  const [collapseActiveKey, setCollapseActiveKey] = useState([
+    "顧客配送信息",
+    "出貨設定",
+  ]);
+
+  const [info, setInfo] = useState({});
+  const actionStatus = info.actionStatus ?? {};
+  const product = info.product ?? [];
 
   const [productTableInfo, setProductTableInfo] = useState({
     rows: [],
   });
-
-  const refundId = form.getFieldValue("refundId");
-  const backStatusName = form.getFieldValue("backStatusName");
-  const ecorderStatusName = form.getFieldValue("ecorderStatusName");
-  const pickingStatusName = form.getFieldValue("pickingStatusName");
-  const actionStatus = form.getFieldValue("actionStatus") ?? {};
-  const product = form.getFieldValue("product");
 
   const logisticsName = Form.useWatch("logisticsName", form);
   const shippingCode = Form.useWatch("shippingCode", form);
@@ -226,17 +230,22 @@ export default function Page(props) {
         form.setFieldsValue({
           ...res.data,
           applyDate: applyDate ? dayjs(applyDate) : null,
-          receiverName: receiverName ?? "-",
-          receiverPhone: receiverPhone ?? "-",
-          receiverTelephone: receiverTelephone ?? "-",
+          receiverName: receiverName ? receiverName : "-",
+          receiverPhone: receiverPhone ? receiverPhone : "-",
+          receiverTelephone: receiverTelephone ? receiverTelephone : "-",
           fullAddress: `${receiverZip}${receiverCityName}${receiverDistrictName}${receiverAddress}`,
-          remark: remark ?? "-",
-          receiverAddressRemark: receiverAddressRemark ?? "-",
-          receiverElevatorName: receiverElevatorName ?? "-",
-          receiverReceiveName: receiverReceiveName ?? "-",
-          taxId: taxId ?? "-",
+          remark: remark ? remark : "-",
+          receiverAddressRemark: receiverAddressRemark
+            ? receiverAddressRemark
+            : "-",
+          receiverElevatorName: receiverElevatorName
+            ? receiverElevatorName
+            : "-",
+          receiverReceiveName: receiverReceiveName ? receiverReceiveName : "-",
+          taxId: taxId ? taxId : "-",
         });
 
+        setInfo((state) => ({ ...state, ...res.data }));
         setProductTableInfo((state) => ({ ...state, rows: product }));
       })
       .catch((err) => {
@@ -378,7 +387,7 @@ export default function Page(props) {
 
     setLoading((state) => ({ ...state, revoke: true }));
     api
-      .post(`v1/scm/order/${refundId}/revoke`, data)
+      .post(`v1/scm/order/${info.refundId}/revoke`, data)
       .then((res) => {
         message.success(res.message);
         fetchInfo();
@@ -394,6 +403,15 @@ export default function Page(props) {
   useEffect(() => {
     fetchInfo();
   }, []);
+
+  // "退貨申請" 狀態下預設收合 "顧客配送信息" 和 "出貨設定" 區塊
+  useEffect(() => {
+    setCollapseActiveKey(
+      ["退貨申請"].includes(info.backStatusName)
+        ? []
+        : ["顧客配送信息", "出貨設定"]
+    );
+  }, [info]);
 
   return (
     <Container>
@@ -450,7 +468,12 @@ export default function Page(props) {
               <Col>
                 <Button
                   type="primary"
-                  onClick={() => setShowModalReturnApproval(true)}
+                  onClick={() =>
+                    setShowModal((state) => ({
+                      ...state,
+                      revokeExamine: true,
+                    }))
+                  }
                 >
                   設定退貨審核結果
                 </Button>
@@ -504,11 +527,11 @@ export default function Page(props) {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item name="orderStatus" label="訂單狀態">
-                    {backStatusName ? (
-                      <Tag color="blue">{backStatusName}</Tag>
-                    ) : ecorderStatusName || pickingStatusName ? (
+                    {info.backStatusName ? (
+                      <Tag color="blue">{info.backStatusName}</Tag>
+                    ) : info.ecorderStatusName || info.pickingStatusName ? (
                       <Tag color="blue">
-                        {ecorderStatusName} / {pickingStatusName}
+                        {info.ecorderStatusName} / {info.pickingStatusName}
                       </Tag>
                     ) : undefined}
                   </Form.Item>
@@ -518,14 +541,13 @@ export default function Page(props) {
 
             <Col span={24}>
               <Collapse
-                activeKey={["1", "2"]}
+                activeKey={collapseActiveKey}
                 ghost
                 bordered={false}
                 expandIconPosition="end"
                 items={[
                   {
-                    key: "1",
-                    showArrow: false,
+                    key: "顧客配送信息",
                     label: (
                       <TitleWrapper>
                         <Title>顧客配送信息</Title>
@@ -535,7 +557,12 @@ export default function Page(props) {
                             <Col>
                               <Button
                                 type="secondary"
-                                onClick={() => setShowModalTax(true)}
+                                onClick={() =>
+                                  setShowModal((state) => ({
+                                    ...state,
+                                    tax: true,
+                                  }))
+                                }
                               >
                                 修改統一編號
                               </Button>
@@ -546,7 +573,12 @@ export default function Page(props) {
                             <Col>
                               <Button
                                 type="secondary"
-                                onClick={() => setShowModalAddress(true)}
+                                onClick={() =>
+                                  setShowModal((state) => ({
+                                    ...state,
+                                    address: true,
+                                  }))
+                                }
                               >
                                 修改配送地址
                               </Button>
@@ -633,8 +665,7 @@ export default function Page(props) {
                     ),
                   },
                   {
-                    key: "2",
-                    showArrow: false,
+                    key: "出貨設定",
                     label: (
                       <TitleWrapper>
                         <Title>出貨設定</Title>
@@ -727,66 +758,100 @@ export default function Page(props) {
                     ),
                   },
                 ]}
+                onChange={(keyList) => {
+                  setCollapseActiveKey(keyList);
+                }}
               />
             </Col>
 
-            <Col span={24}>
-              <TitleWrapper>
-                <Title>收貨設定</Title>
+            {info.backStatus && (
+              <Col span={24}>
+                <TitleWrapper>
+                  <Title>收貨設定</Title>
 
-                <Row style={{ marginLeft: "auto" }} gutter={16}>
-                  {actionStatus.revoke && (
-                    <Col>
-                      <Button
-                        type="secondary"
-                        disabled={isRevokeDisabled()}
-                        loading={loading.revoke}
-                        onClick={handleRevoke}
-                      >
-                        退貨收回
-                      </Button>
-                    </Col>
-                  )}
+                  <Row style={{ marginLeft: "auto" }} gutter={16}>
+                    {actionStatus.revoke && (
+                      <Col>
+                        <Button
+                          type="secondary"
+                          disabled={isRevokeDisabled()}
+                          loading={loading.revoke}
+                          onClick={handleRevoke}
+                        >
+                          退貨收回
+                        </Button>
+                      </Col>
+                    )}
 
-                  {actionStatus.revokeResult && (
-                    <Col>
-                      <Button
-                        type="primary"
-                        onClick={() => setShowModalRevokeResult(true)}
-                      >
-                        設定退貨結果
-                      </Button>
+                    {actionStatus.revokeResult && (
+                      <Col>
+                        <Button
+                          type="primary"
+                          onClick={() =>
+                            setShowModal((state) => ({
+                              ...state,
+                              revokeResult: true,
+                            }))
+                          }
+                        >
+                          設定退貨結果
+                        </Button>
+                      </Col>
+                    )}
+                  </Row>
+                </TitleWrapper>
+
+                <Row gutter={32}>
+                  <Col span={12}>
+                    <Form.Item name="backLogisticsName" label="貨運公司">
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="請選擇貨運公司"
+                        disabled={loading.revoke || !actionStatus.revoke}
+                        options={logisticsOptions.map((opt) => ({
+                          ...opt,
+                          label: opt.logisticsName,
+                          value: opt.logisticsName,
+                        }))}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item name="backShippingCode" label="配送單號">
+                      <Input
+                        placeholder="填寫配送單號"
+                        disabled={loading.revoke || !actionStatus.revoke}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+            )}
+
+            {["退貨收貨完成", "退貨收貨失敗"].includes(info.backStatusName) && (
+              <Col span={24}>
+                <TitleWrapper>
+                  <Title>退貨資訊</Title>
+                </TitleWrapper>
+
+                <Row gutter={32}>
+                  <Col span={12}>
+                    <Form.Item name="backDate" label="退貨收貨失敗日期">
+                      <Input disabled />
+                    </Form.Item>
+                  </Col>
+
+                  {["退貨收貨失敗"].includes(info.backStatusName) && (
+                    <Col span={12}>
+                      <Form.Item name="backReason" label="失敗原因">
+                        <Input disabled />
+                      </Form.Item>
                     </Col>
                   )}
                 </Row>
-              </TitleWrapper>
-
-              <Row gutter={32}>
-                <Col span={12}>
-                  <Form.Item name="backLogisticsName" label="貨運公司">
-                    <Select
-                      style={{ width: "100%" }}
-                      placeholder="請選擇貨運公司"
-                      disabled={loading.revoke || !actionStatus.revoke}
-                      options={logisticsOptions.map((opt) => ({
-                        ...opt,
-                        label: opt.logisticsName,
-                        value: opt.logisticsName,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col span={12}>
-                  <Form.Item name="backShippingCode" label="配送單號">
-                    <Input
-                      placeholder="填寫配送單號"
-                      disabled={loading.revoke || !actionStatus.revoke}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
+              </Col>
+            )}
 
             <Col span={24}>
               <Table
@@ -799,44 +864,50 @@ export default function Page(props) {
         </Form>
 
         <ModalAddress
-          info={{ ...form.getFieldsValue(true) }}
-          open={showModalAddress}
+          info={{ ...info }}
+          open={showModal.address}
           onOk={() => {
-            setShowModalAddress(false);
+            setShowModal((state) => ({ ...state, address: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalAddress(false);
+            setShowModal((state) => ({ ...state, address: false }));
           }}
         />
 
         <ModalRevokeResult
-          info={form.getFieldsValue(true)}
-          open={showModalRevokeResult}
+          info={{ ...info }}
+          open={showModal.revokeResult}
           onOk={() => {
-            setShowModalRevokeResult(false);
+            setShowModal((state) => ({ ...state, revokeResult: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalRevokeResult(false);
+            setShowModal((state) => ({ ...state, revokeResult: false }));
           }}
         />
 
-        <ModalReturnApproval
-          open={showModalReturnApproval}
-          onOk={() => {}}
-          onCancel={() => setShowModalReturnApproval(false)}
+        <ModalRevokeExamine
+          info={{ ...info }}
+          open={showModal.revokeExamine}
+          onOk={() => {
+            setShowModal((state) => ({ ...state, revokeExamine: false }));
+            fetchInfo();
+          }}
+          onCancel={() =>
+            setShowModal((state) => ({ ...state, revokeExamine: false }))
+          }
         />
 
         <ModalTax
-          info={form.getFieldsValue(true)}
-          open={showModalTax}
+          info={{ ...info }}
+          open={showModal.tax}
           onOk={() => {
-            setShowModalTax(false);
+            setShowModal((state) => ({ ...state, tax: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalTax(false);
+            setShowModal((state) => ({ ...state, tax: false }));
           }}
         />
       </Spin>

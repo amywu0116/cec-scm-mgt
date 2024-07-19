@@ -170,11 +170,7 @@ export default function ModalAddress(props) {
           </Col>
 
           <Col span={12}>
-            <Form.Item
-              name="receiverAddressRemark"
-              label="地址備註"
-              rules={[{ required: true, message: "必填" }]}
-            >
+            <Form.Item name="receiverAddressRemark" label="地址備註">
               <TextArea rows={6} autoSize={{ minRows: 3, maxRows: 3 }} />
             </Form.Item>
           </Col>
