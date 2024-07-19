@@ -14,7 +14,7 @@ import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
 
 import ModalAddress from "./ModalAddress";
-import ModalReturnApproval from "./ModalReturnApproval";
+import ModalRevokeExamine from "./ModalRevokeExamine";
 import ModalRevokeResult from "./ModalRevokeResult";
 import ModalTax from "./ModalTax";
 
@@ -101,7 +101,7 @@ export default function Page(props) {
   const [showModal, setShowModal] = useState({
     address: false,
     revokeResult: false,
-    returnApproval: false,
+    revokeExamine: false,
     tax: false,
   });
 
@@ -457,7 +457,7 @@ export default function Page(props) {
                   onClick={() =>
                     setShowModal((state) => ({
                       ...state,
-                      returnApproval: true,
+                      revokeExamine: true,
                     }))
                   }
                 >
@@ -848,11 +848,15 @@ export default function Page(props) {
           }}
         />
 
-        <ModalReturnApproval
-          open={showModal.returnApproval}
-          onOk={() => {}}
+        <ModalRevokeExamine
+          info={{ ...info }}
+          open={showModal.revokeExamine}
+          onOk={() => {
+            setShowModal((state) => ({ ...state, revokeExamine: false }));
+            fetchInfo();
+          }}
           onCancel={() =>
-            setShowModal((state) => ({ ...state, returnApproval: false }))
+            setShowModal((state) => ({ ...state, revokeExamine: false }))
           }
         />
 
