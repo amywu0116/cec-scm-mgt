@@ -1,5 +1,5 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Row, Spin, Collapse } from "antd";
+import { App, Breadcrumb, Col, Collapse, Form, Row, Spin } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -98,11 +98,14 @@ export default function Page(props) {
     revoke: false,
   });
 
-  const [showModalAddress, setShowModalAddress] = useState(false);
-  const [showModalRevokeResult, setShowModalRevokeResult] = useState(false);
-  const [showModalReturnApproval, setShowModalReturnApproval] = useState(false);
-  const [showModalTax, setShowModalTax] = useState(false);
+  const [showModal, setShowModal] = useState({
+    address: false,
+    revokeResult: false,
+    returnApproval: false,
+    tax: false,
+  });
 
+  const [info, setInfo] = useState({});
   const [productTableInfo, setProductTableInfo] = useState({
     rows: [],
   });
@@ -226,17 +229,22 @@ export default function Page(props) {
         form.setFieldsValue({
           ...res.data,
           applyDate: applyDate ? dayjs(applyDate) : null,
-          receiverName: receiverName ?? "-",
-          receiverPhone: receiverPhone ?? "-",
-          receiverTelephone: receiverTelephone ?? "-",
+          receiverName: receiverName ? receiverName : "-",
+          receiverPhone: receiverPhone ? receiverPhone : "-",
+          receiverTelephone: receiverTelephone ? receiverTelephone : "-",
           fullAddress: `${receiverZip}${receiverCityName}${receiverDistrictName}${receiverAddress}`,
-          remark: remark ?? "-",
-          receiverAddressRemark: receiverAddressRemark ?? "-",
-          receiverElevatorName: receiverElevatorName ?? "-",
-          receiverReceiveName: receiverReceiveName ?? "-",
-          taxId: taxId ?? "-",
+          remark: remark ? remark : "-",
+          receiverAddressRemark: receiverAddressRemark
+            ? receiverAddressRemark
+            : "-",
+          receiverElevatorName: receiverElevatorName
+            ? receiverElevatorName
+            : "-",
+          receiverReceiveName: receiverReceiveName ? receiverReceiveName : "-",
+          taxId: taxId ? taxId : "-",
         });
 
+        setInfo((state) => ({ ...state, ...res.data }));
         setProductTableInfo((state) => ({ ...state, rows: product }));
       })
       .catch((err) => {
@@ -450,7 +458,12 @@ export default function Page(props) {
               <Col>
                 <Button
                   type="primary"
-                  onClick={() => setShowModalReturnApproval(true)}
+                  onClick={() =>
+                    setShowModal((state) => ({
+                      ...state,
+                      returnApproval: true,
+                    }))
+                  }
                 >
                   設定退貨審核結果
                 </Button>
@@ -535,7 +548,12 @@ export default function Page(props) {
                             <Col>
                               <Button
                                 type="secondary"
-                                onClick={() => setShowModalTax(true)}
+                                onClick={() =>
+                                  setShowModal((state) => ({
+                                    ...state,
+                                    tax: true,
+                                  }))
+                                }
                               >
                                 修改統一編號
                               </Button>
@@ -546,7 +564,12 @@ export default function Page(props) {
                             <Col>
                               <Button
                                 type="secondary"
-                                onClick={() => setShowModalAddress(true)}
+                                onClick={() =>
+                                  setShowModal((state) => ({
+                                    ...state,
+                                    address: true,
+                                  }))
+                                }
                               >
                                 修改配送地址
                               </Button>
@@ -752,7 +775,12 @@ export default function Page(props) {
                     <Col>
                       <Button
                         type="primary"
-                        onClick={() => setShowModalRevokeResult(true)}
+                        onClick={() =>
+                          setShowModal((state) => ({
+                            ...state,
+                            revokeResult: true,
+                          }))
+                        }
                       >
                         設定退貨結果
                       </Button>
@@ -799,44 +827,46 @@ export default function Page(props) {
         </Form>
 
         <ModalAddress
-          info={{ ...form.getFieldsValue(true) }}
-          open={showModalAddress}
+          info={{ ...info }}
+          open={showModal.address}
           onOk={() => {
-            setShowModalAddress(false);
+            setShowModal((state) => ({ ...state, address: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalAddress(false);
+            setShowModal((state) => ({ ...state, address: false }));
           }}
         />
 
         <ModalRevokeResult
-          info={form.getFieldsValue(true)}
-          open={showModalRevokeResult}
+          info={{ ...info }}
+          open={showModal.revokeResult}
           onOk={() => {
-            setShowModalRevokeResult(false);
+            setShowModal((state) => ({ ...state, revokeResult: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalRevokeResult(false);
+            setShowModal((state) => ({ ...state, revokeResult: false }));
           }}
         />
 
         <ModalReturnApproval
-          open={showModalReturnApproval}
+          open={showModal.returnApproval}
           onOk={() => {}}
-          onCancel={() => setShowModalReturnApproval(false)}
+          onCancel={() =>
+            setShowModal((state) => ({ ...state, returnApproval: false }))
+          }
         />
 
         <ModalTax
-          info={form.getFieldsValue(true)}
-          open={showModalTax}
+          info={{ ...info }}
+          open={showModal.tax}
           onOk={() => {
-            setShowModalTax(false);
+            setShowModal((state) => ({ ...state, tax: false }));
             fetchInfo();
           }}
           onCancel={() => {
-            setShowModalTax(false);
+            setShowModal((state) => ({ ...state, tax: false }));
           }}
         />
       </Spin>
