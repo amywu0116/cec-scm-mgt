@@ -30,11 +30,19 @@ const Container = styled.div`
   .ant-collapse .ant-collapse-content > .ant-collapse-content-box {
     padding: 0;
   }
+
+  .ant-collapse-ghost
+    > .ant-collapse-item
+    > .ant-collapse-content
+    > .ant-collapse-content-box {
+    padding-block: 0;
+  }
 `;
 
 const TitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  height: 54px;
 `;
 
 const Title = styled.div`
@@ -504,7 +512,7 @@ export default function Page(props) {
           requiredMark={false}
           autoComplete="off"
         >
-          <Row gutter={[0, 16]}>
+          <Row>
             <Col span={24}>
               <TitleWrapper>
                 <Title>基礎資料</Title>
@@ -544,10 +552,11 @@ export default function Page(props) {
                 activeKey={collapseActiveKey}
                 ghost
                 bordered={false}
-                expandIconPosition="end"
+                // expandIconPosition="end"
                 items={[
                   {
                     key: "顧客配送信息",
+                    showArrow: false,
                     label: (
                       <TitleWrapper>
                         <Title>顧客配送信息</Title>
@@ -666,6 +675,7 @@ export default function Page(props) {
                   },
                   {
                     key: "出貨設定",
+                    showArrow: false,
                     label: (
                       <TitleWrapper>
                         <Title>出貨設定</Title>
