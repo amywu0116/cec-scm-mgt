@@ -106,16 +106,12 @@ export default function Page(props) {
   });
 
   const [info, setInfo] = useState({});
+  const actionStatus = info.actionStatus ?? {};
+  const product = info.product ?? [];
+
   const [productTableInfo, setProductTableInfo] = useState({
     rows: [],
   });
-
-  const refundId = form.getFieldValue("refundId");
-  const backStatusName = form.getFieldValue("backStatusName");
-  const ecorderStatusName = form.getFieldValue("ecorderStatusName");
-  const pickingStatusName = form.getFieldValue("pickingStatusName");
-  const actionStatus = form.getFieldValue("actionStatus") ?? {};
-  const product = form.getFieldValue("product");
 
   const logisticsName = Form.useWatch("logisticsName", form);
   const shippingCode = Form.useWatch("shippingCode", form);
@@ -386,7 +382,7 @@ export default function Page(props) {
 
     setLoading((state) => ({ ...state, revoke: true }));
     api
-      .post(`v1/scm/order/${refundId}/revoke`, data)
+      .post(`v1/scm/order/${info.refundId}/revoke`, data)
       .then((res) => {
         message.success(res.message);
         fetchInfo();
@@ -517,11 +513,11 @@ export default function Page(props) {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item name="orderStatus" label="訂單狀態">
-                    {backStatusName ? (
-                      <Tag color="blue">{backStatusName}</Tag>
-                    ) : ecorderStatusName || pickingStatusName ? (
+                    {info.backStatusName ? (
+                      <Tag color="blue">{info.backStatusName}</Tag>
+                    ) : info.ecorderStatusName || info.pickingStatusName ? (
                       <Tag color="blue">
-                        {ecorderStatusName} / {pickingStatusName}
+                        {info.ecorderStatusName} / {info.pickingStatusName}
                       </Tag>
                     ) : undefined}
                   </Form.Item>
@@ -753,68 +749,70 @@ export default function Page(props) {
               />
             </Col>
 
-            <Col span={24}>
-              <TitleWrapper>
-                <Title>收貨設定</Title>
+            {info.backStatus && (
+              <Col span={24}>
+                <TitleWrapper>
+                  <Title>收貨設定</Title>
 
-                <Row style={{ marginLeft: "auto" }} gutter={16}>
-                  {actionStatus.revoke && (
-                    <Col>
-                      <Button
-                        type="secondary"
-                        disabled={isRevokeDisabled()}
-                        loading={loading.revoke}
-                        onClick={handleRevoke}
-                      >
-                        退貨收回
-                      </Button>
-                    </Col>
-                  )}
+                  <Row style={{ marginLeft: "auto" }} gutter={16}>
+                    {actionStatus.revoke && (
+                      <Col>
+                        <Button
+                          type="secondary"
+                          disabled={isRevokeDisabled()}
+                          loading={loading.revoke}
+                          onClick={handleRevoke}
+                        >
+                          退貨收回
+                        </Button>
+                      </Col>
+                    )}
 
-                  {actionStatus.revokeResult && (
-                    <Col>
-                      <Button
-                        type="primary"
-                        onClick={() =>
-                          setShowModal((state) => ({
-                            ...state,
-                            revokeResult: true,
-                          }))
-                        }
-                      >
-                        設定退貨結果
-                      </Button>
-                    </Col>
-                  )}
+                    {actionStatus.revokeResult && (
+                      <Col>
+                        <Button
+                          type="primary"
+                          onClick={() =>
+                            setShowModal((state) => ({
+                              ...state,
+                              revokeResult: true,
+                            }))
+                          }
+                        >
+                          設定退貨結果
+                        </Button>
+                      </Col>
+                    )}
+                  </Row>
+                </TitleWrapper>
+
+                <Row gutter={32}>
+                  <Col span={12}>
+                    <Form.Item name="backLogisticsName" label="貨運公司">
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="請選擇貨運公司"
+                        disabled={loading.revoke || !actionStatus.revoke}
+                        options={logisticsOptions.map((opt) => ({
+                          ...opt,
+                          label: opt.logisticsName,
+                          value: opt.logisticsName,
+                        }))}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item name="backShippingCode" label="配送單號">
+                      <Input
+                        placeholder="填寫配送單號"
+                        disabled={loading.revoke || !actionStatus.revoke}
+                      />
+                    </Form.Item>
+                  </Col>
                 </Row>
-              </TitleWrapper>
-
-              <Row gutter={32}>
-                <Col span={12}>
-                  <Form.Item name="backLogisticsName" label="貨運公司">
-                    <Select
-                      style={{ width: "100%" }}
-                      placeholder="請選擇貨運公司"
-                      disabled={loading.revoke || !actionStatus.revoke}
-                      options={logisticsOptions.map((opt) => ({
-                        ...opt,
-                        label: opt.logisticsName,
-                        value: opt.logisticsName,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col span={12}>
-                  <Form.Item name="backShippingCode" label="配送單號">
-                    <Input
-                      placeholder="填寫配送單號"
-                      disabled={loading.revoke || !actionStatus.revoke}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
+              </Col>
+            )}
 
             <Col span={24}>
               <Table
