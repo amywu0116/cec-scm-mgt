@@ -105,6 +105,11 @@ export default function Page(props) {
     tax: false,
   });
 
+  const [collapseActiveKey, setCollapseActiveKey] = useState([
+    "顧客配送信息",
+    "出貨設定",
+  ]);
+
   const [info, setInfo] = useState({});
   const actionStatus = info.actionStatus ?? {};
   const product = info.product ?? [];
@@ -399,6 +404,15 @@ export default function Page(props) {
     fetchInfo();
   }, []);
 
+  // "退貨申請" 狀態下預設收合 "顧客配送信息" 和 "出貨設定" 區塊
+  useEffect(() => {
+    setCollapseActiveKey(
+      ["退貨申請"].includes(info.backStatusName)
+        ? []
+        : ["顧客配送信息", "出貨設定"]
+    );
+  }, [info]);
+
   return (
     <Container>
       <Spin spinning={loading.page}>
@@ -527,14 +541,13 @@ export default function Page(props) {
 
             <Col span={24}>
               <Collapse
-                activeKey={["1", "2"]}
+                activeKey={collapseActiveKey}
                 ghost
                 bordered={false}
                 expandIconPosition="end"
                 items={[
                   {
-                    key: "1",
-                    showArrow: false,
+                    key: "顧客配送信息",
                     label: (
                       <TitleWrapper>
                         <Title>顧客配送信息</Title>
@@ -652,8 +665,7 @@ export default function Page(props) {
                     ),
                   },
                   {
-                    key: "2",
-                    showArrow: false,
+                    key: "出貨設定",
                     label: (
                       <TitleWrapper>
                         <Title>出貨設定</Title>
@@ -746,6 +758,9 @@ export default function Page(props) {
                     ),
                   },
                 ]}
+                onChange={(keyList) => {
+                  setCollapseActiveKey(keyList);
+                }}
               />
             </Col>
 
