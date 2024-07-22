@@ -88,6 +88,12 @@ const Tag = styled.div`
     `}
 `;
 
+const OrderStatusTag = styled.div`
+  height: 42px;
+  display: flex;
+  align-items: center;
+`;
+
 export default function Page(props) {
   const { params } = props;
   const { message } = App.useApp();
@@ -535,13 +541,15 @@ export default function Page(props) {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item name="orderStatus" label="訂單狀態">
-                    {info.backStatusName ? (
-                      <Tag color="blue">{info.backStatusName}</Tag>
-                    ) : info.ecorderStatusName || info.pickingStatusName ? (
-                      <Tag color="blue">
-                        {info.ecorderStatusName} / {info.pickingStatusName}
-                      </Tag>
-                    ) : undefined}
+                    <OrderStatusTag>
+                      {info.backStatusName ? (
+                        <Tag color="blue">{info.backStatusName}</Tag>
+                      ) : info.ecorderStatusName || info.pickingStatusName ? (
+                        <Tag color="blue">
+                          {info.ecorderStatusName} / {info.pickingStatusName}
+                        </Tag>
+                      ) : undefined}
+                    </OrderStatusTag>
                   </Form.Item>
                 </Col>
               </Row>
@@ -839,27 +847,86 @@ export default function Page(props) {
               </Col>
             )}
 
-            {["退貨收貨完成", "退貨收貨失敗"].includes(info.backStatusName) && (
+            {["退貨收貨完成", "退貨收貨失敗", "退貨退款中"].includes(
+              info.backStatusName
+            ) && (
               <Col span={24}>
                 <TitleWrapper>
                   <Title>退貨資訊</Title>
                 </TitleWrapper>
 
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item name="backDate" label="退貨收貨失敗日期">
-                      <Input disabled />
-                    </Form.Item>
-                  </Col>
+                {["退貨收貨完成"].includes(info.backStatusName) && (
+                  <Row gutter={32}>
+                    <Col span={12}>
+                      <Form.Item name="backDate" label="退貨收貨完成日期">
+                        <Input disabled />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                )}
 
-                  {["退貨收貨失敗"].includes(info.backStatusName) && (
+                {["退貨收貨失敗"].includes(info.backStatusName) && (
+                  <Row gutter={32}>
+                    <Col span={12}>
+                      <Form.Item name="backDate" label="退貨收貨失敗日期">
+                        <Input disabled />
+                      </Form.Item>
+                    </Col>
+
                     <Col span={12}>
                       <Form.Item name="backReason" label="失敗原因">
                         <Input disabled />
                       </Form.Item>
                     </Col>
-                  )}
-                </Row>
+                  </Row>
+                )}
+
+                {["退貨退款中"].includes(info.backStatusName) && (
+                  <>
+                    <Row gutter={32}>
+                      <Col span={12}>
+                        <Form.Item name="backDate" label="退貨收貨完成日期">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={12}>
+                        <Form.Item
+                          name="examDate"
+                          label={
+                            info.examReason === null
+                              ? "退貨核可日期"
+                              : "退貨不核可日期"
+                          }
+                        >
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    {info.examReason !== null && (
+                      <Row gutter={32}>
+                        <Col span={12}>
+                          <Form.Item name="examReason" label="不核可原因">
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item name="examPhoto" label="圖片">
+                            <a
+                              style={{ wordBreak: "break-all" }}
+                              href={info.examPhoto}
+                              target="_blank"
+                            >
+                              {info.examPhoto}
+                            </a>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
+                  </>
+                )}
               </Col>
             )}
 
