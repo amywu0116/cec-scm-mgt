@@ -1,17 +1,18 @@
 "use client";
-import { App, Breadcrumb, Col, Collapse, Form, Row, Spin, Space } from "antd";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { App, Breadcrumb, Col, Collapse, Form, Row, Space, Spin } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
-import OrderDatePicker from "./OrderDatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
+import OrderDatePicker from "./OrderDatePicker";
 
 import ModalAddress from "./ModalAddress";
 import ModalRevokeExamine from "./ModalRevokeExamine";
@@ -49,6 +50,8 @@ const Title = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #56659b;
+  display: flex;
+  gap: 0 5px;
 `;
 
 const Tag = styled.div`
@@ -270,8 +273,26 @@ export default function Page(props) {
       });
   };
 
+  const openModalTax = (e) => {
+    e.stopPropagation();
+    setShowModal((state) => ({
+      ...state,
+      tax: true,
+    }));
+  };
+
+  const openModalAddress = (e) => {
+    e.stopPropagation();
+    setShowModal((state) => ({
+      ...state,
+      address: true,
+    }));
+  };
+
   // 出貨
-  const handleShip = () => {
+  const handleShip = (e) => {
+    e.stopPropagation();
+
     const isPickupQtyInValid = productTableInfo.rows.some(
       (r) => r.pickupQty !== r.qty
     );
@@ -557,32 +578,23 @@ export default function Page(props) {
                     showArrow: false,
                     label: (
                       <TitleWrapper>
-                        <Title>顧客配送信息</Title>
+                        <Title>
+                          顧客配送信息
+                          {collapseActiveKey.includes("顧客配送信息") ? (
+                            <DownOutlined />
+                          ) : (
+                            <UpOutlined />
+                          )}
+                        </Title>
                         <Space style={{ marginLeft: "auto" }} size={16}>
                           {actionStatus.editTaxId && (
-                            <Button
-                              type="secondary"
-                              onClick={() =>
-                                setShowModal((state) => ({
-                                  ...state,
-                                  tax: true,
-                                }))
-                              }
-                            >
+                            <Button type="secondary" onClick={openModalTax}>
                               修改統一編號
                             </Button>
                           )}
 
                           {actionStatus.editAddr && (
-                            <Button
-                              type="secondary"
-                              onClick={() =>
-                                setShowModal((state) => ({
-                                  ...state,
-                                  address: true,
-                                }))
-                              }
-                            >
+                            <Button type="secondary" onClick={openModalAddress}>
                               修改配送地址
                             </Button>
                           )}
@@ -682,7 +694,14 @@ export default function Page(props) {
                     showArrow: false,
                     label: (
                       <TitleWrapper>
-                        <Title>出貨設定</Title>
+                        <Title>
+                          出貨設定
+                          {collapseActiveKey.includes("出貨設定") ? (
+                            <DownOutlined />
+                          ) : (
+                            <UpOutlined />
+                          )}
+                        </Title>
                         <Space style={{ marginLeft: "auto" }} size={16}>
                           {actionStatus.printSalesDetail && (
                             <Link href="/pdf" target="_blank">
