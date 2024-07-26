@@ -442,9 +442,7 @@ export default function Page(props) {
   // "退貨申請" 狀態下預設收合 "顧客配送信息" 和 "出貨設定" 區塊
   useEffect(() => {
     setCollapseActiveKey(
-      ["退貨申請"].includes(info.backStatusName)
-        ? []
-        : ["顧客配送信息", "出貨設定"]
+      info.backStatusName ? [] : ["顧客配送信息", "出貨設定"]
     );
   }, [info]);
 
