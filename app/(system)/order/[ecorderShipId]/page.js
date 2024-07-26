@@ -1,12 +1,12 @@
 "use client";
-import { App, Breadcrumb, Col, Collapse, Form, Row, Spin } from "antd";
+import { App, Breadcrumb, Col, Collapse, Form, Row, Spin, Space } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
+import OrderDatePicker from "./OrderDatePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
@@ -137,9 +137,9 @@ export default function Page(props) {
   const invoiceNo = Form.useWatch("invoiceNo", form);
   const applyDate = Form.useWatch("applyDate", form);
   const packaging = Form.useWatch("packaging", form);
-
   const backLogisticsName = Form.useWatch("backLogisticsName", form);
   const backShippingCode = Form.useWatch("backShippingCode", form);
+  const taxId = Form.useWatch("taxId", form);
 
   const columns = [
     {
@@ -441,72 +441,62 @@ export default function Page(props) {
             ]}
           />
 
-          <Row style={{ marginLeft: "auto" }} gutter={16}>
+          <Space style={{ marginLeft: "auto" }} size={16}>
             {actionStatus.reject && (
-              <Col>
-                <Button
-                  type="secondary"
-                  loading={loading.reject}
-                  onClick={handleReject}
-                >
-                  拒收
-                </Button>
-              </Col>
+              <Button
+                type="secondary"
+                loading={loading.reject}
+                onClick={handleReject}
+              >
+                拒收
+              </Button>
             )}
 
             {actionStatus.unusual && (
-              <Col>
-                <Button
-                  type="secondary"
-                  loading={loading.unusual}
-                  onClick={handleUnusual}
-                >
-                  異常
-                </Button>
-              </Col>
+              <Button
+                type="secondary"
+                loading={loading.unusual}
+                onClick={handleUnusual}
+              >
+                異常
+              </Button>
             )}
 
             {actionStatus.arrived && (
-              <Col>
-                <Button
-                  type="primary"
-                  loading={loading.arrived}
-                  onClick={handleArrived}
-                >
-                  已送達
-                </Button>
-              </Col>
+              <Button
+                type="primary"
+                loading={loading.arrived}
+                onClick={handleArrived}
+              >
+                已送達
+              </Button>
             )}
 
             {actionStatus.revokeExamine && (
-              <Col>
-                <Button
-                  type="primary"
-                  onClick={() =>
-                    setShowModal((state) => ({
-                      ...state,
-                      revokeExamine: true,
-                    }))
-                  }
-                >
-                  設定退貨審核結果
-                </Button>
-              </Col>
+              <Button
+                type="primary"
+                onClick={() =>
+                  setShowModal((state) => ({
+                    ...state,
+                    revokeExamine: true,
+                  }))
+                }
+              >
+                設定退貨審核結果
+              </Button>
             )}
 
             {actionStatus.cancel && (
-              <Col>
-                <Button
-                  type="primary"
-                  danger
-                  loading={loading.cancel}
-                  onClick={handleCancel}
-                >
-                  訂單取消
-                </Button>
-              </Col>
+              <Button
+                type="primary"
+                danger
+                loading={loading.cancel}
+                onClick={handleCancel}
+              >
+                訂單取消
+              </Button>
             )}
-          </Row>
+          </Space>
         </LayoutHeader>
 
         <Form
@@ -568,40 +558,35 @@ export default function Page(props) {
                     label: (
                       <TitleWrapper>
                         <Title>顧客配送信息</Title>
-
-                        <Row style={{ marginLeft: "auto" }} gutter={16}>
+                        <Space style={{ marginLeft: "auto" }} size={16}>
                           {actionStatus.editTaxId && (
-                            <Col>
-                              <Button
-                                type="secondary"
-                                onClick={() =>
-                                  setShowModal((state) => ({
-                                    ...state,
-                                    tax: true,
-                                  }))
-                                }
-                              >
-                                修改統一編號
-                              </Button>
-                            </Col>
+                            <Button
+                              type="secondary"
+                              onClick={() =>
+                                setShowModal((state) => ({
+                                  ...state,
+                                  tax: true,
+                                }))
+                              }
+                            >
+                              修改統一編號
+                            </Button>
                           )}
 
                           {actionStatus.editAddr && (
-                            <Col>
-                              <Button
-                                type="secondary"
-                                onClick={() =>
-                                  setShowModal((state) => ({
-                                    ...state,
-                                    address: true,
-                                  }))
-                                }
-                              >
-                                修改配送地址
-                              </Button>
-                            </Col>
+                            <Button
+                              type="secondary"
+                              onClick={() =>
+                                setShowModal((state) => ({
+                                  ...state,
+                                  address: true,
+                                }))
+                              }
+                            >
+                              修改配送地址
+                            </Button>
                           )}
-                        </Row>
+                        </Space>
                       </TitleWrapper>
                     ),
                     children: (
@@ -673,7 +658,16 @@ export default function Page(props) {
 
                         <Row gutter={32}>
                           <Col span={12}>
-                            <Form.Item name="taxId" label="統一編號">
+                            <Form.Item
+                              name="taxId"
+                              label={
+                                <span
+                                  style={{ color: taxId ? "red" : "inherit" }}
+                                >
+                                  統一編號
+                                </span>
+                              }
+                            >
                               <Input disabled />
                             </Form.Item>
                           </Col>
@@ -687,29 +681,24 @@ export default function Page(props) {
                     label: (
                       <TitleWrapper>
                         <Title>出貨設定</Title>
-
-                        <Row style={{ marginLeft: "auto" }} gutter={16}>
+                        <Space style={{ marginLeft: "auto" }} size={16}>
                           {actionStatus.printSalesDetail && (
-                            <Col>
-                              <Link href="/pdf" target="_blank">
-                                <Button type="secondary">銷貨明細列印</Button>
-                              </Link>
-                            </Col>
+                            <Link href="/pdf" target="_blank">
+                              <Button type="secondary">銷貨明細列印</Button>
+                            </Link>
                           )}
 
                           {actionStatus.shipment && (
-                            <Col>
-                              <Button
-                                type="secondary"
-                                loading={loading.ship}
-                                disabled={isShipDisabled()}
-                                onClick={handleShip}
-                              >
-                                出貨
-                              </Button>
-                            </Col>
+                            <Button
+                              type="secondary"
+                              loading={loading.ship}
+                              disabled={isShipDisabled()}
+                              onClick={handleShip}
+                            >
+                              出貨
+                            </Button>
                           )}
-                        </Row>
+                        </Space>
                       </TitleWrapper>
                     ),
                     children: (
@@ -752,10 +741,11 @@ export default function Page(props) {
 
                           <Col span={12}>
                             <Form.Item name="applyDate" label="發票開立日期">
-                              <DatePicker
+                              <OrderDatePicker
                                 style={{ width: "100%" }}
                                 placeholder="填寫發票開立日期"
                                 disabled={!actionStatus.shipment}
+                                ecorderDate={info.ecorderDate}
                               />
                             </Form.Item>
                           </Col>
@@ -786,37 +776,32 @@ export default function Page(props) {
               <Col span={24}>
                 <TitleWrapper>
                   <Title>收貨設定</Title>
-
-                  <Row style={{ marginLeft: "auto" }} gutter={16}>
+                  <Space style={{ marginLeft: "auto" }} size={16}>
                     {actionStatus.revoke && (
-                      <Col>
-                        <Button
-                          type="secondary"
-                          disabled={isRevokeDisabled()}
-                          loading={loading.revoke}
-                          onClick={handleRevoke}
-                        >
-                          退貨收回
-                        </Button>
-                      </Col>
+                      <Button
+                        type="secondary"
+                        disabled={isRevokeDisabled()}
+                        loading={loading.revoke}
+                        onClick={handleRevoke}
+                      >
+                        退貨收回
+                      </Button>
                     )}
 
                     {actionStatus.revokeResult && (
-                      <Col>
-                        <Button
-                          type="primary"
-                          onClick={() =>
-                            setShowModal((state) => ({
-                              ...state,
-                              revokeResult: true,
-                            }))
-                          }
-                        >
-                          設定退貨結果
-                        </Button>
-                      </Col>
+                      <Button
+                        type="primary"
+                        onClick={() =>
+                          setShowModal((state) => ({
+                            ...state,
+                            revokeResult: true,
+                          }))
+                        }
+                      >
+                        設定退貨結果
+                      </Button>
                     )}
-                  </Row>
+                  </Space>
                 </TitleWrapper>
 
                 <Row gutter={32}>

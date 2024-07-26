@@ -5,10 +5,10 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 import TextArea from "@/components/TextArea";
+import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
 
@@ -119,7 +119,11 @@ export default function ModalRevokeExamine(props) {
                 label="退貨核可日期"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <DatePicker style={{ width: "100%" }} placeholder="選擇日期" />
+                <OrderDatePicker
+                  style={{ width: "100%" }}
+                  placeholder="選擇日期"
+                  ecorderDate={info.ecorderDate}
+                />
               </Form.Item>
             </Col>
           </Row>
