@@ -70,6 +70,14 @@ export default function ModalRevokeExamine(props) {
 
   const approval = Form.useWatch("approval", form);
 
+  const validateExamPrice = (_, value) => {
+    if (Number(value) > info.amount) {
+      return Promise.reject(new Error("整新費不得大於訂單金額"));
+    }
+
+    return Promise.resolve();
+  };
+
   const handleFinish = (values) => {
     const formData = new FormData();
     formData.append("approval", values.approval);
@@ -177,7 +185,10 @@ export default function ModalRevokeExamine(props) {
                   <Form.Item
                     name="examPrice"
                     label="整新費"
-                    rules={[{ required: true, message: "必填" }]}
+                    rules={[
+                      { required: true, message: "必填" },
+                      { validator: validateExamPrice },
+                    ]}
                   >
                     <Input placeholder="請輸入整新費" />
                   </Form.Item>
