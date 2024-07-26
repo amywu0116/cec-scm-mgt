@@ -919,11 +919,14 @@ export default function Page(props) {
                         <Col span={12}>
                           <Form.Item name="examPhoto" label="圖片">
                             <a
-                              style={{ wordBreak: "break-all" }}
+                              style={{
+                                wordBreak: "break-all",
+                                lineHeight: "42px",
+                              }}
                               href={info.examPhoto}
                               target="_blank"
                             >
-                              {info.examPhoto}
+                              圖片連結
                             </a>
                           </Form.Item>
                         </Col>
