@@ -395,10 +395,12 @@ export default function Page() {
 
   // 進頁後先自動查詢一次
   useEffect(() => {
-    // 等訂單物流狀態先設定好再查詢
-    setTimeout(() => {
-      form.submit();
-    }, 0);
+    if (options && Object.keys(options).length > 0) {
+      // 等訂單物流狀態先設定好再查詢
+      setTimeout(() => {
+        form.submit();
+      }, 0);
+    }
   }, [options]);
 
   // 選擇 "處理狀態" 後更新 "訂單物流狀態" 列表
@@ -406,9 +408,6 @@ export default function Page() {
     const lsList = statusMapping[processedStatus];
     form.setFieldValue("logisticsStatus", lsList);
   }, [processedStatus]);
-
-  console.log("shippingList", shippingList);
-  console.log("selectedRows", selectedRows);
 
   return (
     <>
@@ -575,7 +574,10 @@ export default function Page() {
                     {
                       label: (
                         <TabLabelWrapper>
-                          異常 <Tag>{tableInfo.countByUnusual}</Tag>
+                          異常
+                          {tableInfo.countByUnusual >= 0 && (
+                            <Tag>{tableInfo.countByUnusual}</Tag>
+                          )}
                         </TabLabelWrapper>
                       ),
                       key: "異常",
@@ -584,7 +586,10 @@ export default function Page() {
                     {
                       label: (
                         <TabLabelWrapper>
-                          待處理 <Tag>{tableInfo.countByPending}</Tag>
+                          待處理
+                          {tableInfo.countByPending >= 0 && (
+                            <Tag>{tableInfo.countByPending}</Tag>
+                          )}
                         </TabLabelWrapper>
                       ),
                       key: "待處理",

@@ -5,16 +5,57 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 import TextArea from "@/components/TextArea";
+import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
 
 const Container = styled.div`
   .ant-upload-wrapper {
     display: flex;
+  }
+`;
+
+const UploadWrapper = styled.div`
+  height: 42px;
+  display: flex;
+  align-items: center;
+
+  .ant-upload-list-item-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(123, 128, 147, 1);
+  }
+
+  .ant-upload-wrapper .ant-upload-list .ant-upload-list-item {
+    margin-top: 0;
+  }
+
+  .ant-upload-wrapper .ant-upload-list {
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-upload-icon {
+    svg {
+      display: none;
+    }
+  }
+`;
+
+const UploadBtn = styled(Button)`
+  &.ant-btn {
+    min-width: auto;
+    height: auto;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(33, 43, 54, 1);
+    padding: 4px 8px;
+    border: 1px solid rgba(145, 158, 171, 0.32);
+    border-radius: 8px;
+    background-color: #fff;
   }
 `;
 
@@ -28,6 +69,14 @@ export default function ModalRevokeExamine(props) {
   });
 
   const approval = Form.useWatch("approval", form);
+
+  const validateExamPrice = (_, value) => {
+    if (Number(value) > info.amount) {
+      return Promise.reject(new Error("整新費不得大於訂單金額"));
+    }
+
+    return Promise.resolve();
+  };
 
   const handleFinish = (values) => {
     const formData = new FormData();
@@ -66,6 +115,7 @@ export default function ModalRevokeExamine(props) {
       centered
       closeIcon={false}
       width={800}
+      destroyOnClose
       open={open}
       onCancel={onCancel}
       footer={[
@@ -116,10 +166,14 @@ export default function ModalRevokeExamine(props) {
             <Col span={12}>
               <Form.Item
                 name="examDate"
-                label="退貨核可日期"
+                label={approval ? "退貨核可日期" : "退貨不核可日期"}
                 rules={[{ required: true, message: "必填" }]}
               >
-                <DatePicker style={{ width: "100%" }} placeholder="選擇日期" />
+                <OrderDatePicker
+                  style={{ width: "100%" }}
+                  placeholder="選擇日期"
+                  ecorderDate={info.ecorderDate}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -131,7 +185,10 @@ export default function ModalRevokeExamine(props) {
                   <Form.Item
                     name="examPrice"
                     label="整新費"
-                    rules={[{ required: true, message: "必填" }]}
+                    rules={[
+                      { required: true, message: "必填" },
+                      { validator: validateExamPrice },
+                    ]}
                   >
                     <Input placeholder="請輸入整新費" />
                   </Form.Item>
@@ -160,9 +217,11 @@ export default function ModalRevokeExamine(props) {
                     label="上傳圖片"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <Upload>
-                      <Button>選擇檔案</Button>
-                    </Upload>
+                    <UploadWrapper>
+                      <Upload>
+                        <UploadBtn>選擇檔案</UploadBtn>
+                      </Upload>
+                    </UploadWrapper>
                   </Form.Item>
                 </Col>
               </Row>

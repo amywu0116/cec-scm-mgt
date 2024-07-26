@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import { useState } from "react";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
 import Modal from "@/components/Modal";
 import TextArea from "@/components/TextArea";
+import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
 
@@ -99,10 +99,14 @@ export default function ModalRevokeResult(props) {
           <Col span={12}>
             <Form.Item
               name="backDate"
-              label="退貨收貨失敗日期"
+              label={isSuccess ? "退貨收貨成功日期" : "退貨收貨失敗日期"}
               rules={[{ required: true, message: "必填" }]}
             >
-              <DatePicker style={{ width: "100%" }} placeholder="選擇日期" />
+              <OrderDatePicker
+                style={{ width: "100%" }}
+                placeholder="選擇日期"
+                ecorderDate={info.ecorderDate}
+              />
             </Form.Item>
           </Col>
         </Row>

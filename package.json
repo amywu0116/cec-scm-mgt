@@ -11,6 +11,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.4.0",
     "@ant-design/nextjs-registry": "^1.0.0",
     "@react-pdf/renderer": "^3.4.4",
     "antd": "^5.18.2",
