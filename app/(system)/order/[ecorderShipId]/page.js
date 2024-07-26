@@ -662,7 +662,9 @@ export default function Page(props) {
                               name="taxId"
                               label={
                                 <span
-                                  style={{ color: taxId ? "red" : "inherit" }}
+                                  style={{
+                                    color: info.taxId ? "red" : "inherit",
+                                  }}
                                 >
                                   統一編號
                                 </span>
