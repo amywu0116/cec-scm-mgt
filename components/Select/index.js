@@ -11,5 +11,16 @@ const StyledSelect = styled(AntdSelect)`
 `;
 
 export default function Select(props) {
-  return <StyledSelect showSearch allowClear {...props} />;
+  return (
+    <StyledSelect
+      showSearch
+      allowClear
+      filterOption={(input, option) => {
+        return (option?.label ?? "")
+          .toLowerCase()
+          .includes(input.toLowerCase());
+      }}
+      {...props}
+    />
+  );
 }
