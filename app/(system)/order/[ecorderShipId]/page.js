@@ -442,9 +442,7 @@ export default function Page(props) {
   // "退貨申請" 狀態下預設收合 "顧客配送信息" 和 "出貨設定" 區塊
   useEffect(() => {
     setCollapseActiveKey(
-      ["退貨申請"].includes(info.backStatusName)
-        ? []
-        : ["顧客配送信息", "出貨設定"]
+      info.backStatusName ? [] : ["顧客配送信息", "出貨設定"]
     );
   }, [info]);
 
@@ -921,11 +919,14 @@ export default function Page(props) {
                         <Col span={12}>
                           <Form.Item name="examPhoto" label="圖片">
                             <a
-                              style={{ wordBreak: "break-all" }}
+                              style={{
+                                wordBreak: "break-all",
+                                lineHeight: "42px",
+                              }}
                               href={info.examPhoto}
                               target="_blank"
                             >
-                              {info.examPhoto}
+                              圖片連結
                             </a>
                           </Form.Item>
                         </Col>
