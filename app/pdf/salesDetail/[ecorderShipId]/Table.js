@@ -4,10 +4,15 @@ import { StyleSheet, Text, View } from "@react-pdf/renderer";
 const styles = StyleSheet.create({
   table: {},
   tableHeader: {
+    borderTop: "0.5px solid #000",
+    borderBottom: "0.5px solid #000",
+    padding: "1px 0",
+  },
+  tableHeaderInner: {
+    borderTop: "0.5px solid #000",
+    borderBottom: "0.5px solid #000",
     display: "flex",
     flexDirection: "row",
-    borderTop: "1px solid black",
-    borderBottom: "1px solid black",
   },
   tableCell: {
     padding: 2,
@@ -26,21 +31,23 @@ export default function Table(props) {
   return (
     <View style={styles.table}>
       <View style={styles.tableHeader}>
-        {columns?.map((col, idx) => {
-          return (
-            <View
-              key={idx}
-              style={[
-                {
-                  width: col.width,
-                  textAlign: col.align ?? "left",
-                },
-              ]}
-            >
-              <Text>{col.title}</Text>
-            </View>
-          );
-        })}
+        <View style={styles.tableHeaderInner}>
+          {columns?.map((col, idx) => {
+            return (
+              <View
+                key={idx}
+                style={[
+                  {
+                    width: col.width,
+                    textAlign: col.align ?? "left",
+                  },
+                ]}
+              >
+                <Text>{col.title}</Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
 
       <View style={styles.tableBody}>
