@@ -279,7 +279,7 @@ export default function MyDocument(props) {
                   <Table dataSource={info.itemList} columns={itemColumns} />
                 </View>
 
-                <View style={styles.checkoutSection}>
+                <View style={styles.checkoutSection} wrap={false}>
                   <View style={{ flex: 1 }}>
                     <Text>*課稅別:應稅為TX,免稅為N</Text>
                   </View>
@@ -384,7 +384,7 @@ export default function MyDocument(props) {
                 </View>
 
                 {info.promotionList?.length > 0 && (
-                  <View style={styles.promotionSection}>
+                  <View style={styles.promotionSection} wrap={false}>
                     <Text style={[styles.label, { width: 50 }]}>活動項目</Text>
                     <Table
                       columns={promotionColumns}
@@ -393,7 +393,7 @@ export default function MyDocument(props) {
                   </View>
                 )}
 
-                <View style={styles.notificationSection} break={true}>
+                <View style={styles.notificationSection} wrap={false}>
                   <Text style={styles.label}>重要通知</Text>
                   <View style={styles.notification}>
                     <Text>
