@@ -702,8 +702,16 @@ export default function Page(props) {
                         </Title>
                         <Space style={{ marginLeft: "auto" }} size={16}>
                           {actionStatus.printSalesDetail && (
-                            <Link href="/pdf" target="_blank">
-                              <Button type="secondary">銷貨明細列印</Button>
+                            <Link
+                              href={`/pdf/salesDetail/${ecorderShipId}`}
+                              target="_blank"
+                            >
+                              <Button
+                                type="secondary"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                銷貨明細列印
+                              </Button>
                             </Link>
                           )}
 
