@@ -14,7 +14,7 @@ import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
 
 import api from "@/api";
-import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
+import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const Title = styled.div`
@@ -190,7 +190,7 @@ export default function Page() {
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
         message.success(res.message);
-        router.push(PATH_PRODUCT_PRODUCT_APPLICATION);
+        router.push(PATH_PRODUCT_APPLICATION);
       })
       .catch((err) => {
         message.error(err.message);
@@ -227,9 +227,7 @@ export default function Page() {
           separator=">"
           items={[
             {
-              title: (
-                <Link href={PATH_PRODUCT_PRODUCT_APPLICATION}>提品申請</Link>
-              ),
+              title: <Link href={PATH_PRODUCT_APPLICATION}>提品申請</Link>,
             },
             {
               title: isEdit
@@ -243,7 +241,7 @@ export default function Page() {
 
         <Row style={{ marginLeft: "auto" }} gutter={16}>
           <Col>
-            <Link href={PATH_PRODUCT_PRODUCT_APPLICATION}>
+            <Link href={PATH_PRODUCT_APPLICATION}>
               <Button>關閉</Button>
             </Link>
           </Col>
@@ -411,32 +409,6 @@ export default function Page() {
 
             <Row gutter={32}>
               <Col span={8}>
-                <Form.Item name="vCapacity" label="容量">
-                  <Input placeholder="請輸入容量" />
-                </Form.Item>
-              </Col>
-
-              <Col span={8}>
-                <Form.Item name="vUnit" label="容量單位">
-                  <Input placeholder="請輸入容量單位" />
-                </Form.Item>
-              </Col>
-
-              {/* <Form.Item style={{ flex: 1 }} name="1" label="庫存單位">
-                <Input placeholder="請輸入庫存單位" />
-              </Form.Item> */}
-            </Row>
-
-            {/* <Form.Item style={{ flex: 1 }} name="2" label="陳列單位(數字)">
-                <Input placeholder="請輸入陳列單位(數字)" />
-              </Form.Item> */}
-
-            {/* <Form.Item style={{ flex: 1 }} name="3" label="陳列容量">
-                <Input placeholder="請輸入陳列容量" />
-              </Form.Item> */}
-
-            <Row gutter={32}>
-              <Col span={8}>
                 <Form.Item name="productHeight" label="商品高度(cm)">
                   <Input placeholder="請輸入商品高度(cm)" />
                 </Form.Item>
@@ -495,15 +467,21 @@ export default function Page() {
               </Col>
             </Row>
 
-            {!isFood && (
-              <Row gutter={32}>
+            <Row gutter={32}>
+              {!isFood && (
                 <Col span={12}>
                   <Form.Item name="powerSpec" label="電源規格">
                     <Input placeholder="請輸入電源規格" />
                   </Form.Item>
                 </Col>
-              </Row>
-            )}
+              )}
+
+              <Col span={12}>
+                <Form.Item name="itemStoreway" label="保存方式(文字)">
+                  <Input placeholder="請輸入保存方式" />
+                </Form.Item>
+              </Col>
+            </Row>
 
             <Row gutter={32}>
               <Col span={12}>
@@ -520,13 +498,15 @@ export default function Page() {
             </Row>
 
             <Row gutter={32}>
-              {/* <Form.Item style={{ flex: 1 }} name="4" label="等級">
-                <Input placeholder="請輸入等級" />
-              </Form.Item> */}
+              <Col span={12}>
+                <Form.Item name="vCapacity" label="容量">
+                  <Input placeholder="請輸入容量" />
+                </Form.Item>
+              </Col>
 
               <Col span={12}>
-                <Form.Item name="itemStoreway" label="保存方式(文字)">
-                  <Input placeholder="請輸入保存方式" />
+                <Form.Item name="" label="入數">
+                  <Input placeholder="請輸入入數" />
                 </Form.Item>
               </Col>
             </Row>
