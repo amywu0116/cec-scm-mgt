@@ -17,7 +17,10 @@ import Table from "@/components/Table";
 import ModalAddProduct from "./ModalAddProduct";
 
 import api from "@/api";
-import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
+import {
+  PATH_PRODUCT_APPLICATION,
+  PATH_PRODUCT_IMAGE_MAINTENANCE,
+} from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const TableTitle = styled.div`
@@ -74,9 +77,7 @@ export default function Page() {
       render: (text, record) => {
         if (!text) return "-";
         return (
-          <Link
-            href={`${PATH_PRODUCT_PRODUCT_APPLICATION}/edit/${record.applyId}`}
-          >
+          <Link href={`${PATH_PRODUCT_APPLICATION}/edit/${record.applyId}`}>
             {text}
           </Link>
         );
@@ -101,7 +102,13 @@ export default function Page() {
       dataIndex: "",
       align: "center",
       render: (text, record, index) => {
-        return <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>;
+        return (
+          <Link
+            href={`${PATH_PRODUCT_IMAGE_MAINTENANCE}/${record.applyId}?itemName=${record.itemName}&itemEan=${record.itemEan}`}
+          >
+            <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>
+          </Link>
+        );
       },
     },
   ];

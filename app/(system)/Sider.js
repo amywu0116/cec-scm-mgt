@@ -11,10 +11,11 @@ import {
   PATH_BILLING_COLLECTION_REPORT,
   PATH_BILLING_RECONCILIATION_REPORT,
   PATH_LOGIN,
-  PATH_ORDER_LIST,
-  PATH_PRODUCT_PRODUCT_APPLICATION,
-  PATH_PRODUCT_PRODUCT_LIST,
   PATH_LOGISTICS,
+  PATH_ORDER_LIST,
+  PATH_PRODUCT_APPLICATION,
+  PATH_PRODUCT_PRODUCT_LIST,
+  PATH_PRODUCT_PROMOTION,
   PATH_SUPPLIER,
 } from "@/constants/paths";
 
@@ -113,8 +114,18 @@ const items = [
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
-        key: PATH_PRODUCT_PRODUCT_APPLICATION,
+        key: PATH_PRODUCT_APPLICATION,
         label: "提品申請",
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
+      },
+      {
+        key: PATH_PRODUCT_PROMOTION,
+        label: "商品促銷",
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
+      },
+      {
+        key: "",
+        label: "樣式商品",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
     ],
