@@ -505,7 +505,7 @@ export default function Page() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="" label="入數">
+                <Form.Item name="vUnit" label="入數">
                   <Input placeholder="請輸入入數" />
                 </Form.Item>
               </Col>
@@ -540,10 +540,6 @@ export default function Page() {
                   </Col>
                 </Row>
               </Col>
-
-              {/* <Form.Item name="5">
-                <Input style={{ width: 102, flex: 1 }} placeholder="數量" />
-              </Form.Item> */}
             </Row>
 
             <Row gutter={32}>
