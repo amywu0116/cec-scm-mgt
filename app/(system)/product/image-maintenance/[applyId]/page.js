@@ -44,7 +44,7 @@ export default function Page() {
   const itemEan = searchParams.get("itemEan");
 
   const options = useBoundStore((state) => state.options);
-  const imgType = options?.img_type ?? [];
+  const imgTypeOptions = options?.img_type ?? [];
 
   const [loading, setLoading] = useState({ table: false });
   const [showImageUpload, setShowImageUpload] = useState(false);
@@ -257,7 +257,7 @@ export default function Page() {
                       <Select
                         style={{ width: "100%" }}
                         placeholder="請選擇圖片類型"
-                        options={imgType.map((t) => {
+                        options={imgTypeOptions.map((t) => {
                           return { ...t, label: t.name };
                         })}
                       />
@@ -270,6 +270,7 @@ export default function Page() {
                         style={{ marginBottom: 0 }}
                         name="file"
                         label=""
+                        valuePropName="fileList"
                         rules={[
                           { required: true, message: "必須至少上傳一張圖片" },
                         ]}
