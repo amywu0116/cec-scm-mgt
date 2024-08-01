@@ -11,7 +11,9 @@ export const PATH_ORDER_LIST = `${PATH_ORDER}/list`;
 export const PATH_PRODUCT = "/product";
 export const PATH_PRODUCT_PRODUCT_LIST = `${PATH_PRODUCT}/list`;
 export const PATH_PRODUCT_STOCK_SETTINGS = `${PATH_PRODUCT}/stock-settings`;
-export const PATH_PRODUCT_PRODUCT_APPLICATION = `${PATH_PRODUCT}/application`;
+export const PATH_PRODUCT_APPLICATION = `${PATH_PRODUCT}/application`;
+export const PATH_PRODUCT_PROMOTION = `${PATH_PRODUCT}/promotion`;
+export const PATH_PRODUCT_IMAGE_MAINTENANCE = `${PATH_PRODUCT}/image-maintenance`;
 
 export const PATH_LOGISTICS = "/logistics";
 export const PATH_PATH_LOGISTICS_ADD = `${PATH_LOGISTICS}/add`;

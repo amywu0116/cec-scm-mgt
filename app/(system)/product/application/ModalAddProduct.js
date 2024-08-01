@@ -3,7 +3,7 @@ import Link from "next/link";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import { PATH_PRODUCT_PRODUCT_APPLICATION } from "@/constants/paths";
+import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 
 const StyledModal = styled(AntdModal)`
   &.ant-modal .ant-modal-content {
@@ -36,7 +36,7 @@ export default function ModalAddProduct(props) {
         </Col>
 
         <Col span={24}>
-          <Link href={`${PATH_PRODUCT_PRODUCT_APPLICATION}/add/food`}>
+          <Link href={`${PATH_PRODUCT_APPLICATION}/add/food`}>
             <Button style={{ width: "100%" }} type="secondary">
               食品
             </Button>
@@ -44,7 +44,7 @@ export default function ModalAddProduct(props) {
         </Col>
 
         <Col span={24}>
-          <Link href={`${PATH_PRODUCT_PRODUCT_APPLICATION}/add/non-food`}>
+          <Link href={`${PATH_PRODUCT_APPLICATION}/add/non-food`}>
             <Button style={{ width: "100%" }} type="secondary">
               非食品
             </Button>
