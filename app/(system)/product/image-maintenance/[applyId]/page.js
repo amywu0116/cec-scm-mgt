@@ -46,12 +46,16 @@ export default function Page() {
   const options = useBoundStore((state) => state.options);
   const imgTypeOptions = options?.img_type ?? [];
 
-  const [loading, setLoading] = useState({ table: false });
+  const [loading, setLoading] = useState({
+    table: false,
+    delete: false,
+  });
+
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const [imageList, setImageList] = useState();
-  const [currentRowData, setCurrentRowData] = useState();
+  const [deleteImgIds, setDeleteImgIds] = useState();
 
   const columns = [
     {
@@ -101,7 +105,10 @@ export default function Page() {
 
                         <DeleteOutlined
                           style={{ color: "red" }}
-                          onClick={() => setShowModalDelete(true)}
+                          onClick={() => {
+                            setDeleteImgIds([t.id]);
+                            setShowModalDelete(true);
+                          }}
                         />
                       </Space>
                     ),
@@ -121,7 +128,8 @@ export default function Page() {
         return (
           <FunctionBtn
             onClick={() => {
-              setCurrentRowData(record);
+              const ids = record.imgList.map((img) => img.id);
+              setDeleteImgIds(ids);
               setShowModalDelete(true);
             }}
           >
@@ -179,7 +187,23 @@ export default function Page() {
   };
 
   const handleDelete = () => {
-    api.delete(`v1/scm/product/apply/img?imgId=14`);
+    const imgIds = deleteImgIds.join(",");
+    setLoading((state) => ({ ...state, delete: true }));
+    api
+      .delete(`v1/scm/product/apply/img`, {
+        params: { imgIds },
+      })
+      .then((res) => {
+        message.success(res.message);
+        setShowModalDelete(false);
+        fetchList();
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, delete: false }));
+      });
   };
 
   const handleCancel = () => {
@@ -270,7 +294,6 @@ export default function Page() {
                         style={{ marginBottom: 0 }}
                         name="file"
                         label=""
-                        valuePropName="fileList"
                         rules={[
                           { required: true, message: "必須至少上傳一張圖片" },
                         ]}
@@ -287,6 +310,8 @@ export default function Page() {
                       <Button
                         style={{ marginLeft: "auto" }}
                         type="secondary"
+                        loading={loading.form}
+                        disabled={false}
                         htmlType="submit"
                       >
                         確認
@@ -315,8 +340,12 @@ export default function Page() {
 
       <ModalDelete
         open={showModalDelete}
+        loading={loading.delete}
         onOk={handleDelete}
-        onCancel={() => setShowModalDelete(false)}
+        onCancel={() => {
+          setShowModalDelete(false);
+          setDeleteImgIds(undefined);
+        }}
       />
     </>
   );
