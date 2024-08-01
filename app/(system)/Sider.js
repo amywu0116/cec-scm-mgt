@@ -16,6 +16,7 @@ import {
   PATH_PRODUCT_APPLICATION,
   PATH_PRODUCT_PRODUCT_LIST,
   PATH_PRODUCT_PROMOTION,
+  PATH_PRODUCT_BATCH_IMG_UPLOAD,
   PATH_SUPPLIER,
 } from "@/constants/paths";
 
@@ -116,6 +117,11 @@ const items = [
       {
         key: PATH_PRODUCT_APPLICATION,
         label: "提品申請",
+        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
+      },
+      {
+        key: PATH_PRODUCT_BATCH_IMG_UPLOAD,
+        label: "批次提品圖片上傳",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
       },
       {
