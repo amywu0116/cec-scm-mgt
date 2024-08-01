@@ -42,7 +42,12 @@ export default function FunctionBtn(props) {
   const { children, color, disabled, onClick } = props;
 
   return (
-    <Container color={color} disabled={disabled} onClick={onClick}>
+    <Container
+      type="button"
+      color={color}
+      disabled={disabled}
+      onClick={onClick}
+    >
       {children}
     </Container>
   );
