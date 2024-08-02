@@ -59,7 +59,7 @@ export default function Page() {
       dataIndex: "no",
       align: "center",
       render: (text, record, index) => {
-        return index + 1;
+        return tableInfo.total - tableInfo.offset - index;
       },
     },
     {
