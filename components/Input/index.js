@@ -26,5 +26,5 @@ const StyledInput = styled(AntdInput)`
 `;
 
 export default function Input(props) {
-  return <StyledInput {...props} />;
+  return <StyledInput allowClear {...props} />;
 }
