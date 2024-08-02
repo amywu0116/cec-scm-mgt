@@ -17,6 +17,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import ModalDelete from "@/components/Modal/ModalDelete";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
+import SearchForm from "./SearchForm";
 
 import api from "@/api";
 import {
@@ -44,14 +45,18 @@ export default function Page() {
   const itemEan = searchParams.get("itemEan");
 
   const options = useBoundStore((state) => state.options);
-  const imgType = options?.img_type ?? [];
+  const imgTypeOptions = options?.img_type ?? [];
 
-  const [loading, setLoading] = useState({ table: false });
+  const [loading, setLoading] = useState({
+    table: false,
+    delete: false,
+  });
+
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const [imageList, setImageList] = useState();
-  const [currentRowData, setCurrentRowData] = useState();
+  const [deleteImgIds, setDeleteImgIds] = useState();
 
   const columns = [
     {
@@ -101,7 +106,10 @@ export default function Page() {
 
                         <DeleteOutlined
                           style={{ color: "red" }}
-                          onClick={() => setShowModalDelete(true)}
+                          onClick={() => {
+                            setDeleteImgIds([t.id]);
+                            setShowModalDelete(true);
+                          }}
                         />
                       </Space>
                     ),
@@ -121,7 +129,8 @@ export default function Page() {
         return (
           <FunctionBtn
             onClick={() => {
-              setCurrentRowData(record);
+              const ids = record.imgList.map((img) => img.id);
+              setDeleteImgIds(ids);
               setShowModalDelete(true);
             }}
           >
@@ -148,7 +157,6 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
-    console.log("values", values);
     const formData = new FormData();
     formData.append("applyId", applyId);
     formData.append("imgType", values.imgType);
@@ -158,7 +166,7 @@ export default function Page() {
       formData.append("file", file);
     });
 
-    setLoading((state) => ({ ...state, form: true }));
+    setLoading((state) => ({ ...state, table: true }));
     api
       .post(`v1/scm/product/apply/img`, formData, {
         headers: {
@@ -174,12 +182,28 @@ export default function Page() {
         message.error(err.message);
       })
       .finally(() => {
-        setLoading((state) => ({ ...state, form: false }));
+        setLoading((state) => ({ ...state, table: false }));
       });
   };
 
   const handleDelete = () => {
-    api.delete(`v1/scm/product/apply/img?imgId=14`);
+    const imgIds = deleteImgIds.join(",");
+    setLoading((state) => ({ ...state, delete: true }));
+    api
+      .delete(`v1/scm/product/apply/img`, {
+        params: { imgIds },
+      })
+      .then((res) => {
+        message.success(res.message);
+        setShowModalDelete(false);
+        fetchList();
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, delete: false }));
+      });
   };
 
   const handleCancel = () => {
@@ -195,7 +219,6 @@ export default function Page() {
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>圖片維護</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
           items={[
@@ -206,116 +229,130 @@ export default function Page() {
         />
       </LayoutHeader>
 
-      <Form
-        form={form}
-        autoComplete="off"
-        colon={false}
-        labelCol={{ flex: "50px" }}
-        labelWrap
-        labelAlign="left"
-        requiredMark={false}
-        disabled={loading.form}
-        initialValues={{
-          itemName,
-          itemEan,
-        }}
-        onFinish={handleFinish}
-      >
-        <Row gutter={16}>
-          <Col span={8} xxl={{ span: 6 }}>
-            <Form.Item name="itemName" label="條碼">
-              <Input disabled />
-            </Form.Item>
-          </Col>
+      <Space style={{ width: "100%" }} direction="vertical" size={100}>
+        <Form
+          form={form}
+          autoComplete="off"
+          colon={false}
+          requiredMark={false}
+          disabled={loading.form}
+          initialValues={{
+            itemName,
+            itemEan,
+          }}
+          onFinish={handleFinish}
+        >
+          <Space style={{ width: "100%" }} direction="vertical" size={16}>
+            <Row gutter={16}>
+              <Col span={8} xxl={{ span: 6 }}>
+                <Form.Item style={{ margin: 0 }} name="itemName" label="條碼">
+                  <Input disabled />
+                </Form.Item>
+              </Col>
 
-          <Col span={8} xxl={{ span: 6 }}>
-            <Form.Item name="itemEan" label="品名">
-              <Input disabled />
-            </Form.Item>
-          </Col>
+              <Col span={8} xxl={{ span: 6 }}>
+                <Form.Item style={{ margin: 0 }} name="itemEan" label="品名">
+                  <Input disabled />
+                </Form.Item>
+              </Col>
 
-          <Col span={8} xxl={{ span: 6 }}>
-            <Button type="primary" onClick={() => setShowImageUpload(true)}>
-              上傳圖片
-            </Button>
-          </Col>
-        </Row>
+              <Col span={8} xxl={{ span: 6 }}>
+                <Button type="primary" onClick={() => setShowImageUpload(true)}>
+                  上傳圖片
+                </Button>
+              </Col>
+            </Row>
 
-        <Row gutter={[0, 16]}>
-          <Col span={24}>
-            {showImageUpload && (
-              <ImageCard>
-                <Row gutter={16}>
-                  <Col span={8} xxl={{ span: 6 }}>
-                    <Form.Item
-                      style={{ marginBottom: 0 }}
-                      name="imgType"
-                      label="圖片類型"
-                      labelCol="100px"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="請選擇圖片類型"
-                        options={imgType.map((t) => {
-                          return { ...t, label: t.name };
-                        })}
-                      />
-                    </Form.Item>
-                  </Col>
+            <Row>
+              <Col span={24}>
+                {showImageUpload && (
+                  <ImageCard>
+                    <Row gutter={16}>
+                      <Col span={8} xxl={{ span: 6 }}>
+                        <Form.Item
+                          style={{ marginBottom: 0 }}
+                          name="imgType"
+                          label="圖片類型"
+                          labelCol="100px"
+                          rules={[{ required: true, message: "必填" }]}
+                        >
+                          <Select
+                            style={{ width: "100%" }}
+                            placeholder="請選擇圖片類型"
+                            options={imgTypeOptions.map((t) => {
+                              return { ...t, label: t.name };
+                            })}
+                          />
+                        </Form.Item>
+                      </Col>
 
-                  <Col>
-                    <Space size={16}>
-                      <Form.Item
-                        style={{ marginBottom: 0 }}
-                        name="file"
-                        label=""
-                        rules={[
-                          { required: true, message: "必須至少上傳一張圖片" },
-                        ]}
-                      >
-                        <Upload maxCount={10} multiple>
-                          <Button type="secondary">上傳</Button>
-                        </Upload>
-                      </Form.Item>
-                    </Space>
-                  </Col>
+                      <Col>
+                        <Space size={16}>
+                          <Form.Item
+                            style={{ marginBottom: 0 }}
+                            name="file"
+                            label=""
+                            rules={[
+                              {
+                                required: true,
+                                message: "必須至少上傳一張圖片",
+                              },
+                            ]}
+                          >
+                            <Upload maxCount={10} multiple>
+                              <Button type="secondary">上傳</Button>
+                            </Upload>
+                          </Form.Item>
+                        </Space>
+                      </Col>
 
-                  <Col style={{ marginLeft: "auto" }}>
-                    <Space size={16}>
-                      <Button
-                        style={{ marginLeft: "auto" }}
-                        type="secondary"
-                        htmlType="submit"
-                      >
-                        確認
-                      </Button>
+                      <Col style={{ marginLeft: "auto" }}>
+                        <Space size={16}>
+                          <Button
+                            style={{ marginLeft: "auto" }}
+                            type="secondary"
+                            loading={loading.form}
+                            disabled={false}
+                            htmlType="submit"
+                          >
+                            確認
+                          </Button>
 
-                      <Button type="default" onClick={handleCancel}>
-                        取消
-                      </Button>
-                    </Space>
-                  </Col>
-                </Row>
-              </ImageCard>
-            )}
-          </Col>
+                          <Button type="default" onClick={handleCancel}>
+                            取消
+                          </Button>
+                        </Space>
+                      </Col>
+                    </Row>
+                  </ImageCard>
+                )}
+              </Col>
+            </Row>
 
-          <Col span={24}>
-            <Table
-              loading={loading.table}
-              columns={columns}
-              dataSource={imageList}
-              pagination={false}
-            />
-          </Col>
-        </Row>
-      </Form>
+            <Row>
+              <Col span={24}>
+                <Table
+                  loading={loading.table}
+                  columns={columns}
+                  dataSource={imageList}
+                  pagination={false}
+                />
+              </Col>
+            </Row>
+          </Space>
+        </Form>
+
+        <SearchForm fetchProductImgList={fetchList} />
+      </Space>
 
       <ModalDelete
         open={showModalDelete}
+        loading={loading.delete}
         onOk={handleDelete}
-        onCancel={() => setShowModalDelete(false)}
+        onCancel={() => {
+          setShowModalDelete(false);
+          setDeleteImgIds(undefined);
+        }}
       />
     </>
   );

@@ -1,3 +1,5 @@
+import { LoadingOutlined } from "@ant-design/icons";
+import { Space, Spin } from "antd";
 import styled, { css } from "styled-components";
 
 const Container = styled.button`
@@ -39,16 +41,19 @@ const Container = styled.button`
 `;
 
 export default function FunctionBtn(props) {
-  const { children, color, disabled, onClick } = props;
+  const { children, color, disabled, loading = false, onClick } = props;
 
   return (
     <Container
       type="button"
       color={color}
-      disabled={disabled}
+      disabled={loading || disabled}
       onClick={onClick}
     >
-      {children}
+      <Space size={5} align="vertical">
+        {loading && <Spin indicator={<LoadingOutlined spin />} spinning />}
+        {children}
+      </Space>
     </Container>
   );
 }

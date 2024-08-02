@@ -104,7 +104,13 @@ export default function Page() {
       render: (text, record, index) => {
         return (
           <Link
-            href={`${PATH_PRODUCT_IMAGE_MAINTENANCE}/${record.applyId}?itemName=${record.itemName}&itemEan=${record.itemEan}`}
+            href={{
+              pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/${record.applyId}`,
+              query: {
+                itemName: record.itemName,
+                itemEan: record.itemEan,
+              },
+            }}
           >
             <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>
           </Link>

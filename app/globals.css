@@ -68,3 +68,7 @@ a {
 .toolbar-wrapper .anticon:hover {
   opacity: 0.3;
 }
+
+.ant-modal-root .ant-modal-wrap {
+  z-index: 1500 !important;
+}

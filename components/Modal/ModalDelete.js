@@ -33,14 +33,7 @@ export default function ModalDelete(props) {
   const { open, loading = false, onOk, onCancel } = props;
 
   return (
-    <Modal
-      width={280}
-      closable={false}
-      open={open}
-      centered
-      footer={null}
-      onCancel={onCancel}
-    >
+    <Modal width={280} closable={false} open={open} centered footer={null}>
       <Spin spinning={loading}>
         <Row gutter={[0, 16]}>
           <Col span={24}>
