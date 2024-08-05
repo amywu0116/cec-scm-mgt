@@ -46,8 +46,7 @@ export default function ShippingFeeSettings() {
     const obj = {};
     arr.forEach((item) => {
       obj[item.cartType] = {
-        shippingDays: item.shippingDays === "",
-        shippingMethod: item.shippingMethod === "",
+        shippingMethod: [null, undefined].includes(item.shippingMethod),
       };
     });
     return obj;
@@ -80,7 +79,6 @@ export default function ShippingFeeSettings() {
           return {
             cartType: item.value,
             cartTypeName: item.name,
-            shippingDays: ["RR", "RC"].includes(item.value) ? "1" : "",
             shippingMethod: "",
             shippingMethodName: "",
           };
@@ -96,26 +94,15 @@ export default function ShippingFeeSettings() {
       });
   };
 
-  const removeLeadingZero = (value) => {
-    while (value.length > 1 && value.startsWith("0")) {
-      value = value.substring(1);
-    }
-    return value;
-  };
-
   const handleSave = () => {
     const errorObj = validate(shippingList);
     setError(errorObj);
 
     if (checkError(errorObj)) return;
 
-    const data = shippingList.map((item) => {
-      return { ...item, shippingDays: Number(item.shippingDays) };
-    });
-
     setLoading((state) => ({ ...state, page: true }));
     api
-      .post("v1/scm/vendor/shipping", data)
+      .post("v1/scm/vendor/shipping", shippingList)
       .then((res) => {
         message.success(res.message);
         setIsEdit(false);
@@ -186,23 +173,8 @@ export default function ShippingFeeSettings() {
                         <Input
                           style={{ width: 200 }}
                           disabled
-                          status={
-                            error[item.cartType]?.shippingDays
-                              ? "error"
-                              : undefined
-                          }
                           suffix="天"
                           value={item.shippingDays}
-                          onChange={(e) => {
-                            const value = removeLeadingZero(e.target.value);
-                            if (/^\d*$/.test(value)) {
-                              const newList = shippingList.map((item, i) => {
-                                if (item.cartType !== a.value) return item;
-                                return { ...item, shippingDays: value };
-                              });
-                              setShippingList(newList);
-                            }
-                          }}
                         />
                       </Item>
                     </Col>
@@ -229,8 +201,8 @@ export default function ShippingFeeSettings() {
                               if (item.cartType !== a.value) return item;
                               return {
                                 ...item,
-                                shippingMethod: option.value,
-                                shippingMethodName: option.name,
+                                shippingMethod: option?.value,
+                                shippingMethodName: option?.name,
                               };
                             });
                             setShippingList(newList);
