@@ -70,5 +70,21 @@ a {
 }
 
 .ant-modal-root .ant-modal-wrap {
-  z-index: 1500 !important;
+  z-index: 1100 !important;
+}
+
+.ant-upload-list-item-name {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(123, 128, 147, 1);
+}
+
+.ant-upload-wrapper .ant-upload-list .ant-upload-list-item {
+  margin-top: 0;
+}
+
+.ant-upload-icon {
+  .anticon svg {
+    display: none;
+  }
 }

@@ -34,7 +34,7 @@ export default function PageLayout(props) {
 
   useEffect(() => {
     const header = document.querySelector("header.ant-layout-header");
-    const headerHeight = header.getBoundingClientRect().height;
+    const headerHeight = header?.getBoundingClientRect().height;
     setHeaderHeight(headerHeight);
   }, []);
 

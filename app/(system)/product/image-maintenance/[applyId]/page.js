@@ -245,13 +245,13 @@ export default function Page() {
           <Space style={{ width: "100%" }} direction="vertical" size={16}>
             <Row gutter={16}>
               <Col span={8} xxl={{ span: 6 }}>
-                <Form.Item style={{ margin: 0 }} name="itemName" label="條碼">
+                <Form.Item style={{ margin: 0 }} name="itemName" label="品名">
                   <Input disabled />
                 </Form.Item>
               </Col>
 
               <Col span={8} xxl={{ span: 6 }}>
-                <Form.Item style={{ margin: 0 }} name="itemEan" label="品名">
+                <Form.Item style={{ margin: 0 }} name="itemEan" label="條碼">
                   <Input disabled />
                 </Form.Item>
               </Col>

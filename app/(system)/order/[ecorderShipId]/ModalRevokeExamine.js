@@ -18,31 +18,10 @@ const Container = styled.div`
   }
 `;
 
-const UploadWrapper = styled.div`
+const UploadBtnWrapper = styled.div`
   height: 42px;
   display: flex;
   align-items: center;
-
-  .ant-upload-list-item-name {
-    font-size: 14px;
-    font-weight: 400;
-    color: rgba(123, 128, 147, 1);
-  }
-
-  .ant-upload-wrapper .ant-upload-list .ant-upload-list-item {
-    margin-top: 0;
-  }
-
-  .ant-upload-wrapper .ant-upload-list {
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-upload-icon {
-    svg {
-      display: none;
-    }
-  }
 `;
 
 const UploadBtn = styled(Button)`
@@ -79,6 +58,7 @@ export default function ModalRevokeExamine(props) {
   };
 
   const handleFinish = (values) => {
+    console.log("values", values);
     const formData = new FormData();
     formData.append("approval", values.approval);
     formData.append("examDate", dayjs(values.examDate).format("YYYY-MM-DD"));
@@ -217,11 +197,11 @@ export default function ModalRevokeExamine(props) {
                     label="上傳圖片"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <UploadWrapper>
-                      <Upload>
+                    <Upload>
+                      <UploadBtnWrapper>
                         <UploadBtn>選擇檔案</UploadBtn>
-                      </Upload>
-                    </UploadWrapper>
+                      </UploadBtnWrapper>
+                    </Upload>
                   </Form.Item>
                 </Col>
               </Row>
