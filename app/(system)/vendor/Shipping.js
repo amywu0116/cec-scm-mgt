@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Row, Spin } from "antd";
+import { App, Col, Row, Space, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -46,8 +46,7 @@ export default function ShippingFeeSettings() {
     const obj = {};
     arr.forEach((item) => {
       obj[item.cartType] = {
-        shippingDays: item.shippingDays === "",
-        shippingMethod: item.shippingMethod === "",
+        shippingMethod: [null, undefined].includes(item.shippingMethod),
       };
     });
     return obj;
@@ -80,7 +79,6 @@ export default function ShippingFeeSettings() {
           return {
             cartType: item.value,
             cartTypeName: item.name,
-            shippingDays: ["RR", "RC"].includes(item.value) ? "1" : "",
             shippingMethod: "",
             shippingMethodName: "",
           };
@@ -96,26 +94,15 @@ export default function ShippingFeeSettings() {
       });
   };
 
-  const removeLeadingZero = (value) => {
-    while (value.length > 1 && value.startsWith("0")) {
-      value = value.substring(1);
-    }
-    return value;
-  };
-
   const handleSave = () => {
     const errorObj = validate(shippingList);
     setError(errorObj);
 
     if (checkError(errorObj)) return;
 
-    const data = shippingList.map((item) => {
-      return { ...item, shippingDays: Number(item.shippingDays) };
-    });
-
     setLoading((state) => ({ ...state, page: true }));
     api
-      .post("v1/scm/vendor/shipping", data)
+      .post("v1/scm/vendor/shipping", shippingList)
       .then((res) => {
         message.success(res.message);
         setIsEdit(false);
@@ -142,27 +129,20 @@ export default function ShippingFeeSettings() {
     <Spin spinning={loading.page}>
       <Row style={{ marginTop: 16 }} gutter={[0, 16]}>
         <Col span={24}>
-          <Row gutter={16}>
+          <Space size={16}>
             {isEdit ? (
               <>
-                <Col>
-                  <Button onClick={handleCancelEdit}>取消</Button>
-                </Col>
-
-                <Col>
-                  <Button type="primary" onClick={handleSave}>
-                    保存
-                  </Button>
-                </Col>
+                <Button onClick={handleCancelEdit}>取消</Button>
+                <Button type="primary" onClick={handleSave}>
+                  保存
+                </Button>
               </>
             ) : (
-              <Col>
-                <Button type="primary" onClick={() => setIsEdit(true)}>
-                  編輯
-                </Button>
-              </Col>
+              <Button type="primary" onClick={() => setIsEdit(true)}>
+                編輯
+              </Button>
             )}
-          </Row>
+          </Space>
         </Col>
 
         {checkError(error) && (
@@ -192,27 +172,9 @@ export default function ShippingFeeSettings() {
                         <ItemLabel>{a.name}</ItemLabel>
                         <Input
                           style={{ width: 200 }}
-                          disabled={
-                            !isEdit ||
-                            (isEdit && ["RR", "RC"].includes(a.value))
-                          }
-                          status={
-                            error[item.cartType]?.shippingDays
-                              ? "error"
-                              : undefined
-                          }
+                          disabled
                           suffix="天"
                           value={item.shippingDays}
-                          onChange={(e) => {
-                            const value = removeLeadingZero(e.target.value);
-                            if (/^\d*$/.test(value)) {
-                              const newList = shippingList.map((item, i) => {
-                                if (item.cartType !== a.value) return item;
-                                return { ...item, shippingDays: value };
-                              });
-                              setShippingList(newList);
-                            }
-                          }}
                         />
                       </Item>
                     </Col>
@@ -239,8 +201,8 @@ export default function ShippingFeeSettings() {
                               if (item.cartType !== a.value) return item;
                               return {
                                 ...item,
-                                shippingMethod: option.value,
-                                shippingMethodName: option.name,
+                                shippingMethod: option?.value,
+                                shippingMethodName: option?.name,
                               };
                             });
                             setShippingList(newList);

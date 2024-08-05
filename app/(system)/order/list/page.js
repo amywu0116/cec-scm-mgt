@@ -245,7 +245,7 @@ export default function Page() {
     }
 
     const data = {
-      queryString: values.queryString,
+      queryString: values.queryString ? values.queryString : undefined,
       ecorderDateStart: values.ecorderDate
         ? values.ecorderDate[0].format("YYYY-MM-DD")
         : undefined,
