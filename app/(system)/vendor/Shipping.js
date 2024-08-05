@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Row, Spin } from "antd";
+import { App, Col, Row, Space, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -142,27 +142,20 @@ export default function ShippingFeeSettings() {
     <Spin spinning={loading.page}>
       <Row style={{ marginTop: 16 }} gutter={[0, 16]}>
         <Col span={24}>
-          <Row gutter={16}>
+          <Space size={16}>
             {isEdit ? (
               <>
-                <Col>
-                  <Button onClick={handleCancelEdit}>取消</Button>
-                </Col>
-
-                <Col>
-                  <Button type="primary" onClick={handleSave}>
-                    保存
-                  </Button>
-                </Col>
+                <Button onClick={handleCancelEdit}>取消</Button>
+                <Button type="primary" onClick={handleSave}>
+                  保存
+                </Button>
               </>
             ) : (
-              <Col>
-                <Button type="primary" onClick={() => setIsEdit(true)}>
-                  編輯
-                </Button>
-              </Col>
+              <Button type="primary" onClick={() => setIsEdit(true)}>
+                編輯
+              </Button>
             )}
-          </Row>
+          </Space>
         </Col>
 
         {checkError(error) && (
@@ -192,10 +185,7 @@ export default function ShippingFeeSettings() {
                         <ItemLabel>{a.name}</ItemLabel>
                         <Input
                           style={{ width: 200 }}
-                          disabled={
-                            !isEdit ||
-                            (isEdit && ["RR", "RC"].includes(a.value))
-                          }
+                          disabled
                           status={
                             error[item.cartType]?.shippingDays
                               ? "error"
