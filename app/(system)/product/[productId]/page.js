@@ -1,5 +1,15 @@
 "use client";
-import { App, Breadcrumb, Col, Flex, Form, Radio, Row, Spin } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Flex,
+  Form,
+  Radio,
+  Row,
+  Space,
+  Spin,
+} from "antd";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -94,9 +104,9 @@ export default function Page() {
           ]}
         />
 
-        <Row style={{ marginLeft: "auto" }} gutter={16}>
+        <Space style={{ marginLeft: "auto" }} size={16}>
           {isEditing ? (
-            <Col>
+            <>
               <Button type="default" onClick={() => setIsEditing(false)}>
                 取消
               </Button>
@@ -104,29 +114,21 @@ export default function Page() {
               <Button type="primary" onClick={() => setIsEditing(false)}>
                 確認修改
               </Button>
-            </Col>
+            </>
           ) : (
-            <Col>
-              <Row gutter={16}>
-                <Col>
-                  <Button type="primary" onClick={() => setIsEditing(true)}>
-                    編輯修改
-                  </Button>
-                </Col>
+            <>
+              <Button type="primary" onClick={() => setIsEditing(true)}>
+                編輯修改
+              </Button>
 
-                <Col>
-                  <Link href={"/product/123/image-maintenance"}>
-                    <Button type="secondary">圖片維護</Button>
-                  </Link>
-                </Col>
-              </Row>
-            </Col>
+              <Link href={"/product/123/image-maintenance"}>
+                <Button type="secondary">圖片維護</Button>
+              </Link>
+            </>
           )}
 
-          <Col>
-            <Button type="secondary">PDF預覽</Button>
-          </Col>
-        </Row>
+          <Button type="secondary">PDF預覽</Button>
+        </Space>
       </LayoutHeader>
 
       <Form
