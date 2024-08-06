@@ -25,7 +25,7 @@ const Container = styled.div`
     pointer-events: none;
     transition: opacity 0.3s ease;
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: 800px 800px;
     opacity: 1;
     z-index: 10;
   }
@@ -58,18 +58,17 @@ export default function PreviewImgZoom(props) {
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
     >
-      {isHovered ? (
-        <div
-          className="zoomed-image"
-          style={{
-            backgroundImage: `url(${src})`,
-            top: `-${position.y}px`,
-            left: `-${position.x}px`,
-          }}
-        />
-      ) : (
-        <Image src={src} alt={alt} fill className="main-image" />
-      )}
+      <div
+        className="zoomed-image"
+        style={{
+          backgroundImage: `url(${src})`,
+          top: `-${position.y}px`,
+          left: `-${position.x}px`,
+          opacity: isHovered ? 1 : 0,
+        }}
+      />
+
+      <Image src={src} alt={alt} fill className="main-image" />
     </Container>
   );
 }
