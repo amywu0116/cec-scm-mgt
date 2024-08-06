@@ -16,6 +16,7 @@ import TextArea from "@/components/TextArea";
 import api from "@/api";
 import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import ApplyHistoryTable from "./ApplyHistoryTable";
 
 const Title = styled.div`
   font-size: 16px;
@@ -267,7 +268,6 @@ export default function Page() {
         <Row gutter={[0, 16]}>
           <Col span={24}>
             <Title>分類設定</Title>
-
             <Row gutter={32}>
               <Col span={12}>
                 <Form.Item
@@ -399,7 +399,6 @@ export default function Page() {
 
           <Col span={24}>
             <Title>容量和重量</Title>
-
             <Row gutter={32}>
               <Col span={8}>
                 <Form.Item name="productHeight" label="商品高度(cm)">
@@ -443,7 +442,6 @@ export default function Page() {
 
           <Col span={24}>
             <Title>其他資訊</Title>
-
             <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="expDateValue" label="保存日期">
@@ -713,6 +711,11 @@ export default function Page() {
                 </Col>
               )}
             </Row>
+          </Col>
+
+          <Col span={24}>
+            <Title>審核歷程</Title>
+            <ApplyHistoryTable data={form.getFieldValue("applyHisInfo")} />
           </Col>
         </Row>
       </Form>
