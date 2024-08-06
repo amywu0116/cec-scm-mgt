@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Form, Row } from "antd";
+import { App, Col, Form, Row, Space } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,14 +41,14 @@ export default function Page() {
       title: "中文品名",
       dataIndex: "itemName",
       align: "center",
+      render: (text, record) => {
+        return <Link href={`${PATH_PRODUCT}/${record.productId}`}>{text}</Link>;
+      },
     },
     {
       title: "條碼",
       dataIndex: "itemEan",
       align: "center",
-      render: (text, record) => {
-        return <Link href={`${PATH_PRODUCT}/${record.productId}`}>{text}</Link>;
-      },
     },
     {
       title: "圖片",
@@ -122,7 +122,7 @@ export default function Page() {
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
       </LayoutHeader>
 
-      <Row>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Form
             form={form}
@@ -132,36 +132,42 @@ export default function Page() {
           >
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item name="productnumber" label="商品ID">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="productnumber"
+                  label="商品ID"
+                >
                   <Input placeholder="請輸入商品ID" />
                 </Form.Item>
               </Col>
 
               <Col span={6}>
-                <Form.Item name="itemEan" label="條碼">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="itemEan"
+                  label="條碼"
+                >
                   <Input placeholder="請輸入條碼" maxLength={13} />
                 </Form.Item>
               </Col>
 
               <Col span={6}>
-                <Form.Item name="itemName" label="品名">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="itemName"
+                  label="品名"
+                >
                   <Input placeholder="請輸入商品名稱" />
                 </Form.Item>
               </Col>
 
-              <Col span={6}>
-                <Row gutter={16} justify="end" align="middle">
-                  <Col>
-                    <Button type="secondary" htmlType="submit">
-                      查詢
-                    </Button>
-                  </Col>
+              <Space style={{ marginLeft: "auto" }} size={16}>
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
 
-                  <Col>
-                    <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-                  </Col>
-                </Row>
-              </Col>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Space>
             </Row>
           </Form>
         </Col>

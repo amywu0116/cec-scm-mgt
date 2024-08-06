@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Form, Row } from "antd";
+import { App, Col, Form, Row, Space } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -69,19 +69,18 @@ export default function Page() {
       title: "中文品名",
       dataIndex: "itemName",
       align: "center",
-    },
-    {
-      title: "條碼",
-      dataIndex: "itemEan",
-      align: "center",
       render: (text, record) => {
-        if (!text) return "-";
         return (
           <Link href={`${PATH_PRODUCT_APPLICATION}/edit/${record.applyId}`}>
             {text}
           </Link>
         );
       },
+    },
+    {
+      title: "條碼",
+      dataIndex: "itemEan",
+      align: "center",
     },
     {
       title: "圖片",
@@ -220,24 +219,18 @@ export default function Page() {
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
-        <Row style={{ marginLeft: "auto" }} gutter={16} justify="end">
-          <Col>
-            <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
-          </Col>
+        <Space style={{ marginLeft: "auto" }} size={16}>
+          <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 
-          <Col>
-            <Button type="secondary">提品匯入</Button>
-          </Col>
+          <Button type="secondary">提品匯入</Button>
 
-          <Col>
-            <Button type="primary" onClick={() => setShowModalAddType(true)}>
-              新增提品
-            </Button>
-          </Col>
-        </Row>
+          <Button type="primary" onClick={() => setShowModalAddType(true)}>
+            新增提品
+          </Button>
+        </Space>
       </LayoutHeader>
 
-      <Row>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Form
             form={form}
@@ -255,19 +248,31 @@ export default function Page() {
 
             <Row gutter={16}>
               <Col span={6}>
-                <Form.Item name="itemEan" label="條碼">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="itemEan"
+                  label="條碼"
+                >
                   <Input placeholder="請輸入條碼" />
                 </Form.Item>
               </Col>
 
               <Col span={6}>
-                <Form.Item name="itemName" label="品名">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="itemName"
+                  label="品名"
+                >
                   <Input placeholder="請輸入品名" />
                 </Form.Item>
               </Col>
 
               <Col span={6}>
-                <Form.Item name="applyStatus" label="狀態">
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="applyStatus"
+                  label="狀態"
+                >
                   <Select
                     placeholder="請選擇狀態"
                     showSearch
@@ -280,19 +285,13 @@ export default function Page() {
                 </Form.Item>
               </Col>
 
-              <Col span={6}>
-                <Row gutter={16} justify="end" align="middle">
-                  <Col>
-                    <Button type="secondary" htmlType="submit">
-                      查詢
-                    </Button>
-                  </Col>
+              <Space style={{ marginLeft: "auto" }} size={16}>
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
 
-                  <Col>
-                    <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-                  </Col>
-                </Row>
-              </Col>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Space>
             </Row>
           </Form>
         </Col>
