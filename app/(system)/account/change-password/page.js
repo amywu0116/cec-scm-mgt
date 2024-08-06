@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
 import { App, Breadcrumb, Form, Typography } from "antd";
+import { useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import InputPassword from "@/components/Input/InputPassword";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 
 import api from "@/api";
 
@@ -35,9 +35,15 @@ export default function Page() {
         oldPassword: values.oldPassword,
         newPassword: values.newPassword,
       })
-      .then((res) => message.success("修改成功"))
-      .catch((err) => setErrorMsg(err.message))
-      .finally(() => setLoading(false));
+      .then((res) => {
+        message.success("修改成功");
+      })
+      .catch((err) => {
+        setErrorMsg(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleFieldsChange = (changedFields, allFields) => {
@@ -51,17 +57,9 @@ export default function Page() {
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>修改密碼</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
-          items={[
-            {
-              title: "帳戶",
-            },
-            {
-              title: "修改密碼",
-            },
-          ]}
+          items={[{ title: "帳戶" }, { title: "修改密碼" }]}
         />
       </LayoutHeader>
 
@@ -75,36 +73,21 @@ export default function Page() {
         >
           <Form.Item
             name="oldPassword"
-            rules={[
-              {
-                required: true,
-                message: "必填",
-              },
-            ]}
+            rules={[{ required: true, message: "必填" }]}
           >
-            <InputPassword size="large" placeholder="請輸入密碼" />
+            <InputPassword size="large" placeholder="請輸入目前密碼" />
           </Form.Item>
 
           <Form.Item
             name="newPassword"
-            rules={[
-              {
-                required: true,
-                message: "必填",
-              },
-            ]}
+            rules={[{ required: true, message: "必填" }]}
           >
             <InputPassword size="large" placeholder="請輸入新密碼" />
           </Form.Item>
 
           <Form.Item
             name="newPasswordConfirm"
-            rules={[
-              {
-                required: true,
-                message: "必填",
-              },
-            ]}
+            rules={[{ required: true, message: "必填" }]}
           >
             <InputPassword size="large" placeholder="請再次輸入新密碼" />
           </Form.Item>
