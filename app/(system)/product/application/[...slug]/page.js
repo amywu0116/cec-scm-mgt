@@ -50,6 +50,8 @@ export default function Page() {
   const [categoryList, setCategoryList] = useState([]);
   const [shippingList, setShippingList] = useState();
 
+  const perpetual = Form.useWatch("perpetual", form);
+
   const validateCartType = () => {
     if (shippingList.length === 0) {
       return Promise.reject(
@@ -512,11 +514,21 @@ export default function Page() {
                     </Form.Item>
                   </Col>
 
-                  <Col>
-                    <Form.Item name="stockStartdate">
-                      <DatePicker placeholder="起始日期" />
-                    </Form.Item>
-                  </Col>
+                  {perpetual && (
+                    <>
+                      <Col span={3}>
+                        <Form.Item style={{ width: "90%" }} name="">
+                          <Input placeholder="數量" />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={3}>
+                        <Form.Item name="stockStartdate">
+                          <DatePicker placeholder="起始日期" />
+                        </Form.Item>
+                      </Col>
+                    </>
+                  )}
                 </Row>
               </Col>
 
