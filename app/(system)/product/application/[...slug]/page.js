@@ -694,25 +694,27 @@ export default function Page() {
               </>
             )}
 
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="certMark" label="標章">
-                  <TextArea
-                    placeholder="請輸入標章"
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                  />
-                </Form.Item>
-              </Col>
+            {isNonFood && (
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="certMark" label="標章">
+                    <TextArea
+                      placeholder="請輸入標章"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
 
-              <Col span={12}>
-                <Form.Item name="energyEfficiency" label="能源效率">
-                  <TextArea
-                    placeholder="請輸入能源效率"
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+                <Col span={12}>
+                  <Form.Item name="energyEfficiency" label="能源效率">
+                    <TextArea
+                      placeholder="請輸入能源效率"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </Form>
