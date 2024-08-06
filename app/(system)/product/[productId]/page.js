@@ -297,7 +297,7 @@ export default function Page() {
                   name="grossWeight"
                   label="重量-毛重"
                 >
-                  <Input />
+                  <Input suffix="克(g)" />
                 </Form.Item>
 
                 <Form.Item
@@ -305,7 +305,7 @@ export default function Page() {
                   name="netWeight"
                   label="重量-淨重"
                 >
-                  <Input />
+                  <Input suffix="克(g)" />
                 </Form.Item>
               </Flex>
             </Col>

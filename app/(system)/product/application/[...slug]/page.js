@@ -481,7 +481,7 @@ export default function Page() {
                   label="重量-毛重"
                   rules={[{ required: true, message: "必填" }]}
                 >
-                  <Input placeholder="請輸入重量-毛重" />
+                  <Input placeholder="請輸入重量-毛重" suffix="克(g)" />
                 </Form.Item>
               </Col>
 
@@ -491,7 +491,7 @@ export default function Page() {
                   label="重量-淨重"
                   rules={[{ required: true, message: "必填" }]}
                 >
-                  <Input placeholder="請輸入重量-淨重" />
+                  <Input placeholder="請輸入重量-淨重" suffix="克(g)" />
                 </Form.Item>
               </Col>
             </Row>
