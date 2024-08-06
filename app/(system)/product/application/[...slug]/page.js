@@ -1,5 +1,5 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Radio, Row, Spin } from "antd";
+import { App, Breadcrumb, Col, Form, Radio, Row, Space, Spin } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ import TextArea from "@/components/TextArea";
 import api from "@/api";
 import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import ApplyHistoryTable from "./ApplyHistoryTable";
 
 const Title = styled.div`
   font-size: 16px;
@@ -37,8 +38,10 @@ export default function Page() {
 
   const isFood =
     (isAdd && params.slug[1] === "food") ||
-    (isEdit && form.getFieldValue("isFood"));
-  const isNonFood = isAdd && params.slug[1] === "non-food";
+    (isEdit && form.getFieldValue("isFood") === true);
+  const isNonFood =
+    (isAdd && params.slug[1] === "non-food") ||
+    (isEdit && form.getFieldValue("isFood") === false);
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -48,15 +51,7 @@ export default function Page() {
   const [categoryList, setCategoryList] = useState([]);
   const [shippingList, setShippingList] = useState();
 
-  const validateCartType = () => {
-    if (shippingList.length === 0) {
-      return Promise.reject(
-        new Error("請先至 供應商>運費設定 功能頁面，進行運費設定！")
-      );
-    }
-
-    return Promise.resolve();
-  };
+  const perpetual = Form.useWatch("perpetual", form);
 
   const removeLeadingZero = (value) => {
     while (value.length > 1 && value.startsWith("0")) {
@@ -85,7 +80,17 @@ export default function Page() {
     api
       .get("v1/scm/vendor/shipping")
       .then((res) => {
-        setShippingList(res.data ?? []);
+        const shippingList = res.data;
+        if (shippingList.length > 0) {
+          setShippingList(shippingList ?? []);
+        } else {
+          form.setFields([
+            {
+              name: "cartType",
+              errors: ["請先至 供應商>運費設定 功能頁面，進行運費設定！"],
+            },
+          ]);
+        }
       })
       .catch((err) => {
         message.error(err.message);
@@ -175,6 +180,7 @@ export default function Page() {
       dutyInsurance: values.dutyInsurance,
       approvalId: values.approvalId,
       warrantyScope: values.warrantyScope,
+      warrantyPeriod: values.warrantyPeriod,
       powerSpec: values.powerSpec,
       manufacturer: values.manufacturer,
       manufacturerPhone: values.manufacturerPhone,
@@ -200,6 +206,24 @@ export default function Page() {
       });
   };
 
+  const handleApply = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .post(`v1/scm/product/apply`, {
+        applyIds: [applyId],
+      })
+      .then(() => {
+        message.success("送審成功");
+        router.push(PATH_PRODUCT_APPLICATION);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
+  };
+
   useEffect(() => {
     fetchCategory();
     fetchShipping();
@@ -210,11 +234,6 @@ export default function Page() {
       fetchInfo();
     }
   }, []);
-
-  useEffect(() => {
-    if (!shippingList) return;
-    form.validateFields(["cartType"]);
-  }, [shippingList]);
 
   return (
     <Spin spinning={loading.page}>
@@ -239,19 +258,19 @@ export default function Page() {
           ]}
         />
 
-        <Row style={{ marginLeft: "auto" }} gutter={16}>
-          <Col>
-            <Link href={PATH_PRODUCT_APPLICATION}>
-              <Button>關閉</Button>
-            </Link>
-          </Col>
+        <Space style={{ marginLeft: "auto" }} size={16}>
+          <Link href={PATH_PRODUCT_APPLICATION}>
+            <Button>關閉</Button>
+          </Link>
 
-          <Col>
-            <Button type="primary" onClick={() => form.submit()}>
-              暫存
-            </Button>
-          </Col>
-        </Row>
+          <Button type="primary" onClick={() => form.submit()}>
+            暫存
+          </Button>
+
+          <Button type="primary" onClick={handleApply}>
+            送審
+          </Button>
+        </Space>
       </LayoutHeader>
 
       <Form
@@ -266,13 +285,12 @@ export default function Page() {
         <Row gutter={[0, 16]}>
           <Col span={24}>
             <Title>分類設定</Title>
-
             <Row gutter={32}>
               <Col span={12}>
                 <Form.Item
                   name="cartType"
                   label="分車類型"
-                  rules={[{ validator: validateCartType }]}
+                  rules={[{ required: true, message: "必填" }]}
                 >
                   <Select
                     placeholder="請選擇分車類型"
@@ -292,7 +310,11 @@ export default function Page() {
 
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="scmCategoryCode" label="分類">
+                <Form.Item
+                  name="scmCategoryCode"
+                  label="分類"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Select
                     placeholder="選擇分類"
                     showSearch
@@ -313,23 +335,27 @@ export default function Page() {
                   <Input placeholder="請輸入品牌" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="itemName" label="中文品名">
-                  <Input placeholder="請輸入中文品名" />
+                <Form.Item
+                  name="itemName"
+                  label="中文品名"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <Input placeholder="請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
-                <Form.Item name="itemNameEn" label="英文品名">
+                <Form.Item
+                  name="itemNameEn"
+                  label="英文品名"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入英文品名" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="vendorProdCode" label="供應商商品編號">
                   <Input placeholder="請輸入供應商商品編號" />
@@ -337,13 +363,15 @@ export default function Page() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="itemCountry" label="生產國家">
+                <Form.Item
+                  name="itemCountry"
+                  label="生產國家"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入生產國家" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={8}>
                 <Form.Item name="itemEan" label="條碼">
                   <Input placeholder="請輸入條碼" />
@@ -351,13 +379,21 @@ export default function Page() {
               </Col>
 
               <Col span={8}>
-                <Form.Item name="itemSpec" label="規格">
+                <Form.Item
+                  name="itemSpec"
+                  label="規格"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入規格" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="isTax" label="應/免稅">
+                <Form.Item
+                  name="isTax"
+                  label="應/免稅"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Select
                     placeholder="請輸入應/免稅"
                     showSearch
@@ -369,11 +405,13 @@ export default function Page() {
                   />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="price" label="原價">
+                <Form.Item
+                  name="price"
+                  label="原價"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input
                     placeholder="請輸入原價"
                     value={form.getFieldValue("price")}
@@ -406,35 +444,44 @@ export default function Page() {
 
           <Col span={24}>
             <Title>容量和重量</Title>
-
             <Row gutter={32}>
               <Col span={8}>
-                <Form.Item name="productHeight" label="商品高度(cm)">
+                <Form.Item
+                  name="productHeight"
+                  label="商品高度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品高度(cm)" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="productWidth" label="商品寬度(cm)">
+                <Form.Item
+                  name="productWidth"
+                  label="商品寬度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品寬度(cm)" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="productLength" label="商品長度(cm)">
+                <Form.Item
+                  name="productLength"
+                  label="商品長度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品長度(cm)" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={8}>
                 <Form.Item
                   name="grossWeight"
                   label="重量-毛重"
                   rules={[{ required: true, message: "必填" }]}
                 >
-                  <Input placeholder="請輸入重量-毛重" />
+                  <Input placeholder="請輸入重量-毛重" suffix="克(g)" />
                 </Form.Item>
               </Col>
 
@@ -444,7 +491,7 @@ export default function Page() {
                   label="重量-淨重"
                   rules={[{ required: true, message: "必填" }]}
                 >
-                  <Input placeholder="請輸入重量-淨重" />
+                  <Input placeholder="請輸入重量-淨重" suffix="克(g)" />
                 </Form.Item>
               </Col>
             </Row>
@@ -452,26 +499,31 @@ export default function Page() {
 
           <Col span={24}>
             <Title>其他資訊</Title>
-
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="expDateValue" label="保存日期">
-                  <Input placeholder="請輸入保存日期" />
+                <Form.Item
+                  name="expDateValue"
+                  label="保存日期"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <Input placeholder="請輸入阿拉伯數字，例如：12" />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
-                <Form.Item name="expDateUnit" label="保存日期單位">
-                  <Input placeholder="請輸入保存日期單位" />
+                <Form.Item
+                  name="expDateUnit"
+                  label="保存日期單位"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <Input placeholder="請輸入 小時 / 日 / 週 / 月 / 年，例如：月" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
-              {!isFood && (
+              {isNonFood && (
                 <Col span={12}>
                   <Form.Item name="powerSpec" label="電源規格">
-                    <Input placeholder="請輸入電源規格" />
+                    <Input placeholder="例如：110V , 220V" />
                   </Form.Item>
                 </Col>
               )}
@@ -481,9 +533,7 @@ export default function Page() {
                   <Input placeholder="請輸入保存方式" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="vColor" label="顏色">
                   <Input placeholder="請輸入顏色" />
@@ -495,9 +545,7 @@ export default function Page() {
                   <Input placeholder="請輸入尺寸" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="vCapacity" label="容量">
                   <Input placeholder="請輸入容量" />
@@ -509,21 +557,21 @@ export default function Page() {
                   <Input placeholder="請輸入入數" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="vStyle" label="款式">
                   <Input placeholder="請輸入款式" />
                 </Form.Item>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
-              <Col span={12}>
+              <Col span={24}>
                 <Row>
-                  <Col span={14}>
-                    <Form.Item name="perpetual" label="庫存">
+                  <Col span={6}>
+                    <Form.Item
+                      name="perpetual"
+                      label="庫存"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
                       <Radio.Group
                         options={[
                           { label: "不庫控", value: false },
@@ -533,16 +581,24 @@ export default function Page() {
                     </Form.Item>
                   </Col>
 
-                  <Col span={10}>
-                    <Form.Item name="stockStartdate">
-                      <DatePicker placeholder="起始日期" />
-                    </Form.Item>
-                  </Col>
+                  {perpetual && (
+                    <>
+                      <Col span={3}>
+                        <Form.Item style={{ width: "90%" }} name="">
+                          <Input placeholder="數量" />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={3}>
+                        <Form.Item name="stockStartdate">
+                          <DatePicker placeholder="起始日期" />
+                        </Form.Item>
+                      </Col>
+                    </>
+                  )}
                 </Row>
               </Col>
-            </Row>
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="itemShortdescription" label="商品特色說明">
                   <TextArea
@@ -560,89 +616,89 @@ export default function Page() {
                   />
                 </Form.Item>
               </Col>
-            </Row>
 
-            {isFood && (
-              <>
-                <Row gutter={32}>
-                  <Col span={8}>
-                    <Form.Item
-                      name="manufacturer"
-                      label="國內負責廠商名稱"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <Input placeholder="請輸入國內負責廠商名稱" />
-                    </Form.Item>
-                  </Col>
+              {isFood && (
+                <Col span={8}>
+                  <Form.Item
+                    name="manufacturer"
+                    label="國內負責廠商名稱"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Input placeholder="請輸入國內負責廠商名稱" />
+                  </Form.Item>
+                </Col>
+              )}
 
-                  <Col span={8}>
-                    <Form.Item
-                      name="manufacturerPhone"
-                      label="電話"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <Input placeholder="請輸入電話" />
-                    </Form.Item>
-                  </Col>
+              {isFood && (
+                <Col span={8}>
+                  <Form.Item
+                    name="manufacturerPhone"
+                    label="電話"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Input placeholder="請輸入電話" />
+                  </Form.Item>
+                </Col>
+              )}
 
-                  <Col span={8}>
-                    <Form.Item
-                      name="manufacturerAddress"
-                      label="地址"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <Input placeholder="請輸入地址" />
-                    </Form.Item>
-                  </Col>
-                </Row>
+              {isFood && (
+                <Col span={8}>
+                  <Form.Item
+                    name="manufacturerAddress"
+                    label="地址"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Input placeholder="請輸入地址" />
+                  </Form.Item>
+                </Col>
+              )}
 
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item name="veggieType" label="素食種類">
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="請選擇素食種類"
-                        options={veggieType.map((v) => ({
-                          ...v,
-                          label: v.name,
-                          value: v.value,
-                        }))}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+              {isFood && (
+                <Col span={12}>
+                  <Form.Item name="veggieType" label="素食種類">
+                    <Select
+                      style={{ width: "100%" }}
+                      placeholder="請選擇素食種類"
+                      options={veggieType.map((v) => ({
+                        ...v,
+                        label: v.name,
+                        value: v.value,
+                      }))}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
 
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="ingredients"
-                      label="產品成份及食品添加物(文字)"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <TextArea
-                        placeholder="請輸入產品成份及食品添加物(文字)"
-                        autoSize={{ minRows: 3, maxRows: 3 }}
-                      />
-                    </Form.Item>
-                  </Col>
+              {isFood && (
+                <Col span={12}>
+                  <Form.Item
+                    name="ingredients"
+                    label="產品成份及食品添加物(文字)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <TextArea
+                      placeholder="請輸入產品成份及食品添加物(文字)"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
 
-                  <Col span={12}>
-                    <Form.Item
-                      name="nutrition"
-                      label="營養標示(文字)"
-                      rules={[{ required: true, message: "必填" }]}
-                    >
-                      <TextArea
-                        placeholder="請輸入營養標示(文字)"
-                        autoSize={{ minRows: 3, maxRows: 3 }}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </>
-            )}
+              {isFood && (
+                <Col span={12}>
+                  <Form.Item
+                    name="nutrition"
+                    label="營養標示(文字)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <TextArea
+                      placeholder="請輸入營養標示(文字)"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
 
-            <Row gutter={32}>
               <Col span={12}>
                 <Form.Item
                   name="dutyInsurance"
@@ -650,7 +706,7 @@ export default function Page() {
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入產品責任險"
+                    placeholder="請載明 : OO產物保險股份有限公司 保單號碼OOOO 字第OOOOO"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
@@ -659,60 +715,76 @@ export default function Page() {
               <Col span={12}>
                 <Form.Item
                   name="approvalId"
-                  label="產品核准字號"
+                  label="食品業者登錄字號"
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入產品核准字號"
+                    placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
               </Col>
+
+              {isNonFood && (
+                <Col span={12}>
+                  <Form.Item name="warrantyScope" label="保固範圍(文字)">
+                    <TextArea
+                      placeholder="請輸入保固範圍(文字)"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+
+              {isNonFood && (
+                <Col span={12}>
+                  <Form.Item name="warrantyPeriod" label="保固期間(文字)">
+                    <TextArea
+                      placeholder="請輸入保固期間(文字)"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+
+              {isNonFood && (
+                <Col span={12}>
+                  <Form.Item name="approvalOther" label="其他證明(文字)">
+                    <TextArea
+                      placeholder="請輸入其他證明(文字)"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+
+              {isNonFood && (
+                <Col span={12}>
+                  <Form.Item name="certMark" label="標章">
+                    <TextArea
+                      placeholder="例如：省水標章 , 環保標章 ... 等等"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
+
+              {isNonFood && (
+                <Col span={12}>
+                  <Form.Item name="energyEfficiency" label="能源效能">
+                    <TextArea
+                      placeholder="例如：能源效能登錄編號"
+                      autoSize={{ minRows: 3, maxRows: 3 }}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
             </Row>
+          </Col>
 
-            {!isFood && (
-              <>
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item name="warrantyScope" label="保固範圍(文字)">
-                      <TextArea
-                        placeholder="請輸入保固範圍(文字)"
-                        autoSize={{ minRows: 3, maxRows: 3 }}
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={12}>
-                    <Form.Item name="approvalOther" label="其他證明(文字)">
-                      <TextArea
-                        placeholder="請輸入其他證明(文字)"
-                        autoSize={{ minRows: 3, maxRows: 3 }}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </>
-            )}
-
-            <Row gutter={32}>
-              <Col span={12}>
-                <Form.Item name="certMark" label="標章">
-                  <TextArea
-                    placeholder="請輸入標章"
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item name="energyEfficiency" label="能源效率">
-                  <TextArea
-                    placeholder="請輸入能源效率"
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+          <Col span={24}>
+            <Title>審核歷程</Title>
+            <ApplyHistoryTable data={form.getFieldValue("applyHisInfo")} />
           </Col>
         </Row>
       </Form>

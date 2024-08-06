@@ -98,7 +98,6 @@ export default function Page() {
       <Spin spinning={loading.page}>
         <LayoutHeader>
           <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
-
           <Breadcrumb
             separator=">"
             items={[
@@ -154,7 +153,6 @@ export default function Page() {
           <Row>
             <Col span={24}>
               <Title>基本設定</Title>
-
               <Flex gap={16}>
                 <Form.Item name="cartType" label="分車類型">
                   <Select
@@ -265,21 +263,7 @@ export default function Page() {
                 <Form.Item style={{ flex: 1 }} name="vUnit" label="容量單位">
                   <Input />
                 </Form.Item>
-
-                {/* <Form.Item name="" label="庫存單位">
-                <Input />
-              </Form.Item> */}
               </Flex>
-
-              {/* <Flex gap={16}>
-            <Form.Item name="" label="陳列單位(數字)">
-                <Input />
-              </Form.Item>
-
-              <Form.Item name="" label="陳列容量">
-                <Input />
-              </Form.Item>
-            </Flex> */}
 
               <Flex gap={16}>
                 <Form.Item
@@ -313,7 +297,7 @@ export default function Page() {
                   name="grossWeight"
                   label="重量-毛重"
                 >
-                  <Input />
+                  <Input suffix="克(g)" />
                 </Form.Item>
 
                 <Form.Item
@@ -321,7 +305,7 @@ export default function Page() {
                   name="netWeight"
                   label="重量-淨重"
                 >
-                  <Input />
+                  <Input suffix="克(g)" />
                 </Form.Item>
               </Flex>
             </Col>
@@ -381,16 +365,9 @@ export default function Page() {
               </Form.Item> */}
               </Flex>
 
-              {/* <Flex gap={16}>
-              <Form.Item name="" label="款式">
-                <Input />
-              </Form.Item>
-            </Flex> */}
-
               <Flex gap={16}>
                 <Form.Item name="perpetual" label="庫存">
                   <Radio.Group
-                    // style={{ width: 250 }}
                     disabled
                     options={[
                       { label: "不庫控", value: false },
