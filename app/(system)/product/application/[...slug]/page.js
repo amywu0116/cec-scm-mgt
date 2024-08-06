@@ -206,6 +206,24 @@ export default function Page() {
       });
   };
 
+  const handleApply = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .post(`v1/scm/product/apply`, {
+        applyIds: [applyId],
+      })
+      .then(() => {
+        message.success("送審成功");
+        router.push(PATH_PRODUCT_APPLICATION);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
+  };
+
   useEffect(() => {
     fetchCategory();
     fetchShipping();
@@ -247,6 +265,10 @@ export default function Page() {
 
           <Button type="primary" onClick={() => form.submit()}>
             暫存
+          </Button>
+
+          <Button type="primary" onClick={handleApply}>
+            送審
           </Button>
         </Space>
       </LayoutHeader>
