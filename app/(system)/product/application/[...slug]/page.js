@@ -53,16 +53,6 @@ export default function Page() {
 
   const perpetual = Form.useWatch("perpetual", form);
 
-  const validateCartType = () => {
-    if (shippingList.length === 0) {
-      return Promise.reject(
-        new Error("請先至 供應商>運費設定 功能頁面，進行運費設定！")
-      );
-    }
-
-    return Promise.resolve();
-  };
-
   const removeLeadingZero = (value) => {
     while (value.length > 1 && value.startsWith("0")) {
       value = value.substring(1);
@@ -90,7 +80,17 @@ export default function Page() {
     api
       .get("v1/scm/vendor/shipping")
       .then((res) => {
-        setShippingList(res.data ?? []);
+        const shippingList = res.data;
+        if (shippingList.length > 0) {
+          setShippingList(shippingList ?? []);
+        } else {
+          form.setFields([
+            {
+              name: "cartType",
+              errors: ["請先至 供應商>運費設定 功能頁面，進行運費設定！"],
+            },
+          ]);
+        }
       })
       .catch((err) => {
         message.error(err.message);
@@ -217,11 +217,6 @@ export default function Page() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!shippingList) return;
-    form.validateFields(["cartType"]);
-  }, [shippingList]);
-
   return (
     <Spin spinning={loading.page}>
       <LayoutHeader>
@@ -273,7 +268,7 @@ export default function Page() {
                 <Form.Item
                   name="cartType"
                   label="分車類型"
-                  rules={[{ validator: validateCartType }]}
+                  rules={[{ required: true, message: "必填" }]}
                 >
                   <Select
                     placeholder="請選擇分車類型"
@@ -293,7 +288,11 @@ export default function Page() {
 
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="scmCategoryCode" label="分類">
+                <Form.Item
+                  name="scmCategoryCode"
+                  label="分類"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Select
                     placeholder="選擇分類"
                     showSearch
@@ -316,13 +315,21 @@ export default function Page() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="itemName" label="中文品名">
+                <Form.Item
+                  name="itemName"
+                  label="中文品名"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
-                <Form.Item name="itemNameEn" label="英文品名">
+                <Form.Item
+                  name="itemNameEn"
+                  label="英文品名"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入英文品名" />
                 </Form.Item>
               </Col>
@@ -334,7 +341,11 @@ export default function Page() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="itemCountry" label="生產國家">
+                <Form.Item
+                  name="itemCountry"
+                  label="生產國家"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入生產國家" />
                 </Form.Item>
               </Col>
@@ -346,13 +357,21 @@ export default function Page() {
               </Col>
 
               <Col span={8}>
-                <Form.Item name="itemSpec" label="規格">
+                <Form.Item
+                  name="itemSpec"
+                  label="規格"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入規格" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="isTax" label="應/免稅">
+                <Form.Item
+                  name="isTax"
+                  label="應/免稅"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Select
                     placeholder="請輸入應/免稅"
                     showSearch
@@ -366,7 +385,11 @@ export default function Page() {
               </Col>
 
               <Col span={12}>
-                <Form.Item name="price" label="原價">
+                <Form.Item
+                  name="price"
+                  label="原價"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input
                     placeholder="請輸入原價"
                     value={form.getFieldValue("price")}
@@ -401,19 +424,31 @@ export default function Page() {
             <Title>容量和重量</Title>
             <Row gutter={32}>
               <Col span={8}>
-                <Form.Item name="productHeight" label="商品高度(cm)">
+                <Form.Item
+                  name="productHeight"
+                  label="商品高度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品高度(cm)" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="productWidth" label="商品寬度(cm)">
+                <Form.Item
+                  name="productWidth"
+                  label="商品寬度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品寬度(cm)" />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
-                <Form.Item name="productLength" label="商品長度(cm)">
+                <Form.Item
+                  name="productLength"
+                  label="商品長度(cm)"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入商品長度(cm)" />
                 </Form.Item>
               </Col>
@@ -444,13 +479,21 @@ export default function Page() {
             <Title>其他資訊</Title>
             <Row gutter={32}>
               <Col span={12}>
-                <Form.Item name="expDateValue" label="保存日期">
+                <Form.Item
+                  name="expDateValue"
+                  label="保存日期"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入阿拉伯數字，例如：12" />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
-                <Form.Item name="expDateUnit" label="保存日期單位">
+                <Form.Item
+                  name="expDateUnit"
+                  label="保存日期單位"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Input placeholder="請輸入 小時 / 日 / 週 / 月 / 年，例如：月" />
                 </Form.Item>
               </Col>
@@ -502,7 +545,11 @@ export default function Page() {
               <Col span={24}>
                 <Row>
                   <Col span={6}>
-                    <Form.Item name="perpetual" label="庫存">
+                    <Form.Item
+                      name="perpetual"
+                      label="庫存"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
                       <Radio.Group
                         options={[
                           { label: "不庫控", value: false },
