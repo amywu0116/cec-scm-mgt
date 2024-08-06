@@ -317,7 +317,7 @@ export default function Page() {
 
               <Col span={12}>
                 <Form.Item name="itemName" label="中文品名">
-                  <Input placeholder="請輸入中文品名" />
+                  <Input placeholder="請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
                 </Form.Item>
               </Col>
 
@@ -445,20 +445,20 @@ export default function Page() {
             <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="expDateValue" label="保存日期">
-                  <Input placeholder="請輸入保存日期" />
+                  <Input placeholder="請輸入阿拉伯數字，例如：12" />
                 </Form.Item>
               </Col>
 
               <Col span={12}>
                 <Form.Item name="expDateUnit" label="保存日期單位">
-                  <Input placeholder="請輸入保存日期單位" />
+                  <Input placeholder="請輸入 小時 / 日 / 週 / 月 / 年，例如：月" />
                 </Form.Item>
               </Col>
 
               {isNonFood && (
                 <Col span={12}>
                   <Form.Item name="powerSpec" label="電源規格">
-                    <Input placeholder="請輸入電源規格" />
+                    <Input placeholder="例如：110V , 220V" />
                   </Form.Item>
                 </Col>
               )}
@@ -637,7 +637,7 @@ export default function Page() {
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入產品責任險"
+                    placeholder="請載明 : OO產物保險股份有限公司 保單號碼OOOO 字第OOOOO"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
@@ -650,7 +650,7 @@ export default function Page() {
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入食品業者登錄字號"
+                    placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
@@ -693,7 +693,7 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item name="certMark" label="標章">
                     <TextArea
-                      placeholder="請輸入標章"
+                      placeholder="例如：省水標章 , 環保標章 ... 等等"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
@@ -702,9 +702,9 @@ export default function Page() {
 
               {isNonFood && (
                 <Col span={12}>
-                  <Form.Item name="energyEfficiency" label="能源效率">
+                  <Form.Item name="energyEfficiency" label="能源效能">
                     <TextArea
-                      placeholder="請輸入能源效率"
+                      placeholder="例如：能源效能登錄編號"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
