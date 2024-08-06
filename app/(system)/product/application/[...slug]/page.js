@@ -659,11 +659,11 @@ export default function Page() {
               <Col span={12}>
                 <Form.Item
                   name="approvalId"
-                  label="產品核准字號"
+                  label="食品業者登錄字號"
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入產品核准字號"
+                    placeholder="請輸入食品業者登錄字號"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
