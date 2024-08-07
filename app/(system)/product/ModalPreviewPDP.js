@@ -294,7 +294,7 @@ const ProductDescriptionTab = styled.div`
 `;
 
 const ProductDescriptionContent = styled.div`
-  height: 1000px;
+  height: auto;
   display: flex;
   flex-direction: column;
   padding: 12px 14px;
@@ -351,46 +351,28 @@ const descriptionTabList = [
 ];
 
 export default function ModalPreviewPDP(props) {
-  const { open, onCancel } = props;
-  const { message } = App.useApp();
+  const { info, loading, open, onCancel } = props;
 
-  const [loading, setLoading] = useState({ page: true });
-  const [info, setInfo] = useState({});
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
 
-  const fetchInfo = () => {
-    setLoading((state) => ({ ...state, page: true }));
-    api
-      .get(`v1/scm/product/apply/pdp`, { params: { applyId: 215 } })
-      .then((res) => {
-        setInfo(res.data);
-        setSelectedImg(res.data.productImages[0]);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
-  };
-
   useEffect(() => {
-    fetchInfo();
-  }, []);
+    if (!info.productImages) return;
+    setSelectedImg(info?.productImages[0]);
+  }, [info]);
 
   return (
     <>
-      <Spin spinning={loading.page}>
-        <Modal
-          title="PDP預覽"
-          centered
-          width={1250}
-          destroyOnClose
-          open={open}
-          onCancel={onCancel}
-          footer={null}
-        >
+      <Modal
+        title="PDP預覽"
+        centered
+        width={1250}
+        destroyOnClose
+        open={open}
+        onCancel={onCancel}
+        footer={null}
+      >
+        <Spin spinning={loading}>
           <Container>
             <Row gutter={[0, 20]}>
               <Col span={24}>
@@ -579,20 +561,22 @@ export default function ModalPreviewPDP(props) {
                       <ProductDescriptionContent>
                         {selectedTab === "0" && (
                           <>
-                            <FeatureImagesList>
-                              {info.featureImages?.map((img, idx) => {
-                                return (
-                                  <FeatureImagesWrapper key={idx}>
-                                    <Image
-                                      key={idx}
-                                      src={img}
-                                      fill
-                                      objectFit="contain"
-                                    />
-                                  </FeatureImagesWrapper>
-                                );
-                              })}
-                            </FeatureImagesList>
+                            {info.featureImages?.length > 0 && (
+                              <FeatureImagesList>
+                                {info.featureImages?.map((img, idx) => {
+                                  return (
+                                    <FeatureImagesWrapper key={idx}>
+                                      <Image
+                                        key={idx}
+                                        src={img}
+                                        fill
+                                        objectFit="contain"
+                                      />
+                                    </FeatureImagesWrapper>
+                                  );
+                                })}
+                              </FeatureImagesList>
+                            )}
 
                             <ProductDescriptionTable>
                               <table>
@@ -640,8 +624,8 @@ export default function ModalPreviewPDP(props) {
               </Col>
             </Row>
           </Container>
-        </Modal>
-      </Spin>
+        </Spin>
+      </Modal>
     </>
   );
 }
