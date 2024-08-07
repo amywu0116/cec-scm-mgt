@@ -9,6 +9,7 @@ import PreviewImgZoom from "./PreviewImgZoom";
 
 import api from "@/api";
 import Modal from "@/components/Modal";
+
 import "swiper/css";
 
 const Container = styled.div`
@@ -42,7 +43,7 @@ const Suggestion = styled.div`
 `;
 
 const PreviewImgList = styled.div`
-  width: 100%;
+  width: 400px;
 `;
 
 const ContactList = styled.div`
