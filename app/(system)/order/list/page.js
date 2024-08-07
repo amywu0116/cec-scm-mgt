@@ -9,6 +9,7 @@ import {
   Form,
   Radio,
   Row,
+  Space,
   Upload,
 } from "antd";
 import Link from "next/link";
@@ -22,7 +23,6 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
-import Tabs from "@/components/Tabs";
 
 import ModalImportShip from "./ModalImportShip";
 
@@ -63,12 +63,6 @@ const Card = styled.div`
   padding: 16px;
 `;
 
-const TabLabelWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 4px;
-`;
-
 const Tag = styled.div`
   padding: 2px 8px;
   border-radius: 8px;
@@ -92,6 +86,28 @@ const Tag = styled.div`
       background-color: #ff563014;
       color: #b71d18;
     `};
+`;
+
+const ResultTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0 20px;
+  margin-bottom: 5px;
+`;
+
+const ResultTitle = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(123, 128, 147, 1);
+`;
+
+const StatusLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(123, 128, 147, 1);
 `;
 
 // key 為處理狀態，value 為訂單物流狀態
@@ -118,9 +134,6 @@ export default function Page() {
   });
 
   const [showModalImportShip, setShowModalImportShip] = useState(false);
-
-  const tabActiveKeyDefault = "全部";
-  const [tabActiveKey, setTabActiveKey] = useState(tabActiveKeyDefault);
 
   const processedStatus = Form.useWatch("processedStatus", form);
   const logisticsStatus = statusMapping[processedStatus] ?? [];
@@ -198,34 +211,6 @@ export default function Page() {
     },
   ];
 
-  const renderTable = () => {
-    return (
-      <Table
-        rowKey="ecorderId"
-        loading={loading.table}
-        rowClassName={(record, index) => {
-          if (record.processedStatus === "已結案") {
-            return "closed";
-          }
-        }}
-        rowSelection={{
-          selectedRowKeys: selectedRows.map((r) => r.ecorderId),
-          onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
-        pageInfo={{
-          total: tableInfo.total,
-          page: tableInfo.page,
-          pageSize: tableInfo.pageSize,
-        }}
-        columns={columns}
-        dataSource={tableInfo.rows}
-        onChange={handleChangeTable}
-      />
-    );
-  };
-
   const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
     const orderStatusList = [];
     const pickingStatusList = [];
@@ -294,31 +279,24 @@ export default function Page() {
     fetchList(tableInfo.tableQuery, { page, pageSize });
   };
 
-  // 切換 Table Tab
-  const handleChangeTab = (activeKey) => {
-    if (activeKey === "異常") {
+  // 查詢
+  const handleSearch = (status) => {
+    if (status === "異常") {
       form.setFieldsValue({
         processedStatus: "0",
         logisticsStatus: logisticsStatus.filter((l) => l === "11"),
       });
     }
 
-    if (activeKey === "待處理") {
+    if (status === "待處理") {
       form.setFieldsValue({
         processedStatus: "0",
         logisticsStatus: statusMapping["0"],
       });
     }
 
-    form.submit();
-    setTabActiveKey(activeKey);
-  };
-
-  // 查詢
-  const handleSearch = () => {
     form.validateFields().then(() => {
       form.submit();
-      setTabActiveKey(tabActiveKeyDefault);
     });
   };
 
@@ -494,13 +472,8 @@ export default function Page() {
 
                 <Divider style={{ margin: 0 }} />
 
-                <Row
-                  style={{ marginTop: 16 }}
-                  gutter={16}
-                  justify="end"
-                  align="middle"
-                >
-                  <Col>
+                <Row justify="end" style={{ marginTop: 16 }}>
+                  <Space size={16}>
                     <Button
                       onClick={() => {
                         handleDownloadFile(
@@ -511,25 +484,36 @@ export default function Page() {
                     >
                       出貨狀態匯入範本
                     </Button>
-                  </Col>
 
-                  <Col>
                     <Upload showUploadList={false} onChange={handleImportShip}>
                       <Button htmlType="label" loading={loading.importShip}>
                         出貨狀態匯入
                       </Button>
                     </Upload>
-                  </Col>
 
-                  <Col>
-                    <Button type="secondary" onClick={handleSearch}>
+                    <Button
+                      type="secondary"
+                      onClick={() => handleSearch("異常")}
+                    >
+                      異常查詢
+                    </Button>
+
+                    <Button
+                      type="secondary"
+                      onClick={() => handleSearch("待處理")}
+                    >
+                      待處理查詢
+                    </Button>
+
+                    <Button
+                      type="secondary"
+                      onClick={() => handleSearch("全部")}
+                    >
                       查詢
                     </Button>
-                  </Col>
 
-                  <Col>
                     <ResetBtn onClick={handleReset}>清除查詢條件</ResetBtn>
-                  </Col>
+                  </Space>
                 </Row>
               </Card>
             </Form>
@@ -564,40 +548,46 @@ export default function Page() {
               </Col>
 
               <Col span={24}>
-                <Tabs
-                  items={[
-                    {
-                      label: "全部",
-                      key: "全部",
-                      children: renderTable(),
+                <ResultTitleWrapper>
+                  <ResultTitle>查詢結果</ResultTitle>
+
+                  <StatusLabel>
+                    異常
+                    {tableInfo.countByUnusual >= 0 && (
+                      <Tag>{tableInfo.countByUnusual}</Tag>
+                    )}
+                  </StatusLabel>
+
+                  <StatusLabel>
+                    待處理
+                    {tableInfo.countByPending >= 0 && (
+                      <Tag>{tableInfo.countByPending}</Tag>
+                    )}
+                  </StatusLabel>
+                </ResultTitleWrapper>
+
+                <Table
+                  rowKey="ecorderId"
+                  loading={loading.table}
+                  rowClassName={(record, index) => {
+                    if (record.processedStatus === "已結案") {
+                      return "closed";
+                    }
+                  }}
+                  rowSelection={{
+                    selectedRowKeys: selectedRows.map((r) => r.ecorderId),
+                    onChange: (selectedRowKeys, selectedRows) => {
+                      setSelectedRows(selectedRows);
                     },
-                    {
-                      label: (
-                        <TabLabelWrapper>
-                          異常
-                          {tableInfo.countByUnusual >= 0 && (
-                            <Tag>{tableInfo.countByUnusual}</Tag>
-                          )}
-                        </TabLabelWrapper>
-                      ),
-                      key: "異常",
-                      children: renderTable(),
-                    },
-                    {
-                      label: (
-                        <TabLabelWrapper>
-                          待處理
-                          {tableInfo.countByPending >= 0 && (
-                            <Tag>{tableInfo.countByPending}</Tag>
-                          )}
-                        </TabLabelWrapper>
-                      ),
-                      key: "待處理",
-                      children: renderTable(),
-                    },
-                  ]}
-                  activeKey={tabActiveKey}
-                  onChange={handleChangeTab}
+                  }}
+                  pageInfo={{
+                    total: tableInfo.total,
+                    page: tableInfo.page,
+                    pageSize: tableInfo.pageSize,
+                  }}
+                  columns={columns}
+                  dataSource={tableInfo.rows}
+                  onChange={handleChangeTable}
                 />
               </Col>
             </Row>
