@@ -207,7 +207,7 @@ export default function Page() {
 
   const handleDownloadFile = () => {
     const link = document.createElement("a");
-    link.href = "/提品匯入範例.xlsx";
+    link.href = "/files/提品匯入範例.xlsx";
     link.download = "提品匯入範例.xlsx";
     document.body.appendChild(link);
     link.click();

@@ -437,6 +437,12 @@ export default function MyDocument(props) {
                         "※ 會員制度以各平台及通路之設定規範為準，如有疑慮，請您務必於購買前與各通路之客服確認。"
                       }
                     </Text>
+
+                    <Text>
+                      {
+                        "※ 如需辦理退貨，請連同紙本發票及商品一同退回。紙本發票請務必妥善保管。"
+                      }
+                    </Text>
                   </View>
                 </View>
 

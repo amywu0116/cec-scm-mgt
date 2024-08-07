@@ -1,15 +1,15 @@
 "use client";
-import styled, { css } from "styled-components";
-import { App, Row, Col, Spin } from "antd";
+import { App, Col, Row, Spin } from "antd";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
+import styled, { css } from "styled-components";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import PreviewImgZoom from "./PreviewImgZoom";
 
-import "swiper/css";
 import api from "@/api";
 import Modal from "@/components/Modal";
+import "swiper/css";
 
 const Container = styled.div`
   background-color: #f0f0f0;
@@ -41,17 +41,9 @@ const Suggestion = styled.div`
   border-left: 1px solid #ebeae8;
 `;
 
-const PreviewImg = styled.div`
-  width: 100%;
-  height: 400px;
-  border: 1px solid #000;
-`;
-
 const PreviewImgList = styled.div`
   width: 100%;
 `;
-
-const PreviewImgListItem = styled.div``;
 
 const ContactList = styled.div`
   display: flex;
@@ -61,7 +53,6 @@ const ContactList = styled.div`
 const ProductImgWrapper = styled.div`
   width: 90px;
   height: 90px;
-  overflow: hidden;
   padding: 2px;
   position: relative;
   border: 2px solid transparent;
@@ -250,66 +241,9 @@ const Commodity = styled.div`
 `;
 
 const Popularity = styled.div`
-  flex: 0 0 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px 0;
-`;
-
-const PopularityTitle = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #1e5bc6;
-`;
-
-const PopularityList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px 0;
-`;
-
-const PopularityItem = styled.div`
-  border-radius: 10px;
-  background-color: #fff;
-  display: flex;
-`;
-
-const PopularityItemImg = styled.div`
-  display: flex;
-  align-self: center;
-`;
-
-const PopularityItemContent = styled.div`
-  flex: 1;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const PopularityItemName = styled.div``;
-
-const PopularityItemPriceWrapper = styled.div`
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-`;
-
-const PopularityItemPrice = styled.div`
-  font-size: 12px;
-  color: #999999;
-  text-decoration: line-through;
-`;
-
-const PopularityItemSpecialPrice = styled.div`
-  font-size: 20px;
-  color: #fd0202;
-  font-weight: bold;
-  margin-left: auto;
-
-  > span {
-    font-size: 12px;
-  }
+  position: relative;
+  width: 220px;
+  height: 775px;
 `;
 
 const ProductDescriptionWrapper = styled.div`
@@ -324,30 +258,10 @@ const ProductDescription = styled.div`
   padding: 8px 16px;
 `;
 
-const RelatedWrapper = styled.div`
-  background-color: #fff;
-  padding: 15px 10px;
-  display: flex;
-  gap: 0 15px;
-`;
-
-const RelatedTitle = styled.div`
-  font-size: 14px;
-  color: #999;
-  align-self: center;
-`;
-
-const RelatedList = styled.div`
-  gap: 10px;
-  display: flex;
-`;
-
-const RelatedTag = styled.div`
-  padding: 5px;
-  border: 1px solid #1e5bc6;
-  border-radius: 10px;
-  background-color: #e8eff9;
-  color: #1e5bc6;
+const Related = styled.div`
+  position: relative;
+  width: 100%;
+  height: 60px;
 `;
 
 const ProductDescriptionTabs = styled.div`
@@ -361,14 +275,26 @@ const ProductDescriptionTab = styled.div`
   font-weight: bold;
   color: #6a6a6a;
   padding: 8px 0;
+  cursor: pointer;
+
+  ${(props) =>
+    props.$active &&
+    css`
+      color: #0e3368;
+      border-bottom: 1px solid #fd5151;
+    `}
 
   &:hover {
     color: #0e3368;
   }
+
+  &:first-child {
+    margin-left: 15px;
+  }
 `;
 
 const ProductDescriptionContent = styled.div`
-  height: 1000px;
+  height: auto;
   display: flex;
   flex-direction: column;
   padding: 12px 14px;
@@ -407,102 +333,46 @@ const ProductDescriptionTable = styled.div`
   }
 `;
 
-const relatedTagList = [
-  "童年 零食",
-  "科學 童年",
-  "零食 科學",
-  "家庭號 分享",
-  "零食 分享",
-  "分享 童年",
-  "家庭號 科學",
-  "家庭號 童年",
-  "科學 分享",
-];
+const Popular = styled.div`
+  position: relative;
+  width: 100%;
+  height: 370px;
+`;
 
-const popularityList = [
+const descriptionTabList = [
   {
-    name: "聯華七小喜多包",
-    price: 62,
-    specialPrice: 55,
-    url: "/popularity-1.jpg",
+    label: "商品資訊",
+    key: "0",
   },
   {
-    name: "味王小王子麵",
-    price: null,
-    specialPrice: 47,
-    url: "/popularity-2.jpg",
-  },
-  {
-    name: "真魷味歡樂包-紅燒口味12gx12",
-    price: 69,
-    specialPrice: 55,
-    url: "/popularity-3.jpg",
-  },
-  {
-    name: "華元神氣包-三色野菜園",
-    price: null,
-    specialPrice: 55,
-    url: "/popularity-4.jpg",
-  },
-  {
-    name: "可樂果古早味量販包48gx4",
-    price: 63,
-    specialPrice: 53,
-    url: "/popularity-5.jpg",
-  },
-  {
-    name: "可樂果辣味量販包",
-    price: 63,
-    specialPrice: 53,
-    url: "/popularity-6.jpg",
-  },
-  {
-    name: "小王子麵-原味(減鹽)",
-    price: null,
-    specialPrice: 47,
-    url: "/popularity-7.jpg",
+    label: "配送售後服務說明",
+    key: "1",
   },
 ];
 
 export default function ModalPreviewPDP(props) {
-  const { open, onCancel } = props;
-  const { message } = App.useApp();
+  const { info, loading, open, onCancel } = props;
 
-  const [loading, setLoading] = useState({ page: true });
-  const [info, setInfo] = useState({});
   const [selectedImg, setSelectedImg] = useState();
-
-  const fetchInfo = () => {
-    setLoading((state) => ({ ...state, page: true }));
-    api
-      .get(`v1/scm/product/apply/pdp`, { params: { applyId: 215 } })
-      .then((res) => {
-        setInfo(res.data);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
-  };
+  const [selectedTab, setSelectedTab] = useState("0");
 
   useEffect(() => {
-    fetchInfo();
-  }, []);
+    if (!info.productImages) return;
+    setSelectedImg(info?.productImages[0]);
+  }, [info]);
 
   return (
     <>
-      <Spin spinning={loading.page}>
-        <Modal
-          title="PDP預覽"
-          centered
-          width={1250}
-          destroyOnClose
-          open={open}
-          onCancel={onCancel}
-          footer={null}
-        >
+      <Modal
+        title="PDP預覽"
+        centered
+        width={1250}
+        destroyOnClose
+        open={open}
+        onCancel={onCancel}
+        footer={null}
+      >
+        <Spin spinning={loading}>
           <Container>
             <Row gutter={[0, 20]}>
               <Col span={24}>
@@ -665,118 +535,97 @@ export default function ModalPreviewPDP(props) {
               <Col span={24}>
                 <Commodity>
                   <Popularity>
-                    <PopularityTitle>人氣熱銷</PopularityTitle>
-                    <PopularityList>
-                      {popularityList.map((item, idx) => {
-                        return (
-                          <PopularityItem key={idx}>
-                            <PopularityItemImg>
-                              <Image
-                                src={item.url}
-                                width={100}
-                                height={100}
-                                alt=""
-                              />
-                            </PopularityItemImg>
-
-                            <PopularityItemContent>
-                              <PopularityItemName>
-                                {item.name}
-                              </PopularityItemName>
-
-                              <PopularityItemPriceWrapper>
-                                {item.price && (
-                                  <PopularityItemPrice>
-                                    ${item.price}
-                                  </PopularityItemPrice>
-                                )}
-
-                                <PopularityItemSpecialPrice>
-                                  <span>$</span>
-                                  {item.specialPrice}
-                                </PopularityItemSpecialPrice>
-                              </PopularityItemPriceWrapper>
-                            </PopularityItemContent>
-                          </PopularityItem>
-                        );
-                      })}
-                    </PopularityList>
+                    <Image src="/popularity.png" fill />
                   </Popularity>
 
                   <ProductDescriptionWrapper>
-                    <RelatedWrapper>
-                      <RelatedTitle>相關搜尋</RelatedTitle>
-                      <RelatedList>
-                        {relatedTagList.map((tag, idx) => {
-                          return <RelatedTag key={idx}>{tag}</RelatedTag>;
-                        })}
-                      </RelatedList>
-                    </RelatedWrapper>
+                    <Related>
+                      <Image src="/related.png" fill />
+                    </Related>
 
                     <ProductDescription>
                       <ProductDescriptionTabs>
-                        <ProductDescriptionTab>商品資訊</ProductDescriptionTab>
-                        <ProductDescriptionTab>
-                          配送及售後服務說明
-                        </ProductDescriptionTab>
+                        {descriptionTabList.map((tab, idx) => {
+                          return (
+                            <ProductDescriptionTab
+                              key={idx}
+                              $active={selectedTab === tab.key}
+                              onClick={() => setSelectedTab(tab.key)}
+                            >
+                              {tab.label}
+                            </ProductDescriptionTab>
+                          );
+                        })}
                       </ProductDescriptionTabs>
 
                       <ProductDescriptionContent>
-                        <FeatureImagesList>
-                          {info.featureImages?.map((img, idx) => {
-                            return (
-                              <FeatureImagesWrapper key={idx}>
-                                <Image
-                                  key={idx}
-                                  src={img}
-                                  fill
-                                  objectFit="contain"
-                                />
-                              </FeatureImagesWrapper>
-                            );
-                          })}
-                        </FeatureImagesList>
+                        {selectedTab === "0" && (
+                          <>
+                            {info.featureImages?.length > 0 && (
+                              <FeatureImagesList>
+                                {info.featureImages?.map((img, idx) => {
+                                  return (
+                                    <FeatureImagesWrapper key={idx}>
+                                      <Image
+                                        key={idx}
+                                        src={img}
+                                        fill
+                                        objectFit="contain"
+                                      />
+                                    </FeatureImagesWrapper>
+                                  );
+                                })}
+                              </FeatureImagesList>
+                            )}
 
-                        <ProductDescriptionTable>
-                          <table>
-                            <tbody>
-                              <tr>
-                                <td>商品來源國家</td>
-                                <td>{info.itemCountry}</td>
-                              </tr>
+                            <ProductDescriptionTable>
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td>商品來源國家</td>
+                                    <td>{info.itemCountry}</td>
+                                  </tr>
 
-                              <tr>
-                                <td>商品高度</td>
-                                <td>{info.productHeight}</td>
-                              </tr>
+                                  <tr>
+                                    <td>商品高度</td>
+                                    <td>{info.productHeight}</td>
+                                  </tr>
 
-                              <tr>
-                                <td>商品寬度</td>
-                                <td>{info.productWidth}</td>
-                              </tr>
+                                  <tr>
+                                    <td>商品寬度</td>
+                                    <td>{info.productWidth}</td>
+                                  </tr>
 
-                              <tr>
-                                <td>保存天數</td>
-                                <td>{info.expDate}</td>
-                              </tr>
+                                  <tr>
+                                    <td>保存天數</td>
+                                    <td>{info.expDate}</td>
+                                  </tr>
 
-                              <tr>
-                                <td>應免稅</td>
-                                <td>{info.isTax ? "應稅" : "免稅"}</td>
-                              </tr>
-                              <tr></tr>
-                            </tbody>
-                          </table>
-                        </ProductDescriptionTable>
+                                  <tr>
+                                    <td>應免稅</td>
+                                    <td>{info.isTax ? "應稅" : "免稅"}</td>
+                                  </tr>
+                                  <tr></tr>
+                                </tbody>
+                              </table>
+                            </ProductDescriptionTable>
+                          </>
+                        )}
+
+                        {selectedTab === "1" && <div>內容待補...</div>}
                       </ProductDescriptionContent>
                     </ProductDescription>
+
+                    <Popular>
+                      <Image src="/popular.png" fill />
+                    </Popular>
                   </ProductDescriptionWrapper>
                 </Commodity>
               </Col>
             </Row>
           </Container>
-        </Modal>
-      </Spin>
+        </Spin>
+      </Modal>
     </>
   );
 }
