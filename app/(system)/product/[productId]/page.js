@@ -212,17 +212,19 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                {/* <Col span={12}>
                   <Form.Item name="vendorProdCode" label="供應商商品編號">
                     <Input />
                   </Form.Item>
-                </Col>
+                </Col> */}
 
                 <Col span={12}>
                   <Form.Item name="itemCountry" label="生產國家">
                     <Input />
                   </Form.Item>
                 </Col>
+
+                <Col span={12}></Col>
 
                 <Col span={8}>
                   <Form.Item name="itemEan" label="條碼">
