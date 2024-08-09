@@ -289,13 +289,17 @@ export default function Page() {
 
             <Button
               type="primary"
-              disabled={!canEdit}
+              disabled={isEdit && !canEdit}
               onClick={() => form.submit()}
             >
               暫存
             </Button>
 
-            <Button type="primary" disabled={!canEdit} onClick={handleApply}>
+            <Button
+              type="primary"
+              disabled={isEdit && !canEdit}
+              onClick={handleApply}
+            >
               送審
             </Button>
 
@@ -317,7 +321,7 @@ export default function Page() {
           labelCol={{ flex: "80px" }}
           labelWrap
           labelAlign="left"
-          disabled={!canEdit}
+          disabled={isEdit && !canEdit}
           onFinish={handleFinish}
         >
           <Row gutter={[0, 16]}>
