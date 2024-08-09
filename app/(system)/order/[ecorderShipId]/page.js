@@ -859,9 +859,12 @@ export default function Page(props) {
               </Col>
             )}
 
-            {["退貨收貨完成", "退貨收貨失敗", "退貨退款中"].includes(
-              info.backStatusName
-            ) && (
+            {[
+              "退貨收貨完成",
+              "退貨收貨失敗",
+              "退貨退款中",
+              "退款完成",
+            ].includes(info.backStatusName) && (
               <Col span={24}>
                 <TitleWrapper>
                   <Title>退貨資訊</Title>
@@ -893,7 +896,7 @@ export default function Page(props) {
                   </Row>
                 )}
 
-                {["退貨退款中"].includes(info.backStatusName) && (
+                {["退貨退款中", "退款完成"].includes(info.backStatusName) && (
                   <>
                     <Row gutter={32}>
                       <Col span={12}>
