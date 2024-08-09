@@ -385,11 +385,11 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                {/* <Col span={12}>
                   <Form.Item name="vendorProdCode" label="供應商商品編號">
                     <Input placeholder="請輸入供應商商品編號" />
                   </Form.Item>
-                </Col>
+                </Col> */}
 
                 <Col span={12}>
                   <Form.Item
@@ -400,6 +400,8 @@ export default function Page() {
                     <Input placeholder="請輸入生產國家" />
                   </Form.Item>
                 </Col>
+
+                <Col span={12}></Col>
 
                 <Col span={8}>
                   <Form.Item name="itemEan" label="條碼">
