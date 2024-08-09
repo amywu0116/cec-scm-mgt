@@ -16,16 +16,38 @@ a {
   text-decoration: none;
 }
 
+/* ---------------------- Form ---------------------- */
+
 .ant-form-item-label > label {
   height: 42px !important;
   font-size: 14px !important;
   font-weight: 700 !important;
-  color: #7b8093 !important;
+  color: rgba(89, 89, 89, 1) !important;
 }
 
 .ant-form-item .ant-form-item-label > label::after {
   margin-inline-end: 16px !important;
 }
+
+.ant-form-item-control .ant-input-affix-wrapper,
+.ant-form-item-control .ant-select-selector,
+.ant-form-item-control .ant-picker {
+  color: rgba(89, 89, 89, 1) !important;
+}
+
+.ant-form-item-control .ant-input-disabled,
+.ant-form-item-control .ant-select-disabled *,
+.ant-form-item-control .ant-picker-disabled * {
+  color: rgba(89, 89, 89, 0.8) !important;
+}
+
+.ant-form-item-control input::placeholder,
+.ant-form-item-control textarea::placeholder,
+.ant-select-selection-placeholder {
+  color: rgba(89, 89, 89, 0.6) !important;
+}
+
+/* ---------------------- Form ---------------------- */
 
 .ant-radio-wrapper {
   font-size: 14px !important;
