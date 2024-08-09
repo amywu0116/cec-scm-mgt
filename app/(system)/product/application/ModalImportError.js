@@ -91,6 +91,9 @@ export default function ModalImportError(props) {
       title: "狀態",
       dataIndex: "statusName",
       align: "center",
+      render: (text) => {
+        return <div style={{ color: "red" }}>{text}</div>;
+      },
     },
     {
       title: "處理情形",
