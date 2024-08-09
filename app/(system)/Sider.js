@@ -164,11 +164,6 @@ const items = [
     icon: <Image src="/accounting.svg" alt="" width={30} height={30} />,
     children: [
       {
-        key: PATH_BILLING_COLLECTION_REPORT,
-        label: "收款報表",
-        icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
-      },
-      {
         key: PATH_BILLING_RECONCILIATION_REPORT,
         label: "對帳報表",
         icon: <Image src="/sider-bullet.svg" alt="" width={24} height={24} />,
