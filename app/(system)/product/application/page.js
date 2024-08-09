@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Form, Row, Space } from "antd";
+import { App, Col, Form, Row, Space, Upload } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,6 +22,7 @@ import {
   PATH_PRODUCT_IMAGE_MAINTENANCE,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import ModalImportError from "./ModalImportError";
 
 const TableTitle = styled.div`
   font-size: 16px;
@@ -37,9 +38,19 @@ export default function Page() {
   const options = useBoundStore((state) => state.options);
   const applyStatusOptions = options?.apply_status ?? [];
 
-  const [loading, setLoading] = useState({ table: false });
-  const [showModalAddType, setShowModalAddType] = useState(false);
+  const [loading, setLoading] = useState({
+    table: false,
+    import: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    add: false,
+    import: false,
+  });
+
   const [selectedRows, setSelectedRows] = useState([]);
+
+  const [importErrorInfo, setImportErrorInfo] = useState();
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
@@ -214,6 +225,31 @@ export default function Page() {
     document.body.removeChild(link);
   };
 
+  const handleImport = (file) => {
+    if (file.file.status === "done") {
+      const formData = new FormData();
+      formData.append("file", file.file.originFileObj);
+
+      setLoading((state) => ({ ...state, import: true }));
+      api
+        .post(`v1/scm/product/apply/new/batch`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setImportErrorInfo(res.data);
+          setOpenModal((state) => ({ ...state, import: true }));
+        })
+        .catch((err) => {
+          message.error(err.message);
+        })
+        .finally(() => {
+          setLoading((state) => ({ ...state, import: false }));
+        });
+    }
+  };
+
   return (
     <>
       <LayoutHeader>
@@ -222,9 +258,20 @@ export default function Page() {
         <Space style={{ marginLeft: "auto" }} size={16}>
           <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 
-          <Button type="secondary">提品匯入</Button>
+          <Upload
+            disabled={loading.import}
+            showUploadList={false}
+            onChange={handleImport}
+          >
+            <Button type="secondary" loading={loading.import}>
+              提品匯入
+            </Button>
+          </Upload>
 
-          <Button type="primary" onClick={() => setShowModalAddType(true)}>
+          <Button
+            type="primary"
+            onClick={() => setOpenModal((state) => ({ ...state, add: true }))}
+          >
             新增提品
           </Button>
         </Space>
@@ -345,8 +392,14 @@ export default function Page() {
       </Row>
 
       <ModalAddProduct
-        open={showModalAddType}
-        onCancel={() => setShowModalAddType(false)}
+        open={openModal.add}
+        onCancel={() => setOpenModal((state) => ({ ...state, add: false }))}
+      />
+
+      <ModalImportError
+        info={importErrorInfo}
+        open={openModal.import}
+        onCancel={() => setOpenModal((state) => ({ ...state, import: false }))}
       />
     </>
   );
