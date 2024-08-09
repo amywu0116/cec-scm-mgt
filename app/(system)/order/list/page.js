@@ -102,12 +102,14 @@ const ResultTitle = styled.div`
 `;
 
 const StatusLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 5px;
   font-size: 14px;
   font-weight: 700;
   color: rgba(123, 128, 147, 1);
+
+  > span {
+    color: rgba(183, 29, 24, 1);
+    padding: 0 3px;
+  }
 `;
 
 // key 為處理狀態，value 為訂單物流狀態
@@ -552,17 +554,8 @@ export default function Page() {
                   <ResultTitle>查詢結果</ResultTitle>
 
                   <StatusLabel>
-                    異常
-                    {tableInfo.countByUnusual >= 0 && (
-                      <Tag>{tableInfo.countByUnusual}</Tag>
-                    )}
-                  </StatusLabel>
-
-                  <StatusLabel>
-                    待處理
-                    {tableInfo.countByPending >= 0 && (
-                      <Tag>{tableInfo.countByPending}</Tag>
-                    )}
+                    待處理<span>{tableInfo.countByPending}</span>筆 ( 其中異常
+                    <span>{tableInfo.countByUnusual}</span>筆)
                   </StatusLabel>
                 </ResultTitleWrapper>
 
