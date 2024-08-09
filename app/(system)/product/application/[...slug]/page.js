@@ -16,8 +16,8 @@ import TextArea from "@/components/TextArea";
 import api from "@/api";
 import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
-import ApplyHistoryTable from "./ApplyHistoryTable";
 import ModalPreviewPDP from "../../ModalPreviewPDP";
+import ApplyHistoryTable from "./ApplyHistoryTable";
 
 const Title = styled.div`
   font-size: 16px;
@@ -43,6 +43,10 @@ export default function Page() {
   const isNonFood =
     (isAdd && params.slug[1] === "non-food") ||
     (isEdit && form.getFieldValue("isFood") === false);
+
+  const canEdit = ["暫存", "審核退件"].includes(
+    form.getFieldValue("applyStatusName")
+  );
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -283,11 +287,15 @@ export default function Page() {
               <Button>關閉</Button>
             </Link>
 
-            <Button type="primary" onClick={() => form.submit()}>
+            <Button
+              type="primary"
+              disabled={!canEdit}
+              onClick={() => form.submit()}
+            >
               暫存
             </Button>
 
-            <Button type="primary" onClick={handleApply}>
+            <Button type="primary" disabled={!canEdit} onClick={handleApply}>
               送審
             </Button>
 
@@ -309,6 +317,7 @@ export default function Page() {
           labelCol={{ flex: "80px" }}
           labelWrap
           labelAlign="left"
+          disabled={!canEdit}
           onFinish={handleFinish}
         >
           <Row gutter={[0, 16]}>
