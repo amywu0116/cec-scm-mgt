@@ -31,13 +31,10 @@ api.interceptors.response.use(
     if (
       errRes &&
       errRes.status === 401 &&
-      ["Unauthorized", "JWT Expired"].includes(errRes.data.message)
+      ["Unauthorized"].includes(errRes.data.message)
     ) {
-      message.error("Token 過期，請重新登入");
-      setTimeout(() => {
-        localStorage.removeItem("cec-scm-mgt");
-        window.location.href = PATH_LOGIN;
-      }, 3000);
+      localStorage.removeItem("cec-scm-mgt");
+      window.location.href = PATH_LOGIN;
     }
     return Promise.reject(error.response.data);
   }
