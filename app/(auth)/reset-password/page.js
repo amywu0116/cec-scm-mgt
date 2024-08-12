@@ -1,13 +1,13 @@
 "use client";
-import { useState } from "react";
 import { App, Form, Input, Typography } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
 
-import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Title from "../Title";
 
 import api from "@/api";
 import { PATH_LOGIN } from "@/constants/paths";
@@ -66,24 +66,14 @@ export default function Page() {
       >
         <Form.Item
           name="password"
-          rules={[
-            {
-              required: true,
-              message: "必填",
-            },
-          ]}
+          rules={[{ required: true, message: "必填" }]}
         >
           <Input.Password size="large" placeholder="請輸入新密碼" />
         </Form.Item>
 
         <Form.Item
           name="passwordConfirm"
-          rules={[
-            {
-              required: true,
-              message: "必填",
-            },
-          ]}
+          rules={[{ required: true, message: "必填" }]}
         >
           <Input.Password size="large" placeholder="請重複輸入新密碼" />
         </Form.Item>
@@ -94,7 +84,7 @@ export default function Page() {
           </Form.Item>
         )}
 
-        <Form.Item style={{ margin: 0 }}>
+        <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
@@ -103,6 +93,12 @@ export default function Page() {
             disabled={isSubmitDisabled}
           >
             確認
+          </Button>
+        </Form.Item>
+
+        <Form.Item>
+          <Button block onClick={() => router.push(PATH_LOGIN)}>
+            返回登入頁
           </Button>
         </Form.Item>
       </Form>
