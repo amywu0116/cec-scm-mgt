@@ -55,6 +55,8 @@ export default function Page() {
   const scmCategoryCode = form.getFieldValue("scmCategoryCode");
   const scmCategoryName = form.getFieldValue("scmCategoryName");
 
+  const perpetual = Form.useWatch("perpetual", form);
+
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -159,9 +161,9 @@ export default function Page() {
           form={form}
           autoComplete="off"
           colon={false}
-          labelCol={{ flex: "80px" }}
+          labelCol={{ flex: "130px" }}
           labelWrap
-          labelAlign="left"
+          labelAlign="right"
           disabled={!isEditing}
           onFinish={handleFinish}
         >
@@ -370,14 +372,14 @@ export default function Page() {
                       <Form.Item name="perpetual" label="庫存">
                         <Radio.Group
                           options={[
-                            { label: "不庫控", value: false },
-                            { label: "活動庫存", value: true },
+                            { label: "不庫控", value: true },
+                            { label: "活動庫存", value: false },
                           ]}
                         />
                       </Form.Item>
                     </Col>
 
-                    {true && (
+                    {perpetual === false && (
                       <>
                         <Col span={3}>
                           <Form.Item style={{ width: "90%" }} name="">

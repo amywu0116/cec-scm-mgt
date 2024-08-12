@@ -625,7 +625,7 @@ export default function Page() {
                       </Form.Item>
                     </Col>
 
-                    {perpetual && (
+                    {perpetual === false && (
                       <>
                         <Col span={3}>
                           <Form.Item style={{ width: "90%" }} name="">
