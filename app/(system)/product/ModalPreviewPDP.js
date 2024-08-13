@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import Modal from "@/components/Modal";
 import PreviewImgZoom from "./PreviewImgZoom";
 
 import api from "@/api";
-import Modal from "@/components/Modal";
 
 import "swiper/css";
 
@@ -352,15 +352,53 @@ const descriptionTabList = [
 ];
 
 export default function ModalPreviewPDP(props) {
-  const { info, loading, open, onCancel } = props;
+  const { type, id, open, onCancel } = props;
+  const { message } = App.useApp();
+
+  const isApply = type === "apply";
+  const isProduct = type === "product";
+
+  const [loading, setLoading] = useState({ page: true });
 
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
+  const [info, setInfo] = useState({});
+
+  const fetchInfo = () => {
+    const apiUrl = isApply
+      ? "v1/scm/product/apply/pdp"
+      : isProduct
+        ? "v1/scm/product/pdp"
+        : "";
+
+    const params = isApply
+      ? { applyId: id }
+      : isProduct
+        ? { productId: id }
+        : undefined;
+
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .get(apiUrl, { params })
+      .then((res) => {
+        setInfo(res.data);
+        setSelectedImg(res.data.productImages[0]);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
+  };
 
   useEffect(() => {
-    if (!info.productImages) return;
-    setSelectedImg(info?.productImages[0]);
-  }, [info]);
+    if (open) {
+      fetchInfo();
+    } else {
+      setInfo({});
+    }
+  }, [open]);
 
   return (
     <>
@@ -373,7 +411,7 @@ export default function ModalPreviewPDP(props) {
         onCancel={onCancel}
         footer={null}
       >
-        <Spin spinning={loading}>
+        <Spin spinning={loading.page}>
           <Container>
             <Row gutter={[0, 20]}>
               <Col span={24}>
