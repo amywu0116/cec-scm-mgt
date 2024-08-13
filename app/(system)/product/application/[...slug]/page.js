@@ -80,7 +80,7 @@ export default function Page() {
     return value;
   };
 
-  // 驗證 規格(一)
+  // 驗證 規格(一)內容
   const validateVariationType1Value = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     if (variationType1Code && !value) {
@@ -89,11 +89,21 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(二)
+  // 驗證 規格(二)內容
   const validateVariationType2Value = (_, value) => {
-    const variationType1Code = form.getFieldValue("variationType2Code");
-    if (variationType1Code && !value) {
+    const variationType2Code = form.getFieldValue("variationType2Code");
+    if (variationType2Code && !value) {
       return Promise.reject(new Error("必填"));
+    }
+    return Promise.resolve();
+  };
+
+  // 驗證 規格(二)
+  const validateVariationType2Code = (_, value) => {
+    const variationType1Code = form.getFieldValue("variationType1Code");
+    const variationType2Code = form.getFieldValue("variationType2Code");
+    if (variationType1Code === variationType2Code) {
+      return Promise.reject(new Error("不能與規格(一)相同"));
     }
     return Promise.resolve();
   };
@@ -152,8 +162,6 @@ export default function Page() {
       })
       .then((res) => {
         const { stockStartdate, scmCategoryCode } = res.data;
-        // const variationType1Code = variationType.find(t => )
-
         form.setFieldsValue({
           ...res.data,
           scmCategory: scmCategoryCode,
@@ -633,6 +641,7 @@ export default function Page() {
                       <Form.Item
                         style={{ display: "inline-block", width: "48%" }}
                         name="variationType2Code"
+                        rules={[{ validator: validateVariationType2Code }]}
                       >
                         <Select
                           style={{ width: "100%" }}
