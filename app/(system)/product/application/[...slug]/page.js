@@ -1,5 +1,15 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Radio, Row, Space, Spin } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Flex,
+  Form,
+  Radio,
+  Row,
+  Space,
+  Spin,
+} from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -50,6 +60,7 @@ export default function Page() {
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
+  const variationType = options?.variation_type ?? [];
 
   const [loading, setLoading] = useState({ page: true, pdpPreview: false });
   const [showModal, setShowModal] = useState({ previewPDP: false });
@@ -59,6 +70,8 @@ export default function Page() {
   const [pdpInfo, setPdpInfo] = useState({});
 
   const perpetual = Form.useWatch("perpetual", form);
+  const variationType1Code = Form.useWatch("variationType1Code", form);
+  const variationType2Code = Form.useWatch("variationType2Code", form);
 
   const removeLeadingZero = (value) => {
     while (value.length > 1 && value.startsWith("0")) {
@@ -67,6 +80,25 @@ export default function Page() {
     return value;
   };
 
+  // 驗證 規格(一)
+  const validateVariationType1Value = (_, value) => {
+    const variationType1Code = form.getFieldValue("variationType1Code");
+    if (variationType1Code && !value) {
+      return Promise.reject(new Error("必填"));
+    }
+    return Promise.resolve();
+  };
+
+  // 驗證 規格(二)
+  const validateVariationType2Value = (_, value) => {
+    const variationType1Code = form.getFieldValue("variationType2Code");
+    if (variationType1Code && !value) {
+      return Promise.reject(new Error("必填"));
+    }
+    return Promise.resolve();
+  };
+
+  // 分類
   const fetchCategory = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -82,6 +114,7 @@ export default function Page() {
       });
   };
 
+  // 分車類型
   const fetchShipping = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -107,6 +140,7 @@ export default function Page() {
       });
   };
 
+  // 詳細內容
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -118,6 +152,7 @@ export default function Page() {
       })
       .then((res) => {
         const { stockStartdate, scmCategoryCode } = res.data;
+        // const variationType1Code = variationType.find(t => )
 
         form.setFieldsValue({
           ...res.data,
@@ -133,6 +168,7 @@ export default function Page() {
       });
   };
 
+  // PDP Modal 內容
   const fetchPDPInfo = () => {
     setLoading((state) => ({ ...state, pdpPreview: true }));
     api
@@ -148,36 +184,28 @@ export default function Page() {
       });
   };
 
+  // 暫存
   const handleFinish = (values) => {
     const scmCategoryName = categoryList.find(
       (c) => c.categoryCode === values.scmCategoryCode
     )?.categoryName;
 
     const data = {
+      ...form.getFieldsValue(),
       applyId: isEdit ? applyId : undefined,
-      scmCategoryCode: values.scmCategoryCode,
       scmCategoryName: scmCategoryName,
-      isFood: isAdd && isFood ? true : isAdd && isNonFood ? false : undefined,
-      cartType: values.cartType,
-      itemName: values.itemName,
-      itemNameEn: values.itemNameEn,
-      vendorProdCode: values.vendorProdCode,
-      itemEan: values.itemEan,
-      itemSpec: values.itemSpec,
-      isTax: values.isTax,
+      isFood:
+        isAdd && isFood
+          ? true
+          : isAdd && isNonFood
+            ? false
+            : isEdit
+              ? form.getFieldValue("isFood")
+              : undefined,
       price: values.price ? Number(values.price) : undefined,
       specialPrice: values.specialPrice
         ? Number(values.specialPrice)
         : undefined,
-      itemCountry: values.itemCountry,
-      brand: values.brand,
-      vColor: values.vColor,
-      vSize: values.vSize,
-      vCapacity: values.vCapacity,
-      vUnit: values.vUnit,
-      vStyle: values.vStyle,
-      certMark: values.certMark,
-      energyEfficiency: values.energyEfficiency,
       productHeight: values.productHeight
         ? Number(values.productHeight)
         : undefined,
@@ -192,22 +220,6 @@ export default function Page() {
       expDateValue: values.expDateValue
         ? Number(values.expDateValue)
         : undefined,
-      expDateUnit: values.expDateUnit,
-      itemStoreway: values.itemStoreway,
-      itemShortdescription: values.itemShortdescription,
-      itemDetail: values.itemDetail,
-      ingredients: values.ingredients,
-      nutrition: values.nutrition,
-      veggieType: values.veggieType,
-      dutyInsurance: values.dutyInsurance,
-      approvalId: values.approvalId,
-      warrantyScope: values.warrantyScope,
-      warrantyPeriod: values.warrantyPeriod,
-      powerSpec: values.powerSpec,
-      manufacturer: values.manufacturer,
-      manufacturerPhone: values.manufacturerPhone,
-      manufacturerAddress: values.manufacturerAddress,
-      perpetual: values.perpetual,
       stockStartdate: values.stockStartdate
         ? values.stockStartdate.format("YYYY-MM-DD")
         : undefined,
@@ -228,6 +240,7 @@ export default function Page() {
       });
   };
 
+  // 送審
   const handleApply = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -397,12 +410,6 @@ export default function Page() {
                     <Input placeholder="請輸入英文品名" />
                   </Form.Item>
                 </Col>
-
-                {/* <Col span={12}>
-                  <Form.Item name="vendorProdCode" label="供應商商品編號">
-                    <Input placeholder="請輸入供應商商品編號" />
-                  </Form.Item>
-                </Col> */}
 
                 <Col span={12}>
                   <Form.Item
@@ -578,33 +585,81 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
+                <Col span={12}></Col>
+
                 <Col span={12}>
-                  <Form.Item name="vColor" label="顏色">
-                    <Input placeholder="請輸入顏色" />
+                  <Form.Item style={{ marginBottom: 0 }} label="規格(一)">
+                    <Flex justify="space-between">
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType1Code"
+                      >
+                        <Select
+                          style={{ width: "100%" }}
+                          placeholder="請輸入規格(一)"
+                          options={variationType.map((v) => ({
+                            ...v,
+                            label: v.name,
+                            value: v.value,
+                          }))}
+                          onChange={() => {
+                            form.setFieldValue(
+                              "variationType1Value",
+                              undefined
+                            );
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType1Value"
+                        rules={[{ validator: validateVariationType1Value }]}
+                      >
+                        <Input
+                          placeholder="請輸入規格(一)內容"
+                          disabled={!variationType1Code}
+                        />
+                      </Form.Item>
+                    </Flex>
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="vSize" label="尺寸">
-                    <Input placeholder="請輸入尺寸" />
-                  </Form.Item>
-                </Col>
+                  <Form.Item style={{ marginBottom: 0 }} label="規格(二)">
+                    <Flex justify="space-between">
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType2Code"
+                      >
+                        <Select
+                          style={{ width: "100%" }}
+                          placeholder="請輸入規格(二)"
+                          options={variationType.map((v) => ({
+                            ...v,
+                            label: v.name,
+                            value: v.value,
+                          }))}
+                          onChange={() => {
+                            form.setFieldValue(
+                              "variationType2Value",
+                              undefined
+                            );
+                          }}
+                        />
+                      </Form.Item>
 
-                <Col span={12}>
-                  <Form.Item name="vCapacity" label="容量">
-                    <Input placeholder="請輸入容量" />
-                  </Form.Item>
-                </Col>
-
-                <Col span={12}>
-                  <Form.Item name="vUnit" label="入數">
-                    <Input placeholder="請輸入入數" />
-                  </Form.Item>
-                </Col>
-
-                <Col span={12}>
-                  <Form.Item name="vStyle" label="款式">
-                    <Input placeholder="請輸入款式" />
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType2Value"
+                        rules={[{ validator: validateVariationType2Value }]}
+                      >
+                        <Input
+                          placeholder="請輸入規格(二)內容"
+                          disabled={!variationType2Code}
+                        />
+                      </Form.Item>
+                    </Flex>
                   </Form.Item>
                 </Col>
 

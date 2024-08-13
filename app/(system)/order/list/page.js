@@ -479,7 +479,7 @@ export default function Page() {
                     <Button
                       onClick={() => {
                         handleDownloadFile(
-                          "/出貨狀態匯入範本.xlsx",
+                          "/files/出貨狀態匯入範本.xlsx",
                           "出貨狀態匯入範本.xlsx"
                         );
                       }}
