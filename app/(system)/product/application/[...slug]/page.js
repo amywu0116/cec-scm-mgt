@@ -580,12 +580,14 @@ export default function Page() {
                 )}
 
                 <Col span={12}>
-                  <Form.Item name="itemStoreway" label="保存方式(文字)">
+                  <Form.Item
+                    name="itemStoreway"
+                    label="保存方式(文字)"
+                    rules={[{ required: isFood, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入保存方式" />
                   </Form.Item>
                 </Col>
-
-                <Col span={12}></Col>
 
                 <Col span={12}>
                   <Form.Item style={{ marginBottom: 0 }} label="規格(一)">
@@ -708,7 +710,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemDetail" label="商品完整說明(文字)">
+                  <Form.Item
+                    name="itemDetail"
+                    label="商品完整說明(文字)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <TextArea
                       placeholder="請輸入商品完整說明(文字)"
                       autoSize={{ minRows: 3, maxRows: 3 }}
