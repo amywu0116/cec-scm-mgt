@@ -38,7 +38,10 @@ export default function Page() {
   const [form] = Form.useForm();
 
   const params = useParams();
-  const applyId = params.applyId;
+  const type = params.type;
+  const isApply = type === "apply";
+  const isProduct = type === "product";
+  const id = params.id;
 
   const searchParams = useSearchParams();
   const itemName = searchParams.get("itemName");
@@ -142,9 +145,21 @@ export default function Page() {
   ];
 
   const fetchList = () => {
+    const apiUrl = isProduct
+      ? `v1/scm/product/img`
+      : isApply
+        ? `v1/scm/product/apply/img`
+        : "";
+
+    const params = isProduct
+      ? { productId: id }
+      : isApply
+        ? { applyId: id }
+        : undefined;
+
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get(`v1/scm/product/apply/img`, { params: { applyId } })
+      .get(apiUrl, { params })
       .then((res) => {
         setImageList(res.data);
       })
@@ -158,7 +173,7 @@ export default function Page() {
 
   const handleFinish = (values) => {
     const formData = new FormData();
-    formData.append("applyId", applyId);
+    formData.append("applyId", id);
     formData.append("imgType", values.imgType);
 
     const fileList = values.file.fileList.map((f) => f.originFileObj);
@@ -188,11 +203,22 @@ export default function Page() {
 
   const handleDelete = () => {
     const imgIds = deleteImgIds.join(",");
+
+    const apiUrl = isProduct
+      ? `v1/scm/product/img`
+      : isApply
+        ? `v1/scm/product/apply/img`
+        : "";
+
+    const params = isProduct
+      ? { productId: id, productAttributeIds: imgIds }
+      : isApply
+        ? { imgIds }
+        : undefined;
+
     setLoading((state) => ({ ...state, delete: true }));
     api
-      .delete(`v1/scm/product/apply/img`, {
-        params: { imgIds },
-      })
+      .delete(apiUrl, { params })
       .then((res) => {
         message.success(res.message);
         setShowModalDelete(false);
@@ -256,11 +282,16 @@ export default function Page() {
                 </Form.Item>
               </Col>
 
-              <Col span={8} xxl={{ span: 6 }}>
-                <Button type="primary" onClick={() => setShowImageUpload(true)}>
-                  上傳圖片
-                </Button>
-              </Col>
+              {isApply && (
+                <Col span={8} xxl={{ span: 6 }}>
+                  <Button
+                    type="primary"
+                    onClick={() => setShowImageUpload(true)}
+                  >
+                    上傳圖片
+                  </Button>
+                </Col>
+              )}
             </Row>
 
             <Row>

@@ -17,7 +17,10 @@ export default function SearchForm(props) {
   const [form] = Form.useForm();
 
   const params = useParams();
-  const applyId = params.applyId;
+  const type = params.type;
+  const isApply = type === "apply";
+  const isProduct = type === "product";
+  const id = params.id;
 
   const [loading, setLoading] = useState({ table: false });
 
@@ -106,7 +109,7 @@ export default function SearchForm(props) {
       offset: (pagination.page - 1) * pagination.pageSize,
       max: pagination.pageSize,
       fileName: values.fileName,
-      applyId,
+      applyId: id,
     };
 
     setLoading((state) => ({ ...state, table: true }));
@@ -130,14 +133,21 @@ export default function SearchForm(props) {
   };
 
   const handleBind = (imgId) => {
-    const data = {
-      applyId,
-      imgId,
-    };
+    const apiUrl = isProduct
+      ? `v1/scm/product/img?productId=${id}`
+      : isApply
+        ? `v1/scm/product/apply/img/bind`
+        : "";
+
+    const params = isProduct
+      ? { imgId }
+      : isApply
+        ? { applyId: id, imgId }
+        : undefined;
 
     setLoading((state) => ({ ...state, [`bind_${imgId}`]: true }));
     api
-      .post(`v1/scm/product/apply/img/bind`, data)
+      .post(apiUrl, params)
       .then((res) => {
         message.success(res.message);
         fetchList(tableInfo.tableQuery);
