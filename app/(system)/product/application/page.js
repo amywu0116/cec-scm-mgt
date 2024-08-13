@@ -115,7 +115,7 @@ export default function Page() {
         return (
           <Link
             href={{
-              pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/${record.applyId}`,
+              pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${record.applyId}`,
               query: {
                 itemName: record.itemName,
                 itemEan: record.itemEan,

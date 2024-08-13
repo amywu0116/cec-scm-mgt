@@ -1,15 +1,5 @@
 "use client";
-import {
-  App,
-  Breadcrumb,
-  Col,
-  Flex,
-  Form,
-  Radio,
-  Row,
-  Space,
-  Spin,
-} from "antd";
+import { App, Breadcrumb, Col, Form, Radio, Row, Space, Spin } from "antd";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,7 +14,10 @@ import TextArea from "@/components/TextArea";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
-import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
+import {
+  PATH_PRODUCT_IMAGE_MAINTENANCE,
+  PATH_PRODUCT_PRODUCT_LIST,
+} from "@/constants/paths";
 
 const Title = styled.div`
   font-size: 16px;
@@ -54,6 +47,8 @@ export default function Page() {
 
   const scmCategoryCode = form.getFieldValue("scmCategoryCode");
   const scmCategoryName = form.getFieldValue("scmCategoryName");
+  const itemName = form.getFieldValue("itemName");
+  const itemEan = form.getFieldValue("itemEan");
 
   const perpetual = Form.useWatch("perpetual", form);
 
@@ -140,7 +135,12 @@ export default function Page() {
                   編輯修改
                 </Button>
 
-                <Link href={"/product/123/image-maintenance"}>
+                <Link
+                  href={{
+                    pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/product/${params.productId}`,
+                    query: { itemName, itemEan },
+                  }}
+                >
                   <Button type="secondary">圖片維護</Button>
                 </Link>
               </>
