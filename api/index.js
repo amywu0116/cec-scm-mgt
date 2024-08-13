@@ -27,11 +27,11 @@ api.interceptors.response.use(
   },
   (error) => {
     const errRes = error.response;
-    // Token 過期的話要導頁去登入頁
+    // Unauthorized：非法的 Token
+    // JWT Expired：Token 過期
     if (
-      errRes &&
-      errRes.status === 401 &&
-      ["Unauthorized"].includes(errRes.data.message)
+      errRes?.status === 401 &&
+      ["Unauthorized", "JWT Expired"].includes(errRes.data.message)
     ) {
       localStorage.removeItem("cec-scm-mgt");
       window.location.href = PATH_LOGIN;
