@@ -38,12 +38,17 @@ export default function Page() {
   const params = useParams();
   const [form] = Form.useForm();
 
-  const [loading, setLoading] = useState({ page: false, pdpPreview: false });
-  const [showModal, setShowModal] = useState({ pdpPreview: false });
+  const [loading, setLoading] = useState({
+    page: false,
+    pdpPreview: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    pdpPreview: false,
+  });
 
   const [isEditing, setIsEditing] = useState(false);
   const [shippingList, setShippingList] = useState([]);
-  const [pdpInfo, setPdpInfo] = useState({});
 
   const scmCategoryCode = form.getFieldValue("scmCategoryCode");
   const scmCategoryName = form.getFieldValue("scmCategoryName");
@@ -52,13 +57,13 @@ export default function Page() {
 
   const perpetual = Form.useWatch("perpetual", form);
 
+  // 詳細內容
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get(`v1/scm/product/${params.productId}`)
       .then((res) => {
         form.setFieldsValue({ ...res.data });
-        fetchPDPInfo(res.data.productId);
       })
       .catch((err) => {
         message.error(err.message);
@@ -68,6 +73,7 @@ export default function Page() {
       });
   };
 
+  // 分車類型
   const fetchShipping = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -80,21 +86,6 @@ export default function Page() {
       })
       .finally(() => {
         setLoading((state) => ({ ...state, page: false }));
-      });
-  };
-
-  const fetchPDPInfo = (productId) => {
-    setLoading((state) => ({ ...state, pdpPreview: true }));
-    api
-      .get(`v1/scm/product/pdp`, { params: { productId } })
-      .then((res) => {
-        setPdpInfo(res.data);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, pdpPreview: false }));
       });
   };
 
@@ -149,7 +140,7 @@ export default function Page() {
             <Button
               type="secondary"
               onClick={() => {
-                setShowModal((state) => ({ ...state, pdpPreview: true }));
+                setOpenModal((state) => ({ ...state, pdpPreview: true }));
               }}
             >
               PDP預覽
@@ -539,11 +530,11 @@ export default function Page() {
       </Spin>
 
       <ModalPreviewPDP
-        info={pdpInfo}
-        loading={loading.pdpPreview}
-        open={showModal.pdpPreview}
+        type="product"
+        id={form.getFieldValue("productId")}
+        open={openModal.pdpPreview}
         onCancel={() => {
-          setShowModal((state) => ({ ...state, pdpPreview: false }));
+          setOpenModal((state) => ({ ...state, pdpPreview: false }));
         }}
       />
     </>

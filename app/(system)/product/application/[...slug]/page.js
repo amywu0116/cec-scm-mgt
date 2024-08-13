@@ -67,7 +67,6 @@ export default function Page() {
 
   const [categoryList, setCategoryList] = useState([]);
   const [shippingList, setShippingList] = useState();
-  const [pdpInfo, setPdpInfo] = useState({});
 
   const perpetual = Form.useWatch("perpetual", form);
   const variationType1Code = Form.useWatch("variationType1Code", form);
@@ -176,22 +175,6 @@ export default function Page() {
       });
   };
 
-  // PDP Modal 內容
-  const fetchPDPInfo = () => {
-    setLoading((state) => ({ ...state, pdpPreview: true }));
-    api
-      .get(`v1/scm/product/apply/pdp`, { params: { applyId } })
-      .then((res) => {
-        setPdpInfo(res.data);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, pdpPreview: false }));
-      });
-  };
-
   // 暫存
   const handleFinish = (values) => {
     const scmCategoryName = categoryList.find(
@@ -275,7 +258,6 @@ export default function Page() {
   useEffect(() => {
     if (isEdit) {
       fetchInfo();
-      fetchPDPInfo();
     }
   }, []);
 
@@ -905,8 +887,8 @@ export default function Page() {
       </Spin>
 
       <ModalPreviewPDP
-        info={pdpInfo}
-        loading={loading.pdpPreview}
+        type="apply"
+        id={form.getFieldValue("applyId")}
         open={showModal.previewPDP}
         onCancel={() => {
           setShowModal((state) => ({ ...state, previewPDP: false }));

@@ -1,6 +1,6 @@
 "use client";
-import { App, Col, Form, Row, Space, Upload } from "antd";
-import Image from "next/image";
+import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { App, Col, Form, Image, Row, Space, Upload } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 import styled from "styled-components";
@@ -14,6 +14,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
+import ModalPreviewPDP from "../ModalPreviewPDP";
 import ModalAddProduct from "./ModalAddProduct";
 
 import api from "@/api";
@@ -46,9 +47,11 @@ export default function Page() {
   const [openModal, setOpenModal] = useState({
     add: false,
     import: false,
+    pdpPreview: false,
   });
 
   const [selectedRows, setSelectedRows] = useState([]);
+  const [currentApplyId, setCurrentApplyId] = useState();
 
   const [importErrorInfo, setImportErrorInfo] = useState();
 
@@ -62,22 +65,38 @@ export default function Page() {
 
   const columns = [
     {
-      title: "申請日期",
-      dataIndex: "createdTime",
+      title: "圖片",
+      dataIndex: "productImgUrl",
       align: "center",
+      render: (text, record) => {
+        if (!text) return "-";
+        return (
+          <Image
+            width={40}
+            height={40}
+            src={text}
+            alt=""
+            preview={{
+              toolbarRender: (
+                _,
+                {
+                  image: { url },
+                  transform: { scale },
+                  actions: { onZoomOut, onZoomIn },
+                }
+              ) => (
+                <Space size={12} className="toolbar-wrapper">
+                  <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
+                  <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
+                </Space>
+              ),
+            }}
+          />
+        );
+      },
     },
     {
-      title: "申請類型",
-      dataIndex: "applyTypeName",
-      align: "center",
-    },
-    {
-      title: "部門別",
-      dataIndex: "scmCategoryCode",
-      align: "center",
-    },
-    {
-      title: "中文品名",
+      title: "品名",
       dataIndex: "itemName",
       align: "center",
       render: (text, record) => {
@@ -89,23 +108,76 @@ export default function Page() {
       },
     },
     {
+      title: "規格",
+      dataIndex: "",
+      align: "center",
+      render: (text, record) => {
+        const list = [
+          record.variationType1Value,
+          record.variationType2Value,
+        ].filter(Boolean);
+        if (list.length === 0) return "-";
+        return list.join(" / ");
+      },
+    },
+    {
       title: "條碼",
       dataIndex: "itemEan",
       align: "center",
     },
     {
-      title: "圖片",
-      dataIndex: "productImgUrl",
+      title: "價格",
+      dataIndex: "",
       align: "center",
       render: (text, record) => {
-        if (!text) return "-";
-        return <Image width={40} height={40} src={text} alt="" />;
+        if (record.price === null && record.specialPrice === null) {
+          return "-";
+        }
+        if (record.price !== null && record.specialPrice === null) {
+          return <div>NT${record.price}</div>;
+        }
+        if (record.price !== null && record.specialPrice !== null) {
+          return (
+            <>
+              <div>NT${record.specialPrice}</div>
+              <div style={{ textDecoration: "line-through", color: "#ccc" }}>
+                NT${record.price}
+              </div>
+            </>
+          );
+        }
+      },
+    },
+    {
+      title: "庫存",
+      dataIndex: "perpetual",
+      align: "center",
+      render: (text, record) => {
+        if (text) return "不庫控";
+        if (!text) return record.stock;
       },
     },
     {
       title: "審核狀態",
       dataIndex: "applyStatusName",
       align: "center",
+    },
+    {
+      title: "預覽",
+      dataIndex: "",
+      align: "center",
+      render: (text, record) => {
+        return (
+          <FunctionBtn
+            onClick={() => {
+              setCurrentApplyId(record.applyId);
+              setOpenModal((state) => ({ ...state, pdpPreview: true }));
+            }}
+          >
+            PDP
+          </FunctionBtn>
+        );
+      },
     },
     {
       title: "功能",
@@ -393,13 +465,26 @@ export default function Page() {
 
       <ModalAddProduct
         open={openModal.add}
-        onCancel={() => setOpenModal((state) => ({ ...state, add: false }))}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, add: false }));
+        }}
       />
 
       <ModalImportError
         info={importErrorInfo}
         open={openModal.import}
-        onCancel={() => setOpenModal((state) => ({ ...state, import: false }))}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, import: false }));
+        }}
+      />
+
+      <ModalPreviewPDP
+        type="apply"
+        id={currentApplyId}
+        open={openModal.pdpPreview}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, pdpPreview: false }));
+        }}
       />
     </>
   );
