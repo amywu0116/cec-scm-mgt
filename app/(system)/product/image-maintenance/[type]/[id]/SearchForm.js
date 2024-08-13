@@ -109,7 +109,7 @@ export default function SearchForm(props) {
       offset: (pagination.page - 1) * pagination.pageSize,
       max: pagination.pageSize,
       fileName: values.fileName,
-      applyId: id,
+      applyId: isProduct ? undefined : isApply ? id : undefined,
     };
 
     setLoading((state) => ({ ...state, table: true }));
