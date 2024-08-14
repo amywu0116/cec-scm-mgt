@@ -367,7 +367,7 @@ export default function Page() {
                       options={categoryList.map((c) => {
                         return {
                           ...c,
-                          label: c.categoryName,
+                          label: `${c.categoryCode} / ${c.categoryName}`,
                           value: c.categoryCode,
                         };
                       })}
