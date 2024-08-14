@@ -447,10 +447,6 @@ const isNonFoodColumns = [
     dataIndex: "warrantyPeriod",
   },
   {
-    title: "其他證明",
-    dataIndex: "",
-  },
-  {
     title: "標章",
     dataIndex: "certMark",
   },

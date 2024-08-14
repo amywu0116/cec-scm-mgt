@@ -130,15 +130,15 @@ export default function Page() {
       .get("v1/scm/vendor/shipping")
       .then((res) => {
         const shippingList = res.data;
-        if (shippingList.length > 0) {
-          setShippingList(shippingList ?? []);
-        } else {
+        if (shippingList.some((l) => l.shippingMethod === null)) {
           form.setFields([
             {
               name: "cartType",
               errors: ["請先至 供應商>運費設定 功能頁面，進行運費設定！"],
             },
           ]);
+        } else {
+          setShippingList(shippingList ?? []);
         }
       })
       .catch((err) => {
