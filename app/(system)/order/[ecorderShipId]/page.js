@@ -7,17 +7,17 @@ import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
-import OrderDatePicker from "./OrderDatePicker";
-
 import ModalAddress from "./ModalAddress";
 import ModalRevokeExamine from "./ModalRevokeExamine";
 import ModalRevokeResult from "./ModalRevokeResult";
 import ModalTax from "./ModalTax";
+import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
 import { PATH_ORDER_LIST } from "@/constants/paths";
@@ -222,6 +222,7 @@ export default function Page(props) {
     return !(backLogisticsName && backShippingCode);
   };
 
+  // 詳細內容
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
@@ -242,6 +243,8 @@ export default function Page(props) {
           receiverElevatorName,
           receiverReceiveName,
           taxId,
+          shipDateStart,
+          shipDateEnd,
         } = res.data;
 
         form.setFieldsValue({
@@ -260,6 +263,10 @@ export default function Page(props) {
             : "-",
           receiverReceiveName: receiverReceiveName ? receiverReceiveName : "-",
           taxId: taxId ? taxId : "-",
+          shipDate:
+            shipDateStart && shipDateEnd
+              ? [dayjs(shipDateStart), dayjs(shipDateEnd)]
+              : undefined,
         });
 
         setInfo((state) => ({ ...state, ...res.data }));
@@ -521,9 +528,9 @@ export default function Page(props) {
         <Form
           form={form}
           colon={false}
-          labelCol={{ flex: "80px" }}
+          labelCol={{ flex: "130px" }}
           labelWrap
-          labelAlign="left"
+          labelAlign="right"
           requiredMark={false}
           autoComplete="off"
         >
@@ -559,6 +566,16 @@ export default function Page(props) {
                         </Tag>
                       ) : undefined}
                     </OrderStatusTag>
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item label="預計配送日" name="shipDate">
+                    <RangePicker
+                      style={{ width: "100%" }}
+                      disabled
+                      placeholder={["日期起", "日期迄"]}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
