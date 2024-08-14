@@ -101,7 +101,7 @@ export default function Page() {
   const validateVariationType2Code = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     const variationType2Code = form.getFieldValue("variationType2Code");
-    if (variationType1Code === variationType2Code) {
+    if (variationType1Code && variationType1Code === variationType2Code) {
       return Promise.reject(new Error("不能與規格(一)相同"));
     }
     return Promise.resolve();
@@ -300,7 +300,7 @@ export default function Page() {
 
             <Button
               type="primary"
-              disabled={isEdit && !canEdit}
+              disabled={isAdd || (isEdit && !canEdit)}
               onClick={handleApply}
             >
               送審
@@ -308,6 +308,7 @@ export default function Page() {
 
             <Button
               type="secondary"
+              disabled={isAdd}
               onClick={() => {
                 setShowModal((state) => ({ ...state, previewPDP: true }));
               }}
