@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
@@ -77,6 +77,11 @@ export default function Page() {
       value = value.substring(1);
     }
     return value;
+  };
+
+  // 禁用今天及今天之前的日期
+  const disabledStockDate = (current) => {
+    return current && current <= dayjs().endOf("day");
   };
 
   // 驗證 規格(一)內容
@@ -160,11 +165,15 @@ export default function Page() {
         },
       })
       .then((res) => {
-        const { stockStartdate, scmCategoryCode } = res.data;
+        const { stockStartdate, stockEnddate, scmCategoryCode } = res.data;
         form.setFieldsValue({
           ...res.data,
           scmCategory: scmCategoryCode,
           stockStartdate: stockStartdate ? dayjs(stockStartdate) : undefined,
+          stockDate:
+            stockStartdate && stockEnddate
+              ? [dayjs(stockStartdate), dayjs(stockEnddate)]
+              : undefined,
         });
       })
       .catch((err) => {
@@ -211,8 +220,11 @@ export default function Page() {
       expDateValue: values.expDateValue
         ? Number(values.expDateValue)
         : undefined,
-      stockStartdate: values.stockStartdate
-        ? values.stockStartdate.format("YYYY-MM-DD")
+      stockStartdate: values.stockDate
+        ? values.stockDate[0].format("YYYY-MM-DD")
+        : undefined,
+      stockEnddate: values.stockDate
+        ? values.stockDate[1].format("YYYY-MM-DD")
         : undefined,
     };
 
@@ -658,38 +670,40 @@ export default function Page() {
                 </Col>
 
                 <Col span={24}>
-                  <Row>
-                    <Col span={6}>
+                  <Form.Item
+                    style={{ display: "inline-block", width: 330 }}
+                    name="perpetual"
+                    label="庫存"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Radio.Group>
+                      <Radio value={true}>不庫控</Radio>
+                      <Radio value={false}>活動庫存</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+
+                  {perpetual === false && (
+                    <Space size={10}>
                       <Form.Item
-                        name="perpetual"
-                        label="庫存"
+                        style={{ display: "inline-block", width: 100 }}
+                        name="stock"
                         rules={[{ required: true, message: "必填" }]}
                       >
-                        <Radio.Group
-                          options={[
-                            { label: "不庫控", value: true },
-                            { label: "活動庫存", value: false },
-                          ]}
+                        <Input placeholder="數量" />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: "inline-block", width: 260 }}
+                        name="stockDate"
+                        rules={[{ required: true, message: "必填" }]}
+                      >
+                        <RangePicker
+                          placeholder={["日期起", "日期迄"]}
+                          disabledDate={disabledStockDate}
                         />
                       </Form.Item>
-                    </Col>
-
-                    {perpetual === false && (
-                      <>
-                        <Col span={3}>
-                          <Form.Item style={{ width: "90%" }} name="">
-                            <Input placeholder="數量" />
-                          </Form.Item>
-                        </Col>
-
-                        <Col span={3}>
-                          <Form.Item name="stockStartdate">
-                            <DatePicker placeholder="起始日期" />
-                          </Form.Item>
-                        </Col>
-                      </>
-                    )}
-                  </Row>
+                    </Space>
+                  )}
                 </Col>
 
                 <Col span={12}>
