@@ -242,6 +242,8 @@ export default function Page(props) {
           receiverElevatorName,
           receiverReceiveName,
           taxId,
+          shipDateStart,
+          shipDateEnd,
         } = res.data;
 
         form.setFieldsValue({
@@ -260,6 +262,7 @@ export default function Page(props) {
             : "-",
           receiverReceiveName: receiverReceiveName ? receiverReceiveName : "-",
           taxId: taxId ? taxId : "-",
+          shipDate: `${shipDateStart} ~ ${shipDateEnd}`,
         });
 
         setInfo((state) => ({ ...state, ...res.data }));
@@ -563,15 +566,8 @@ export default function Page(props) {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item label="預計配送日">
-                    <div
-                      style={{
-                        lineHeight: "42px",
-                        color: "rgba(89, 89, 89, 1)",
-                      }}
-                    >
-                      {info.shipDateStart} ~ {info.shipDateEnd}
-                    </div>
+                  <Form.Item name="shipDate" label="預計配送日">
+                    <Input disabled />
                   </Form.Item>
                 </Col>
               </Row>
