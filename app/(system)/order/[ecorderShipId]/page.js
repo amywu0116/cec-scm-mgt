@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Button from "@/components/Button";
-import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
@@ -243,8 +242,6 @@ export default function Page(props) {
           receiverElevatorName,
           receiverReceiveName,
           taxId,
-          shipDateStart,
-          shipDateEnd,
         } = res.data;
 
         form.setFieldsValue({
@@ -263,10 +260,6 @@ export default function Page(props) {
             : "-",
           receiverReceiveName: receiverReceiveName ? receiverReceiveName : "-",
           taxId: taxId ? taxId : "-",
-          shipDate:
-            shipDateStart && shipDateEnd
-              ? [dayjs(shipDateStart), dayjs(shipDateEnd)]
-              : undefined,
         });
 
         setInfo((state) => ({ ...state, ...res.data }));
@@ -570,12 +563,15 @@ export default function Page(props) {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item label="預計配送日" name="shipDate">
-                    <RangePicker
-                      style={{ width: "100%" }}
-                      disabled
-                      placeholder={["日期起", "日期迄"]}
-                    />
+                  <Form.Item label="預計配送日">
+                    <div
+                      style={{
+                        lineHeight: "42px",
+                        color: "rgba(89, 89, 89, 1)",
+                      }}
+                    >
+                      {info.shipDateStart} ~ {info.shipDateEnd}
+                    </div>
                   </Form.Item>
                 </Col>
               </Row>
