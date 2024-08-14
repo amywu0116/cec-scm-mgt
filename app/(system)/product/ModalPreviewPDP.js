@@ -39,7 +39,7 @@ const Detail = styled.div`
 
 const Suggestion = styled.div`
   flex: 1;
-  border-left: 1px solid #ebeae8;
+  position: relative;
 `;
 
 const PreviewImgList = styled.div`
@@ -197,45 +197,6 @@ const FavoriteBtn = styled.div`
   opacity: 0.22;
 `;
 
-const SuggestionTitle = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-`;
-
-const SuggestionList = styled.div`
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px 0;
-`;
-
-const SuggestionItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px 0;
-  position: relative;
-`;
-
-const SuggestionItemImg = styled.div`
-  height: 100px;
-  text-align: center;
-`;
-
-const SuggestionItemName = styled.div`
-  font-size: 14px;
-  color: #000;
-  text-align: center;
-`;
-
-const SuggestionItemPrice = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: #e13d3d;
-  text-align: center;
-`;
-
 const Commodity = styled.div`
   display: flex;
   gap: 0 20px;
@@ -351,6 +312,150 @@ const descriptionTabList = [
   },
 ];
 
+const isFoodColumns = [
+  {
+    title: "顏色",
+    dataIndex: "vColor",
+  },
+  {
+    title: "尺寸",
+    dataIndex: "vSize",
+  },
+  {
+    title: "容量",
+    dataIndex: "vCapacity",
+  },
+  {
+    title: "入數",
+    dataIndex: "vUnit",
+  },
+  {
+    title: "款式",
+    dataIndex: "vStyle",
+  },
+  {
+    title: "商品來源國家",
+    dataIndex: "itemCountry",
+  },
+  {
+    title: "保存天數",
+    dataIndex: "expDate",
+  },
+  {
+    title: "保存方式",
+    dataIndex: "itemStoreway",
+  },
+  {
+    title: "應免稅",
+    dataIndex: "isTax",
+    render: (text, record) => {
+      return text ? "應稅" : "免稅";
+    },
+  },
+  {
+    title: "國內負責廠商名稱",
+    dataIndex: "manufacturer",
+  },
+  {
+    title: "國內負責廠商電話",
+    dataIndex: "manufacturerPhone",
+  },
+  {
+    title: "國內負責廠商地址",
+    dataIndex: "manufacturerAddress",
+  },
+  {
+    title: "素食種類",
+    dataIndex: "veggieType",
+  },
+  {
+    title: "產品成份及食品添加物",
+    dataIndex: "ingredients",
+  },
+  {
+    title: "營養標示",
+    dataIndex: "nutrition",
+  },
+  {
+    title: "產品責任險",
+    dataIndex: "dutyInsurance",
+  },
+  {
+    title: "食品業者登錄字號",
+    dataIndex: "approvalId",
+  },
+];
+
+const isNonFoodColumns = [
+  {
+    title: "顏色",
+    dataIndex: "vColor",
+  },
+  {
+    title: "尺寸",
+    dataIndex: "vSize",
+  },
+  {
+    title: "容量",
+    dataIndex: "vCapacity",
+  },
+  {
+    title: "入數",
+    dataIndex: "vUnit",
+  },
+  {
+    title: "款式",
+    dataIndex: "vStyle",
+  },
+  {
+    title: "商品來源國家",
+    dataIndex: "itemCountry",
+  },
+  {
+    title: "保存天數",
+    dataIndex: "expDate",
+  },
+  {
+    title: "保存方式",
+    dataIndex: "itemStoreway",
+  },
+  {
+    title: "應免稅",
+    dataIndex: "isTax",
+    render: (text, record) => {
+      return text ? "應稅" : "免稅";
+    },
+  },
+  {
+    title: "電源規格",
+    dataIndex: "powerSpec",
+  },
+  {
+    title: "產品責任險",
+    dataIndex: "dutyInsurance",
+  },
+  {
+    title: "產品核准字號",
+    dataIndex: "approvalId",
+  },
+  {
+    title: "保固範圍",
+    dataIndex: "warrantyScope",
+  },
+  {
+    title: "保固期間",
+    dataIndex: "warrantyPeriod",
+  },
+  {
+    title: "標章",
+    dataIndex: "certMark",
+  },
+  {
+    title: "能源效率",
+    dataIndex: "energyEfficiency",
+  },
+];
+
 export default function ModalPreviewPDP(props) {
   const { type, id, open, onCancel } = props;
   const { message } = App.useApp();
@@ -363,6 +468,7 @@ export default function ModalPreviewPDP(props) {
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
   const [info, setInfo] = useState({});
+  const columns = info.isFood ? isFoodColumns : isNonFoodColumns;
 
   const fetchInfo = () => {
     const apiUrl = isApply
@@ -397,6 +503,7 @@ export default function ModalPreviewPDP(props) {
       fetchInfo();
     } else {
       setInfo({});
+      setSelectedImg(undefined);
     }
   }, [open]);
 
@@ -522,51 +629,7 @@ export default function ModalPreviewPDP(props) {
                   </Detail>
 
                   <Suggestion>
-                    <SuggestionTitle>猜你也喜歡</SuggestionTitle>
-                    <SuggestionList>
-                      <SuggestionItem>
-                        <SuggestionItemImg>
-                          <Image
-                            src="/suggestion-1.jpg"
-                            alt=""
-                            width={100}
-                            height={100}
-                          />
-                        </SuggestionItemImg>
-                        <SuggestionItemName>
-                          華元大吉利超值包
-                        </SuggestionItemName>
-                        <SuggestionItemPrice>$55</SuggestionItemPrice>
-                      </SuggestionItem>
-
-                      <SuggestionItem>
-                        <SuggestionItemImg>
-                          <Image
-                            src="/suggestion-2.jpg"
-                            alt=""
-                            width={100}
-                            height={100}
-                          />
-                        </SuggestionItemImg>
-                        <SuggestionItemName>聯華七小喜多包</SuggestionItemName>
-                        <SuggestionItemPrice>$55</SuggestionItemPrice>
-                      </SuggestionItem>
-
-                      <SuggestionItem>
-                        <SuggestionItemImg>
-                          <Image
-                            src="/suggestion-3.jpg"
-                            alt=""
-                            width={100}
-                            height={100}
-                          />
-                        </SuggestionItemImg>
-                        <SuggestionItemName>
-                          來一客-鮮蝦魚板-63g
-                        </SuggestionItemName>
-                        <SuggestionItemPrice>$65</SuggestionItemPrice>
-                      </SuggestionItem>
-                    </SuggestionList>
+                    <Image src="/suggestion.png" fill />
                   </Suggestion>
                 </ProductDetail>
               </Col>
@@ -620,31 +683,19 @@ export default function ModalPreviewPDP(props) {
                             <ProductDescriptionTable>
                               <table>
                                 <tbody>
-                                  <tr>
-                                    <td>商品來源國家</td>
-                                    <td>{info.itemCountry}</td>
-                                  </tr>
-
-                                  <tr>
-                                    <td>商品高度</td>
-                                    <td>{info.productHeight}</td>
-                                  </tr>
-
-                                  <tr>
-                                    <td>商品寬度</td>
-                                    <td>{info.productWidth}</td>
-                                  </tr>
-
-                                  <tr>
-                                    <td>保存天數</td>
-                                    <td>{info.expDate}</td>
-                                  </tr>
-
-                                  <tr>
-                                    <td>應免稅</td>
-                                    <td>{info.isTax ? "應稅" : "免稅"}</td>
-                                  </tr>
-                                  <tr></tr>
+                                  {columns.map((c, idx) => {
+                                    if (info[c.dataIndex] === null) return;
+                                    return (
+                                      <tr key={idx}>
+                                        <td>{c.title}</td>
+                                        <td>
+                                          {c.render
+                                            ? c.render(info[c.dataIndex], info)
+                                            : info[c.dataIndex]}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
                                 </tbody>
                               </table>
                             </ProductDescriptionTable>

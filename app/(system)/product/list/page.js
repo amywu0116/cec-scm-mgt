@@ -227,6 +227,7 @@ export default function Page() {
             form={form}
             autoComplete="off"
             colon={false}
+            disabled={loading.table}
             onFinish={handleFinish}
           >
             <Row gutter={16}>
@@ -261,7 +262,12 @@ export default function Page() {
               </Col>
 
               <Space style={{ marginLeft: "auto" }} size={16}>
-                <Button type="secondary" htmlType="submit">
+                <Button
+                  type="secondary"
+                  loading={loading.table}
+                  disabled={false}
+                  htmlType="submit"
+                >
                   查詢
                 </Button>
 

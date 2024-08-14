@@ -17,7 +17,7 @@ const StyledTabs = styled(AntdTabs)`
   &.ant-tabs .ant-tabs-tab {
     font-size: 14px;
     font-weight: 700;
-    color: #7b8093;
+    color: rgba(89, 89, 89, 1);
   }
 `;
 

@@ -40,7 +40,7 @@ const Container = styled.div`
         background-color: #eeeeee;
 
         a {
-          color: #7b8093;
+          color: rgba(89, 89, 89, 1);
         }
 
         > .ant-table-cell-row-hover {
