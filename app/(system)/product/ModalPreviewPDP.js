@@ -507,6 +507,7 @@ export default function ModalPreviewPDP(props) {
       fetchInfo();
     } else {
       setInfo({});
+      setSelectedImg(undefined);
     }
   }, [open]);
 
