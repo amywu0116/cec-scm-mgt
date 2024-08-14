@@ -53,7 +53,7 @@ const Item = styled.div`
 const ItemLabel = styled.div`
   font-size: 14px;
   font-weight: 700;
-  color: #7b8093;
+  color: rgba(89, 89, 89, 1);
   width: 64px;
   flex-shrink: 0;
 `;

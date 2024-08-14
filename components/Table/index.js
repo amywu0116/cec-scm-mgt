@@ -6,7 +6,7 @@ const StyledTable = styled(AntdTable)`
   &.ant-table-wrapper .ant-table-tbody > tr > td {
     font-size: 14px;
     font-weight: 400;
-    color: #7b8093;
+    color: rgba(89, 89, 89, 1);
     border-bottom: 1px solid #cccccc;
   }
 
@@ -41,7 +41,7 @@ const PaginationWrapper = styled.div`
   .total {
     font-size: 14px;
     font-weight: 400;
-    color: #7b8093;
+    color: rgba(89, 89, 89, 1);
   }
 `;
 
