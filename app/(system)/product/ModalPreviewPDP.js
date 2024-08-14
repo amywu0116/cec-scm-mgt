@@ -97,7 +97,7 @@ const ItemLabel = styled.div`
   margin-right: 20px;
 `;
 
-const SpecialPrice = styled.div`
+const Price = styled.div`
   font-size: 42px;
   font-weight: 700;
   color: #fd0202;
@@ -108,7 +108,7 @@ const SpecialPrice = styled.div`
   }
 `;
 
-const Price = styled.div`
+const SpecialPrice = styled.div`
   text-decoration: line-through;
   font-size: 20px;
   font-weight: 400;
@@ -564,16 +564,24 @@ export default function ModalPreviewPDP(props) {
                     </ItemText>
 
                     <ItemPriceWrapper>
-                      <ItemLabel>促銷價</ItemLabel>
-
-                      {info.specialPrice && (
-                        <SpecialPrice>
-                          <span>$</span>
-                          {info.specialPrice}
-                        </SpecialPrice>
+                      {info.specialPrice ? (
+                        <>
+                          <ItemLabel>促銷價</ItemLabel>
+                          <Price>
+                            <span>$</span>
+                            {info.specialPrice}
+                          </Price>
+                          <SpecialPrice>${info.price}</SpecialPrice>
+                        </>
+                      ) : (
+                        <>
+                          <ItemLabel>原價</ItemLabel>
+                          <Price>
+                            <span>$</span>
+                            {info.price}
+                          </Price>
+                        </>
                       )}
-
-                      <Price>${info.price}</Price>
                     </ItemPriceWrapper>
 
                     <ItemOthers>
