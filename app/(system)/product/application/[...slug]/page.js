@@ -22,12 +22,12 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
+import ModalPreviewPDP from "../../ModalPreviewPDP";
+import ApplyHistoryTable from "./ApplyHistoryTable";
 
 import api from "@/api";
 import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
-import ModalPreviewPDP from "../../ModalPreviewPDP";
-import ApplyHistoryTable from "./ApplyHistoryTable";
 
 const Title = styled.div`
   font-size: 16px;
@@ -164,7 +164,7 @@ export default function Page() {
         form.setFieldsValue({
           ...res.data,
           scmCategory: scmCategoryCode,
-          stockStartdate: dayjs(stockStartdate),
+          stockStartdate: stockStartdate ? dayjs(stockStartdate) : undefined,
         });
       })
       .catch((err) => {
