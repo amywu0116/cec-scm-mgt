@@ -1,5 +1,6 @@
 "use client";
 import { App, Breadcrumb, Col, Form, Radio, Row, Space, Spin } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -63,7 +64,11 @@ export default function Page() {
     api
       .get(`v1/scm/product/${params.productId}`)
       .then((res) => {
-        form.setFieldsValue({ ...res.data });
+        const { stockStartdate } = res.data;
+        form.setFieldsValue({
+          ...res.data,
+          stockStartdate: stockStartdate ? dayjs(stockStartdate) : undefined,
+        });
       })
       .catch((err) => {
         message.error(err.message);

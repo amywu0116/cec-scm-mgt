@@ -1,6 +1,6 @@
 "use client";
-import { App, Col, Form, Row, Space } from "antd";
-import Image from "next/image";
+import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { App, Col, Form, Image, Row, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -12,6 +12,7 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
+import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
 import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
@@ -21,7 +22,13 @@ export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
 
-  const [loading, setLoading] = useState({ table: false });
+  const [loading, setLoading] = useState({
+    table: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    pdpPreview: false,
+  });
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
@@ -31,14 +38,42 @@ export default function Page() {
     tableQuery: {},
   });
 
+  const [currentProductId, setCurrentProductId] = useState();
+
   const columns = [
     {
-      title: "部門別",
-      dataIndex: "scmCategoryCode",
+      title: "圖片",
+      dataIndex: "productImgUrl",
       align: "center",
+      render: (text, record) => {
+        if (!text) return "-";
+        return (
+          <Image
+            width={40}
+            height={40}
+            src={text}
+            alt=""
+            preview={{
+              toolbarRender: (
+                _,
+                {
+                  image: { url },
+                  transform: { scale },
+                  actions: { onZoomOut, onZoomIn },
+                }
+              ) => (
+                <Space size={12} className="toolbar-wrapper">
+                  <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
+                  <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
+                </Space>
+              ),
+            }}
+          />
+        );
+      },
     },
     {
-      title: "中文品名",
+      title: "品名",
       dataIndex: "itemName",
       align: "center",
       render: (text, record) => {
@@ -46,31 +81,95 @@ export default function Page() {
       },
     },
     {
-      title: "條碼",
-      dataIndex: "itemEan",
-      align: "center",
-    },
-    {
-      title: "圖片",
-      dataIndex: "productImgUrl",
+      title: "規格",
+      dataIndex: "",
       align: "center",
       render: (text, record) => {
-        if (!text) return "-";
-        return <Image width={40} height={40} src={text} alt="" />;
+        const list = [
+          record.variationType1Value,
+          record.variationType2Value,
+        ].filter(Boolean);
+        if (list.length === 0) return "-";
+        return list.join(" / ");
       },
     },
     {
-      title: "功能",
+      title: "商品編號/條碼",
       dataIndex: "",
       align: "center",
-      render: (text, record, index) => {
-        if (record.perpetual) return "-";
+      render: (text, record) => {
+        return (
+          <>
+            <div>{record.productnumber}</div>
+            <div>{record.itemEan}</div>
+          </>
+        );
+      },
+    },
+    {
+      title: "價格",
+      dataIndex: "",
+      align: "center",
+      render: (text, record) => {
+        if (record.price === null && record.specialPrice === null) {
+          return "-";
+        }
+        if (record.price !== null && record.specialPrice === null) {
+          return <div>NT${record.price}</div>;
+        }
+        if (record.price !== null && record.specialPrice !== null) {
+          return (
+            <>
+              <div>NT${record.specialPrice}</div>
+              <div style={{ textDecoration: "line-through", color: "#ccc" }}>
+                NT${record.price}
+              </div>
+            </>
+          );
+        }
+      },
+    },
+    {
+      title: "庫存",
+      dataIndex: "perpetual",
+      align: "center",
+      render: (text, record) => {
+        return (
+          <>
+            <div>{text ? "不庫控" : record.stock}</div>
+            <div>
+              <FunctionBtn
+                color="green"
+                onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
+              >
+                庫存設定
+              </FunctionBtn>
+            </div>
+          </>
+        );
+      },
+    },
+    {
+      title: "狀態",
+      dataIndex: "isPublushed",
+      align: "center",
+      render: (text, record) => {
+        return text ? "上架" : "下架";
+      },
+    },
+    {
+      title: "預覽",
+      dataIndex: "",
+      align: "center",
+      render: (text, record) => {
         return (
           <FunctionBtn
-            color="green"
-            onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
+            onClick={() => {
+              setCurrentProductId(record.productId);
+              setOpenModal((state) => ({ ...state, pdpPreview: true }));
+            }}
           >
-            庫存設定
+            PDP
           </FunctionBtn>
         );
       },
@@ -197,6 +296,15 @@ export default function Page() {
           />
         </Col>
       </Row>
+
+      <ModalPreviewPDP
+        type="product"
+        id={currentProductId}
+        open={openModal.pdpPreview}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, pdpPreview: false }));
+        }}
+      />
     </>
   );
 }
