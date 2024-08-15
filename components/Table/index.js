@@ -7,7 +7,7 @@ const StyledTable = styled(AntdTable)`
     font-size: 14px;
     font-weight: 400;
     color: rgba(89, 89, 89, 1);
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 1px solid rgba(204, 204, 204, 1);
   }
 
   &.ant-table-wrapper .ant-table-thead > tr > th {
