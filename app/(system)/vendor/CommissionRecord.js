@@ -3,6 +3,12 @@ import { App, Col, Divider, Form, Row } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
 
 import Button from "@/components/Button";
 import ResetBtn from "@/components/Button/ResetBtn";
@@ -11,6 +17,7 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
+import updateQuery from "@/utils/updateQuery";
 
 const TableTitle = styled.div`
   font-size: 16px;
@@ -28,6 +35,15 @@ const Card = styled.div`
 export default function CommissionRecord() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    categoryCode: parseAsString,
+    queryDate: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+  });
 
   const [loading, setLoading] = useState({ table: false });
 
@@ -109,24 +125,26 @@ export default function CommissionRecord() {
       .finally(() => {});
   };
 
-  const fetchTableInfo = (values, pagination = { page: 1, pageSize: 10 }) => {
-    const data = {
+  const fetchTableInfo = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
       categoryCode: values.categoryCode,
       queryStart: values.queryDate[0].format("YYYY-MM-DD"),
       queryEnd: values.queryDate[1].format("YYYY-MM-DD"),
-      offset: (pagination.page - 1) * pagination.pageSize,
-      max: pagination.pageSize,
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
     };
 
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/vendor/commissionRecord", { params: { ...data } })
+      .get("v1/scm/vendor/commissionRecord", { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -139,15 +157,24 @@ export default function CommissionRecord() {
   };
 
   const handleFinish = (values) => {
-    fetchTableInfo(values);
+    fetchTableInfo({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchTableInfo(tableInfo.tableQuery, { page, pageSize });
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
   };
 
   useEffect(() => {
     fetchCategory();
+  }, []);
+
+  useEffect(() => {
+    if (Object.values(query).some((q) => q === null)) return;
+    fetchTableInfo(query);
+    form.setFieldsValue({
+      categoryCode: query.categoryCode,
+      queryDate: query.queryDate,
+    });
   }, []);
 
   return (
