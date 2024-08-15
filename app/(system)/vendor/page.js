@@ -28,7 +28,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (Object.values(query).some((q) => q === null)) return;
+    if (Object.values(query).every((q) => q === null)) return;
     setTabKey(query.tabKey);
   }, []);
 
