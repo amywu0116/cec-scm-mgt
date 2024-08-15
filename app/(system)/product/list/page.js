@@ -77,6 +77,7 @@ export default function Page() {
       dataIndex: "itemName",
       align: "center",
       render: (text, record) => {
+        if ([null, undefined].includes(text)) return "-";
         return <Link href={`${PATH_PRODUCT}/${record.productId}`}>{text}</Link>;
       },
     },
@@ -137,14 +138,18 @@ export default function Page() {
         return (
           <>
             <div>{text ? "不庫控" : record.stock}</div>
-            <div>
-              <FunctionBtn
-                color="green"
-                onClick={() => router.push(PATH_PRODUCT_STOCK_SETTINGS)}
-              >
-                庫存設定
-              </FunctionBtn>
-            </div>
+            <Link
+              href={{
+                pathname: `${PATH_PRODUCT_STOCK_SETTINGS}`,
+                query: {
+                  productId: record.productId,
+                  itemName: record.itemName,
+                  itemEan: record.itemEan,
+                },
+              }}
+            >
+              <FunctionBtn color="green">庫存設定</FunctionBtn>
+            </Link>
           </>
         );
       },

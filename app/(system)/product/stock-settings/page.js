@@ -1,31 +1,20 @@
 "use client";
-import { Breadcrumb, Col, Form, Row } from "antd";
+import { App, Breadcrumb, Col, Form, Radio, Row, Space } from "antd";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
-import DatePicker from "@/components/DatePicker";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
 
+import api from "@/api";
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(89, 89, 89, 1);
-  flex-shrink: 0;
-`;
 
 const SettingsCard = styled.div`
   background-color: #f1f3f6;
@@ -33,40 +22,54 @@ const SettingsCard = styled.div`
 `;
 
 export default function Page() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
+
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+  const itemName = searchParams.get("itemName");
+  const itemEan = searchParams.get("itemEan");
+
+  const perpetual = Form.useWatch("perpetual", form);
+
+  const [loading, setLoading] = useState({
+    table: false,
+    form: false,
+  });
 
   const [showSettings, setShowSettings] = useState(false);
 
   const columns = [
     {
       title: "No",
-      dataIndex: "a",
+      dataIndex: "id",
       align: "center",
     },
     {
-      title: "起始日期",
-      dataIndex: "b",
+      title: "日期",
+      dataIndex: "",
       align: "center",
+      render: (text, record) => {
+        if (record.stockStartdate && record.stockEnddate) {
+          return `${record.stockStartdate} ~ ${record.stockEnddate}`;
+        }
+        return "-";
+      },
     },
     {
       title: "庫存",
-      dataIndex: "c",
+      dataIndex: "perpetual",
       align: "center",
+      render: (text, record) => {
+        return text ? "不庫控" : record.stock;
+      },
     },
     {
       title: "已販售量",
-      dataIndex: "d",
+      dataIndex: "",
       align: "center",
       render: () => {
-        return (
-          // <Image
-          //   width={40}
-          //   height={40}
-          //   src="https://fakeimg.pl/40x40/"
-          //   alt=""
-          // />
-          <div>image</div>
-        );
+        return "-";
       },
     },
     {
@@ -74,33 +77,116 @@ export default function Page() {
       dataIndex: "e",
       align: "center",
       render: (text, record, index) => {
-        return <FunctionBtn>刪除</FunctionBtn>;
+        return (
+          <FunctionBtn
+            loading={loading[`delete_${record.id}`]}
+            onClick={() => handleDelete(record.id)}
+          >
+            刪除
+          </FunctionBtn>
+        );
       },
     },
   ];
 
-  const data = [
-    {
-      a: "1",
-      b: "2024/05/01",
-      c: "3472860001492",
-      d: "30",
-      e: "",
-    },
-    {
-      a: "2",
-      b: "2024/04/23",
-      c: "3472860001492",
-      d: "35",
-      e: "",
-    },
-  ];
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
+
+  const fetchTableInfo = (pagination = { page: 1, pageSize: 10 }) => {
+    const params = {
+      productId,
+      offset: (pagination.page - 1) * pagination.pageSize,
+      max: pagination.pageSize,
+    };
+
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/product/stock`, { params })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }));
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ page, pageSize });
+  };
+
+  const handleDelete = (stockId) => {
+    setLoading((state) => ({ ...state, [`delete_${stockId}`]: true }));
+    api
+      .delete(`v1/scm/product/stock`, {
+        params: { productId, stockId },
+      })
+      .then((res) => {
+        message.success(res.message);
+        fetchTableInfo();
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, [`delete_${stockId}`]: false }));
+      });
+  };
+
+  const handleFinish = (values) => {
+    const data = {
+      perpetual: values.perpetual,
+      stock: values.perpetual ? undefined : values.stock,
+      stockStartdate: values.perpetual
+        ? undefined
+        : values.stockDate[0].format("YYYY-MM-DD"),
+      stockEnddate: values.perpetual
+        ? undefined
+        : values.stockDate[1].format("YYYY-MM-DD"),
+    };
+
+    setLoading((state) => ({ ...state, form: true }));
+    api
+      .post(`v1/scm/product/stock?productId=${productId}`, data)
+      .then((res) => {
+        message.success(res.message);
+        fetchTableInfo();
+        setShowSettings(false);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, form: false }));
+      });
+  };
+
+  useEffect(() => {
+    fetchTableInfo();
+  }, []);
+
+  useEffect(() => {
+    if (!showSettings) {
+      form.resetFields();
+    }
+  }, [showSettings]);
 
   return (
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
           items={[
@@ -112,68 +198,92 @@ export default function Page() {
 
       <Row gutter={[0, 16]}>
         <Col span={24}>
-          <Row gutter={16}>
-            <Col span={8}>
-              <Item>
-                <ItemLabel>條碼</ItemLabel>
-                <Input placeholder="請輸入條碼" disabled />
-              </Item>
-            </Col>
+          <Form colon={false} layout="inline">
+            <Form.Item style={{ flex: 1 }} label="條碼">
+              <Input placeholder="請輸入條碼" disabled value={itemEan} />
+            </Form.Item>
 
-            <Col span={8}>
-              <Item>
-                <ItemLabel>品名</ItemLabel>
-                <Input placeholder="請輸入商品名稱" disabled />
-              </Item>
-            </Col>
+            <Form.Item style={{ flex: 1 }} label="品名">
+              <Input placeholder="請輸入商品名稱" disabled value={itemName} />
+            </Form.Item>
 
-            <Col span={8}>
+            <Form.Item style={{ margin: 0 }}>
               <Button
+                style={{ width: "100%" }}
                 type="primary"
                 disabled={showSettings}
                 onClick={() => setShowSettings(true)}
               >
                 新增庫存設定
               </Button>
-            </Col>
-          </Row>
+            </Form.Item>
+          </Form>
         </Col>
 
         {showSettings && (
           <Col span={24}>
             <SettingsCard>
-              <Row gutter={16}>
-                <Col span={8}>
-                  <Item>
-                    <ItemLabel>數量</ItemLabel>
-                    <Input placeholder="請輸入數量" />
-                  </Item>
-                </Col>
+              <Form
+                form={form}
+                colon={false}
+                layout="inline"
+                requiredMark={false}
+                autoComplete="off"
+                disabled={loading.form}
+                onFinish={handleFinish}
+              >
+                <Form.Item
+                  style={{ flex: "0 0 250px" }}
+                  name="perpetual"
+                  label="庫存"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <Radio.Group>
+                    <Radio value={true}>不庫控</Radio>
+                    <Radio value={false}>活動庫存</Radio>
+                  </Radio.Group>
+                </Form.Item>
 
-                <Col span={8}>
-                  <Item>
-                    <ItemLabel>起始日期</ItemLabel>
-                    <DatePicker
-                      style={{ width: "100%" }}
-                      placeholder="請選擇起始日期"
-                    />
-                  </Item>
-                </Col>
+                {perpetual === false && (
+                  <>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="stock"
+                      label="數量"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
+                      <Input placeholder="請輸入數量" />
+                    </Form.Item>
 
-                <Col span={8}>
-                  <Row gutter={16} justify="end">
-                    <Col>
-                      <Button type="secondary">確認</Button>
-                    </Col>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="stockDate"
+                      label="日期"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
+                      <RangePicker
+                        style={{ width: "100%" }}
+                        placeholder={["日期起", "日期迄"]}
+                      />
+                    </Form.Item>
+                  </>
+                )}
 
-                    <Col>
-                      <Button onClick={() => setShowSettings(false)}>
-                        取消
-                      </Button>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
+                <Form.Item style={{ margin: "0 0 0 auto" }}>
+                  <Space size={16}>
+                    <Button
+                      type="secondary"
+                      htmlType="submit"
+                      disabled={false}
+                      loading={loading.form}
+                    >
+                      確認
+                    </Button>
+
+                    <Button onClick={() => setShowSettings(false)}>取消</Button>
+                  </Space>
+                </Form.Item>
+              </Form>
             </SettingsCard>
           </Col>
         )}
@@ -188,9 +298,15 @@ export default function Page() {
                 children: (
                   <>
                     <Table
+                      loading={loading.table}
                       columns={columns}
-                      dataSource={data}
-                      pagination={false}
+                      dataSource={tableInfo.rows}
+                      pageInfo={{
+                        total: tableInfo.total,
+                        page: tableInfo.page,
+                        pageSize: tableInfo.pageSize,
+                      }}
+                      onChange={handleChangeTable}
                     />
                   </>
                 ),
