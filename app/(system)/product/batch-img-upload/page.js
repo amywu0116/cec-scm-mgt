@@ -5,19 +5,22 @@ import {
   ZoomOutOutlined,
 } from "@ant-design/icons";
 import { App, Col, Form, Image, Row, Space, Spin, Upload } from "antd";
+import dayjs from "dayjs";
+import { parseAsArrayOf, parseAsInteger, useQueryStates } from "nuqs";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import ModalDelete from "@/components/Modal/ModalDelete";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import RangePicker from "@/components/DatePicker/RangePicker";
 import { useBoundStore } from "@/store";
+import updateQuery from "@/utils/updateQuery";
 
 const ImageCard = styled.div`
   background-color: #f1f3f6;
@@ -33,6 +36,14 @@ export default function Page() {
 
   const options = useBoundStore((state) => state.options);
   const imgTypeOptions = options?.img_type ?? [];
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    createTime: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+  });
 
   const [loading, setLoading] = useState({
     table: false,
@@ -113,6 +124,7 @@ export default function Page() {
       title: "已綁定之商品",
       dataIndex: "bindedProduct",
       align: "center",
+      width: 500,
       render: (text, record, index) => {
         if ([null, undefined].includes(text)) {
           return "-";
@@ -150,10 +162,12 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
-    const data = {
-      offset: (pagination.page - 1) * pagination.pageSize,
-      max: pagination.pageSize,
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
       createTimeStart: values.createTime
         ? values.createTime[0].format("YYYY-MM-DD")
         : undefined,
@@ -164,13 +178,13 @@ export default function Page() {
 
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get(`v1/scm/product/apply/img/list`, { params: { ...data } })
+      .get(`v1/scm/product/apply/img/list`, { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -183,11 +197,11 @@ export default function Page() {
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchList(tableInfo.tableQuery, { page, pageSize });
+    fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
 
   const handleFinishSearch = (values) => {
-    fetchList(values);
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleFinishUpload = (values) => {
@@ -245,7 +259,11 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchList(tableInfo.tableQuery);
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchList(query);
+    searchForm.setFieldsValue({
+      createTime: query.createTime,
+    });
   }, []);
 
   return (
@@ -268,11 +286,7 @@ export default function Page() {
           >
             <Row gutter={[0, 16]}>
               <Col span={8} xxl={{ span: 6 }}>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="createTime"
-                  label=""
-                >
+                <Form.Item style={{ marginBottom: 0 }} name="createTime">
                   <RangePicker
                     style={{ width: "100%" }}
                     placeholder={["上傳日期起", "上傳日期迄"]}

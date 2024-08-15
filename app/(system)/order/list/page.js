@@ -12,7 +12,14 @@ import {
   Space,
   Upload,
 } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
@@ -28,6 +35,7 @@ import ModalImportShip from "./ModalImportShip";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
+import updateQuery from "@/utils/updateQuery";
 
 const Container = styled.div`
   .ant-checkbox-group {
@@ -129,6 +137,18 @@ export default function Page() {
   const osOptions = options?.order_status ?? [];
   const bsOptions = options?.back_status ?? [];
 
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    queryString: parseAsString,
+    ecorderDate: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+    processedStatus: parseAsString,
+    logisticsId: parseAsInteger,
+    logisticsStatus: parseAsArrayOf(parseAsString),
+  });
+
   const [loading, setLoading] = useState({
     table: false,
     batchDelivered: false,
@@ -213,7 +233,9 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+
     const orderStatusList = [];
     const pickingStatusList = [];
     const backStatusList = [];
@@ -231,7 +253,7 @@ export default function Page() {
       });
     }
 
-    const data = {
+    const params = {
       queryString: values.queryString ? values.queryString : undefined,
       ecorderDateStart: values.ecorderDate
         ? values.ecorderDate[0].format("YYYY-MM-DD")
@@ -239,7 +261,7 @@ export default function Page() {
       ecorderDateEnd: values.ecorderDate
         ? values.ecorderDate[1].format("YYYY-MM-DD")
         : undefined,
-      processedStatus,
+      processedStatus: values.processedStatus,
       ecorderStatus:
         orderStatusList.length > 0 ? orderStatusList.join(",") : undefined,
       pickingStatus:
@@ -247,20 +269,20 @@ export default function Page() {
       backStatus:
         backStatusList.length > 0 ? backStatusList.join(",") : undefined,
       logisticsId: values.logisticsId,
-      offset: (pagination.page - 1) * pagination.pageSize,
-      max: pagination.pageSize,
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
     };
 
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/order", { params: { ...data } })
+      .get("v1/scm/order", { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -273,12 +295,12 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
-    fetchList(values);
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   // 切換 Table 分頁、分頁大小
   const handleChangeTable = (page, pageSize) => {
-    fetchList(tableInfo.tableQuery, { page, pageSize });
+    fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
 
   // 查詢
@@ -333,7 +355,7 @@ export default function Page() {
       .post(`v1/scm/order/batch/delivered`, data)
       .then((res) => {
         message.success(res.message);
-        fetchList(tableInfo.tableQuery);
+        fetchList({ ...tableInfo.tableQuery });
       })
       .catch((err) => {
         message.error(err.message);
@@ -373,21 +395,35 @@ export default function Page() {
     }
   };
 
-  // 進頁後先自動查詢一次
-  useEffect(() => {
-    if (options && Object.keys(options).length > 0) {
-      // 等訂單物流狀態先設定好再查詢
-      setTimeout(() => {
-        form.submit();
-      }, 0);
-    }
-  }, [options]);
+  // // 進頁後先自動查詢一次
+  // useEffect(() => {
+  //   if (options && Object.keys(options).length > 0) {
+  //     // 等訂單物流狀態先設定好再查詢
+  //     setTimeout(() => {
+  //       form.submit();
+  //     }, 0);
+  //   }
+  // }, [options]);
 
   // 選擇 "處理狀態" 後更新 "訂單物流狀態" 列表
   useEffect(() => {
-    const lsList = statusMapping[processedStatus];
-    form.setFieldValue("logisticsStatus", lsList);
+    if (query.logisticsStatus === null) {
+      const lsList = statusMapping[processedStatus];
+      form.setFieldValue("logisticsStatus", lsList);
+    }
   }, [processedStatus]);
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchList(query);
+    form.setFieldsValue({
+      queryString: query.queryString,
+      ecorderDate: query.ecorderDate,
+      processedStatus: query.processedStatus,
+      logisticsId: query.logisticsId,
+      logisticsStatus: query.logisticsStatus,
+    });
+  }, []);
 
   return (
     <>
@@ -455,6 +491,10 @@ export default function Page() {
                           { label: "待處理", value: "0" },
                           { label: "已結案", value: "1" },
                         ]}
+                        onChange={(e) => {
+                          const lsList = statusMapping[e.target.value];
+                          form.setFieldValue("logisticsStatus", lsList);
+                        }}
                       />
                     </Form.Item>
                   </Col>

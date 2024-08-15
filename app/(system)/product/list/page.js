@@ -2,8 +2,8 @@
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import { App, Col, Form, Image, Row, Space } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -16,11 +16,19 @@ import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
 import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
+import updateQuery from "@/utils/updateQuery";
 
 export default function Page() {
-  const router = useRouter();
   const { message } = App.useApp();
   const [form] = Form.useForm();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    productnumber: parseAsString,
+    itemEan: parseAsString,
+    itemName: parseAsString,
+  });
 
   const [loading, setLoading] = useState({
     table: false,
@@ -181,26 +189,26 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
+      productnumber: values.productnumber ? values.productnumber : undefined,
+      itemEan: values.itemEan ? values.itemEan : undefined,
+      itemName: values.itemName ? values.itemName : undefined,
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+    };
+
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/product", {
-        params: {
-          productnumber: values.productnumber
-            ? values.productnumber
-            : undefined,
-          itemEan: values.itemEan ? values.itemEan : undefined,
-          itemName: values.itemName ? values.itemName : undefined,
-          offset: (pagination.page - 1) * pagination.pageSize,
-          max: pagination.pageSize,
-        },
-      })
+      .get("v1/scm/product", { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -213,12 +221,22 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
-    fetchList(values);
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchList(tableInfo.tableQuery, { page, pageSize });
+    fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchList(query);
+    form.setFieldsValue({
+      productnumber: query.productnumber,
+      itemEan: query.itemEan,
+      itemName: query.itemName,
+    });
+  }, []);
 
   return (
     <>
