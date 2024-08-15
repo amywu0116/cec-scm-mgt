@@ -150,7 +150,7 @@ export default function FeeRecord() {
   };
 
   useEffect(() => {
-    if (Object.values(query).some((q) => q === null)) return;
+    if (Object.values(query).every((q) => q === null)) return;
     fetchTableInfo(query);
     form.setFieldsValue({
       feeType: query.feeType,
