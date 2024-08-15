@@ -18,6 +18,7 @@ import api from "@/api";
 import {
   PATH_PRODUCT_IMAGE_MAINTENANCE,
   PATH_PRODUCT_PRODUCT_LIST,
+  PATH_PRODUCT_STOCK_SETTINGS,
 } from "@/constants/paths";
 
 const Title = styled.div`
@@ -150,6 +151,19 @@ export default function Page() {
             >
               PDP預覽
             </Button>
+
+            <Link
+              href={{
+                pathname: `${PATH_PRODUCT_STOCK_SETTINGS}`,
+                query: {
+                  productId: params.productId,
+                  itemName,
+                  itemEan,
+                },
+              }}
+            >
+              <Button type="secondary">庫存設定</Button>
+            </Link>
           </Space>
         </LayoutHeader>
 
@@ -210,12 +224,6 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                {/* <Col span={12}>
-                  <Form.Item name="vendorProdCode" label="供應商商品編號">
-                    <Input />
-                  </Form.Item>
-                </Col> */}
-
                 <Col span={12}>
                   <Form.Item name="itemCountry" label="生產國家">
                     <Input />
@@ -267,12 +275,6 @@ export default function Page() {
             <Col span={24}>
               <Title>容量和重量</Title>
               <Row gutter={32}>
-                {/* <Col span={8}>
-                  <Form.Item  name="vUnit" label="容量單位">
-                    <Input />
-                  </Form.Item>
-                </Col>  */}
-
                 <Col span={8}>
                   <Form.Item name="productHeight" label="商品高度(cm)">
                     <Input />
@@ -536,7 +538,7 @@ export default function Page() {
 
       <ModalPreviewPDP
         type="product"
-        id={form.getFieldValue("productId")}
+        id={params.productId}
         open={openModal.pdpPreview}
         onCancel={() => {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));

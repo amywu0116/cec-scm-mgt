@@ -1,8 +1,15 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import { App, Col, Form, Image, Row, Space, Upload } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
-import { useState } from "react";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
@@ -16,6 +23,7 @@ import Table from "@/components/Table";
 
 import ModalPreviewPDP from "../ModalPreviewPDP";
 import ModalAddProduct from "./ModalAddProduct";
+import ModalImportError from "./ModalImportError";
 
 import api from "@/api";
 import {
@@ -23,7 +31,7 @@ import {
   PATH_PRODUCT_IMAGE_MAINTENANCE,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
-import ModalImportError from "./ModalImportError";
+import updateQuery from "@/utils/updateQuery";
 
 const TableTitle = styled.div`
   font-size: 16px;
@@ -38,6 +46,17 @@ export default function Page() {
 
   const options = useBoundStore((state) => state.options);
   const applyStatusOptions = options?.apply_status ?? [];
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    itemEan: parseAsString,
+    itemName: parseAsString,
+    applyStatus: parseAsString,
+    applyDate: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+  });
 
   const [loading, setLoading] = useState({
     table: false,
@@ -201,8 +220,10 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
-    const data = {
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
       applyDateStart: values.applyDate
         ? values.applyDate[0].format("YYYY-MM-DD")
         : undefined,
@@ -212,20 +233,20 @@ export default function Page() {
       applyStatus: values.applyStatus,
       itemEan: values.itemEan ? values.itemEan : undefined,
       itemName: values.itemName ? values.itemName : undefined,
-      offset: (pagination.page - 1) * pagination.pageSize,
-      max: pagination.pageSize,
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
     };
 
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/product/apply", { params: { ...data } })
+      .get("v1/scm/product/apply", { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -238,16 +259,16 @@ export default function Page() {
   };
 
   const refreshTable = () => {
-    fetchList(tableInfo.tableQuery);
+    fetchList({ ...tableInfo.tableQuery });
     setSelectedRows([]);
   };
 
   const handleFinish = (values) => {
-    fetchList(values);
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchList(tableInfo.tableQuery, { page, pageSize });
+    fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
 
   // 送審
@@ -322,11 +343,21 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    if (Object.values(query).some((q) => q === null)) return;
+    fetchList(query);
+    form.setFieldsValue({
+      itemEan: query.itemEan,
+      itemName: query.itemName,
+      applyStatus: query.applyStatus,
+      applyDate: query.applyDate,
+    });
+  }, []);
+
   return (
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
-
         <Space style={{ marginLeft: "auto" }} size={16}>
           <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 

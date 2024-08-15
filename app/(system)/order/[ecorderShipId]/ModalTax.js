@@ -85,7 +85,11 @@ export default function ModalTax(props) {
         onFinish={handleFinish}
       >
         <Row gutter={[0, 16]}>
-          <Col span={24}>原統一編號：{`${info.taxId ?? "-"}`}</Col>
+          <Col span={24}>
+            <Form.Item style={{ margin: 0 }} label="原統一編號：">
+              <div style={{ lineHeight: "42px" }}>{info.taxId ?? "-"}</div>
+            </Form.Item>
+          </Col>
 
           <Col span={24}>
             <Form.Item

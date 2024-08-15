@@ -2,7 +2,8 @@
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import { App, Col, Form, Image, Row, Space, Spin } from "antd";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -10,6 +11,7 @@ import Input from "@/components/Input";
 import Table from "@/components/Table";
 
 import api from "@/api";
+import updateQuery from "@/utils/updateQuery";
 
 export default function SearchForm(props) {
   const { fetchProductImgList } = props;
@@ -21,6 +23,12 @@ export default function SearchForm(props) {
   const isApply = type === "apply";
   const isProduct = type === "product";
   const id = params.id;
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    fileName: parseAsString,
+  });
 
   const [loading, setLoading] = useState({ table: false });
 
@@ -104,23 +112,25 @@ export default function SearchForm(props) {
     },
   ];
 
-  const fetchList = (values, pagination = { page: 1, pageSize: 10 }) => {
-    const data = {
-      offset: (pagination.page - 1) * pagination.pageSize,
-      max: pagination.pageSize,
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
       fileName: values.fileName,
       applyId: isProduct ? undefined : isApply ? id : undefined,
     };
 
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get(`v1/scm/product/apply/img/list`, { params: data })
+      .get(`v1/scm/product/apply/img/list`, { params })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
           ...res.data,
-          page: pagination.page,
-          pageSize: pagination.pageSize,
+          page: values.page,
+          pageSize: values.pageSize,
           tableQuery: { ...values },
         }));
       })
@@ -162,12 +172,20 @@ export default function SearchForm(props) {
   };
 
   const handleFinish = (values) => {
-    fetchList(values);
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchList(tableInfo.tableQuery, { page, pageSize });
+    fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
+
+  useEffect(() => {
+    if (Object.values(query).some((q) => q === null)) return;
+    fetchList(query);
+    form.setFieldsValue({
+      fileName: query.fileName,
+    });
+  }, []);
 
   return (
     <Form
