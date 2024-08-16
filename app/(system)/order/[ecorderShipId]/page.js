@@ -1,6 +1,21 @@
 "use client";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
-import { App, Breadcrumb, Col, Collapse, Form, Row, Space, Spin } from "antd";
+import {
+  DownOutlined,
+  UpOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+} from "@ant-design/icons";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Collapse,
+  Form,
+  Image,
+  Row,
+  Space,
+  Spin,
+} from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -953,16 +968,33 @@ export default function Page(props) {
 
                         <Col span={12}>
                           <Form.Item name="examPhoto" label="圖片">
-                            <a
-                              style={{
-                                wordBreak: "break-all",
-                                lineHeight: "42px",
+                            <Image
+                              width={40}
+                              height={40}
+                              src={info.examPhoto}
+                              alt=""
+                              preview={{
+                                toolbarRender: (
+                                  _,
+                                  {
+                                    image: { url },
+                                    transform: { scale },
+                                    actions: { onZoomOut, onZoomIn },
+                                  }
+                                ) => (
+                                  <Space size={12} className="toolbar-wrapper">
+                                    <ZoomOutOutlined
+                                      disabled={scale === 1}
+                                      onClick={onZoomOut}
+                                    />
+                                    <ZoomInOutlined
+                                      disabled={scale === 50}
+                                      onClick={onZoomIn}
+                                    />
+                                  </Space>
+                                ),
                               }}
-                              href={info.examPhoto}
-                              target="_blank"
-                            >
-                              圖片連結
-                            </a>
+                            />
                           </Form.Item>
                         </Col>
                       </Row>
