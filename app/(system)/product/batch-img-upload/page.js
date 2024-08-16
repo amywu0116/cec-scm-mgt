@@ -66,7 +66,7 @@ export default function Page() {
 
   const columns = [
     {
-      title: "No",
+      title: "No.",
       dataIndex: "no",
       align: "center",
       render: (text, record, index) => {

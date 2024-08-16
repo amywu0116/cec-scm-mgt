@@ -42,12 +42,17 @@ export default function SearchForm(props) {
 
   const columns = [
     {
-      title: "No",
+      title: "No.",
       dataIndex: "no",
       align: "center",
       render: (text, record, index) => {
         return tableInfo.total - tableInfo.offset - index;
       },
+    },
+    {
+      title: "圖片類型",
+      dataIndex: "imgTypeName",
+      align: "center",
     },
     {
       title: "檔名",
