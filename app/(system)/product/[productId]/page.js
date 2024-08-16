@@ -62,13 +62,56 @@ export default function Page() {
 
   const perpetual = Form.useWatch("perpetual", form);
 
+  const validateWarningPrice = (_, value) => {
+    const priceBefore = Number(info.price);
+    const priceAfter = Number(value);
+    const isGreaterThan = priceAfter > priceBefore + priceBefore * 0.25;
+    const isLessThan = priceAfter < priceBefore - priceBefore * 0.25;
+
+    if (value && (isGreaterThan || isLessThan)) {
+      return Promise.reject(
+        new Error(
+          `原價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
+        )
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateWarningSpecialPrice = (_, value) => {
+    const priceBefore = Number(info.specialPrice);
+    const priceAfter = Number(value);
+    const isGreaterThan = priceAfter > priceBefore + priceBefore * 0.25;
+    const isLessThan = priceAfter < priceBefore - priceBefore * 0.25;
+
+    if (priceBefore && value && (isGreaterThan || isLessThan)) {
+      return Promise.reject(
+        new Error(
+          `原價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
+        )
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateSpecialPrice = (_, value) => {
+    const price = form.getFieldValue("price");
+
+    if (value > price) {
+      return Promise.reject(new Error("促銷價需低於原價"));
+    }
+
+    return Promise.resolve();
+  };
+
   // 詳細內容
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get(`v1/scm/product/${params.productId}`)
       .then((res) => {
-        console.log("res", res.data);
         const { stockStartdate } = res.data;
         form.setFieldsValue({
           ...res.data,
@@ -100,10 +143,14 @@ export default function Page() {
       });
   };
 
+  // 確認修改
   const handleFinish = (values) => {
     const data = {
-      ...info,
       ...values,
+      price: values.price ? Number(values.price) : undefined,
+      specialPrice: values.specialPrice
+        ? Number(values.specialPrice)
+        : undefined,
     };
 
     setLoading((state) => ({ ...state, page: true }));
@@ -142,7 +189,18 @@ export default function Page() {
           <Space style={{ marginLeft: "auto" }} size={16}>
             {isEditing ? (
               <>
-                <Button type="default" onClick={() => setIsEditing(false)}>
+                <Button
+                  type="default"
+                  onClick={() => {
+                    setIsEditing(false);
+                    form.setFieldsValue({
+                      ...info,
+                      stockStartdate: info.stockStartdate
+                        ? dayjs(info.stockStartdate)
+                        : undefined,
+                    });
+                  }}
+                >
                   取消
                 </Button>
 
@@ -224,7 +282,7 @@ export default function Page() {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item label="商品分類">
-                    <CategoryLabel style={{ width: 350 }}>
+                    <CategoryLabel style={{ width: 350, lineHeight: "42px" }}>
                       {scmCategoryCode} / {scmCategoryName}
                     </CategoryLabel>
                   </Form.Item>
@@ -232,39 +290,51 @@ export default function Page() {
 
                 <Col span={12}>
                   <Form.Item name="brand" label="品牌">
-                    <Input />
+                    <Input placeholder="請輸入品牌" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="itemName" label="中文品名">
-                    <Input />
+                    <Input placeholder="請輸入中文品名" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="itemNameEn" label="英文品名">
-                    <Input />
+                    <Input placeholder="請輸入英文品名" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="itemCountry" label="生產國家">
-                    <Input />
+                    <Input placeholder="請輸入生產國家" />
                   </Form.Item>
                 </Col>
 
-                <Col span={12}></Col>
+                <Col span={12}>
+                  <Form.Item name="isPublushed" label="上下架狀態">
+                    <Select
+                      placeholder="請選擇上下架狀態"
+                      showSearch
+                      allowClear
+                      options={[
+                        { label: "上架", value: true },
+                        { label: "下架", value: false },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
 
                 <Col span={8}>
                   <Form.Item name="itemEan" label="條碼">
-                    <Input />
+                    <Input placeholder="請輸入條碼" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
                   <Form.Item name="itemSpec" label="規格">
-                    <Input />
+                    <Input placeholder="請輸入規格" />
                   </Form.Item>
                 </Col>
 
@@ -283,14 +353,30 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="price" label="原價">
-                    <Input />
+                  <Form.Item
+                    name="price"
+                    label="原價"
+                    rules={[
+                      { validator: validateWarningPrice, warningOnly: true },
+                    ]}
+                  >
+                    <Input placeholder="請輸入原價" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="specialPrice" label="促銷價">
-                    <Input />
+                  <Form.Item
+                    name="specialPrice"
+                    label="促銷價"
+                    rules={[
+                      {
+                        validator: validateWarningSpecialPrice,
+                        warningOnly: true,
+                      },
+                      { validator: validateSpecialPrice },
+                    ]}
+                  >
+                    <Input placeholder="請輸入促銷價" />
                   </Form.Item>
                 </Col>
               </Row>
@@ -301,31 +387,31 @@ export default function Page() {
               <Row gutter={32}>
                 <Col span={8}>
                   <Form.Item name="productHeight" label="商品高度(cm)">
-                    <Input />
+                    <Input placeholder="請輸入商品高度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
                   <Form.Item name="productWidth" label="商品寬度(cm)">
-                    <Input />
+                    <Input placeholder="請輸入商品寬度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
                   <Form.Item name="productLength" label="商品長度(cm)">
-                    <Input />
+                    <Input placeholder="請輸入商品長度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
                   <Form.Item name="grossWeight" label="重量-毛重">
-                    <Input suffix="克(g)" />
+                    <Input suffix="克(g)" placeholder="請輸入重量-毛重" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
                   <Form.Item name="netWeight" label="重量-淨重">
-                    <Input suffix="克(g)" />
+                    <Input suffix="克(g)" placeholder="請輸入重量-淨重" />
                   </Form.Item>
                 </Col>
               </Row>
@@ -336,43 +422,43 @@ export default function Page() {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item name="expDateValue" label="保存日期">
-                    <Input />
+                    <Input placeholder="請輸入保存日期" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="expDateUnit" label="保存日期單位">
-                    <Input />
+                    <Input placeholder="請輸入保存日期單位" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="powerSpec" label="電源規格">
-                    <Input />
+                    <Input placeholder="請輸入電源規格" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="itemStoreway" label="保存方式(文字)">
-                    <Input />
+                    <Input placeholder="請輸入保存方式(文字)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="vColor" label="顏色">
-                    <Input />
+                    <Input placeholder="請輸入顏色" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="vSize" label="尺寸">
-                    <Input />
+                    <Input placeholder="請輸入尺寸" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="vCapacity" label="容量">
-                    <Input />
+                    <Input placeholder="請輸入容量" />
                   </Form.Item>
                 </Col>
 

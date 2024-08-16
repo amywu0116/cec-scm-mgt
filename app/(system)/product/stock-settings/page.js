@@ -41,7 +41,7 @@ export default function Page() {
 
   const columns = [
     {
-      title: "No",
+      title: "No.",
       dataIndex: "id",
       align: "center",
     },

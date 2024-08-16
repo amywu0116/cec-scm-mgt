@@ -139,3 +139,13 @@ a {
     display: none;
   }
 }
+
+.ant-tag {
+  border-radius: 8px !important;
+  border: none !important;
+  line-height: 30px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding-inline: 8px !important;
+  margin-inline-end: 0 !important;
+}

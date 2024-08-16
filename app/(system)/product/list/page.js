@@ -1,8 +1,13 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { App, Col, Form, Image, Row, Space } from "antd";
+import { App, Col, Form, Image, Row, Space, Flex } from "antd";
 import Link from "next/link";
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button";
@@ -12,6 +17,7 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
+import Select from "@/components/Select";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
@@ -28,6 +34,7 @@ export default function Page() {
     productnumber: parseAsString,
     itemEan: parseAsString,
     itemName: parseAsString,
+    isPublushed: parseAsBoolean,
   });
 
   const [loading, setLoading] = useState({
@@ -109,8 +116,8 @@ export default function Page() {
       render: (text, record) => {
         return (
           <>
-            <div>{record.productnumber}</div>
-            <div>{record.itemEan}</div>
+            <div>{record.productnumber ?? "-"}</div>
+            <div>{record.itemEan ?? "-"}</div>
           </>
         );
       },
@@ -196,6 +203,7 @@ export default function Page() {
       productnumber: values.productnumber ? values.productnumber : undefined,
       itemEan: values.itemEan ? values.itemEan : undefined,
       itemName: values.itemName ? values.itemName : undefined,
+      isPublushed: values.isPublushed,
       offset: (values.page - 1) * values.pageSize,
       max: values.pageSize,
     };
@@ -235,10 +243,9 @@ export default function Page() {
       productnumber: query.productnumber,
       itemEan: query.itemEan,
       itemName: query.itemName,
+      isPublushed: query.isPublushed,
     });
   }, []);
-
-  console.log("query", query);
 
   return (
     <>
@@ -246,87 +253,94 @@ export default function Page() {
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
       </LayoutHeader>
 
-      <Row gutter={[0, 16]}>
-        <Col span={24}>
-          <Form
-            form={form}
-            autoComplete="off"
-            colon={false}
-            disabled={loading.table}
-            onFinish={handleFinish}
-          >
-            <Row gutter={16}>
-              <Col span={6}>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="productnumber"
-                  label="商品ID"
-                >
-                  <Input placeholder="請輸入商品ID" />
-                </Form.Item>
-              </Col>
+      <Flex vertical>
+        <Form
+          form={form}
+          autoComplete="off"
+          labelWrap
+          labelCol={{ flex: "80px" }}
+          colon={false}
+          disabled={loading.table}
+          onFinish={handleFinish}
+        >
+          <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item name="productnumber" label="商城商品編號">
+                <Input placeholder="請輸入商城商品編號" />
+              </Form.Item>
+            </Col>
 
-              <Col span={6}>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="itemEan"
-                  label="條碼"
-                >
-                  <Input placeholder="請輸入條碼" maxLength={13} />
-                </Form.Item>
-              </Col>
+            <Col span={6}>
+              <Form.Item name="itemEan" label="條碼">
+                <Input placeholder="請輸入條碼" maxLength={13} />
+              </Form.Item>
+            </Col>
 
-              <Col span={6}>
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="itemName"
-                  label="品名"
-                >
-                  <Input placeholder="請輸入商品名稱" />
-                </Form.Item>
-              </Col>
+            <Col span={6}>
+              <Form.Item name="itemName" label="品名">
+                <Input placeholder="請輸入商品名稱" />
+              </Form.Item>
+            </Col>
 
-              <Space style={{ marginLeft: "auto" }} size={16}>
-                <Button
-                  type="secondary"
-                  loading={loading.table}
-                  disabled={false}
-                  htmlType="submit"
-                >
-                  查詢
-                </Button>
-
-                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-              </Space>
-            </Row>
-          </Form>
-        </Col>
-
-        <Col span={24}>
-          <Tabs
-            defaultActiveKey="1"
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <Table
+            <Col span={6}>
+              <Form.Item>
+                <Flex gap={16} align="center">
+                  <Button
+                    style={{ marginLeft: "auto" }}
+                    type="secondary"
                     loading={loading.table}
-                    columns={columns}
-                    dataSource={tableInfo.rows}
-                    pageInfo={{
-                      total: tableInfo.total,
-                      page: tableInfo.page,
-                      pageSize: tableInfo.pageSize,
-                    }}
-                    onChange={handleChangeTable}
-                  />
-                ),
-              },
-            ]}
-          />
-        </Col>
-      </Row>
+                    disabled={false}
+                    htmlType="submit"
+                  >
+                    查詢
+                  </Button>
+
+                  <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+                </Flex>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item name="isPublushed" label="上下架狀態">
+                <Select
+                  placeholder="請選擇上下架狀態"
+                  showSearch
+                  allowClear
+                  options={[
+                    { label: "上架", value: true },
+                    { label: "下架", value: false },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+
+        <Tabs
+          defaultActiveKey="1"
+          items={[
+            {
+              label: "全部",
+              key: "1",
+              children: (
+                <Table
+                  loading={loading.table}
+                  columns={columns}
+                  dataSource={tableInfo.rows}
+                  pageInfo={{
+                    total: tableInfo.total,
+                    page: tableInfo.page,
+                    pageSize: tableInfo.pageSize,
+                  }}
+                  onChange={handleChangeTable}
+                />
+              ),
+            },
+          ]}
+        />
+      </Flex>
 
       <ModalPreviewPDP
         type="product"

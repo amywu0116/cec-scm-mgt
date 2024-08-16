@@ -66,7 +66,7 @@ export default function Page() {
 
   const columns = [
     {
-      title: "No",
+      title: "No.",
       dataIndex: "no",
       align: "center",
       render: (text, record, index) => {
@@ -74,8 +74,13 @@ export default function Page() {
       },
     },
     {
-      title: "檔名",
+      title: "圖片類型",
       dataIndex: "imgTypeName",
+      align: "center",
+    },
+    {
+      title: "檔名",
+      dataIndex: "fileName",
       align: "center",
     },
     {
@@ -124,7 +129,7 @@ export default function Page() {
       title: "已綁定之商品",
       dataIndex: "bindedProduct",
       align: "center",
-      width: 500,
+      width: 400,
       render: (text, record, index) => {
         if ([null, undefined].includes(text)) {
           return "-";
