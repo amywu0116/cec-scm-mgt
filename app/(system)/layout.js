@@ -2,7 +2,7 @@
 import { ConfigProvider, Layout } from "antd";
 import zhTW from "antd/locale/zh_TW";
 import "dayjs/locale/zh-tw";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
 import Sider from "./Sider";
@@ -45,20 +45,22 @@ export default function PageLayout(props) {
   }, [updateOptions]);
 
   return (
-    <Layout hasSider>
-      <Sider />
+    <Suspense>
+      <Layout hasSider>
+        <Sider />
 
-      <Layout
-        style={{
-          marginLeft: 280,
-          backgroundColor: "#fff",
-          minHeight: "100vh",
-        }}
-      >
-        <ConfigProvider locale={zhTW}>
-          <Container $headerHeight={headerHeight}>{children}</Container>
-        </ConfigProvider>
+        <Layout
+          style={{
+            marginLeft: 280,
+            backgroundColor: "#fff",
+            minHeight: "100vh",
+          }}
+        >
+          <ConfigProvider locale={zhTW}>
+            <Container $headerHeight={headerHeight}>{children}</Container>
+          </ConfigProvider>
+        </Layout>
       </Layout>
-    </Layout>
+    </Suspense>
   );
 }
