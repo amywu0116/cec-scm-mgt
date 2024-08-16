@@ -141,7 +141,6 @@ export default function Page(props) {
   const packaging = Form.useWatch("packaging", form);
   const backLogisticsName = Form.useWatch("backLogisticsName", form);
   const backShippingCode = Form.useWatch("backShippingCode", form);
-  const taxId = Form.useWatch("taxId", form);
 
   const columns = [
     {
@@ -578,6 +577,14 @@ export default function Page(props) {
                     <Input disabled />
                   </Form.Item>
                 </Col>
+
+                {info.cancelReason && (
+                  <Col span={12}>
+                    <Form.Item name="cancelReason" label="退貨原因">
+                      <Input disabled />
+                    </Form.Item>
+                  </Col>
+                )}
               </Row>
             </Col>
 
