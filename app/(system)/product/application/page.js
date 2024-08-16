@@ -1,6 +1,6 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { App, Col, Form, Image, Row, Space, Upload } from "antd";
+import { App, Col, Form, Image, Row, Space, Tag, Upload } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import {
@@ -189,6 +189,12 @@ export default function Page() {
       title: "審核狀態",
       dataIndex: "applyStatusName",
       align: "center",
+      render: (text) => {
+        if (text === "審核退件") {
+          return <Tag color="red">{text}</Tag>;
+        }
+        return text;
+      },
     },
     {
       title: "預覽",

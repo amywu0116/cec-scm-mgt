@@ -234,7 +234,7 @@ export default function Page() {
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item label="商品分類">
-                    <CategoryLabel style={{ width: 350 }}>
+                    <CategoryLabel style={{ width: 350, lineHeight: "42px" }}>
                       {scmCategoryCode} / {scmCategoryName}
                     </CategoryLabel>
                   </Form.Item>
