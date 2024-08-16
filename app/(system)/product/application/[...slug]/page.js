@@ -193,7 +193,7 @@ export default function Page() {
     )?.categoryName;
 
     const data = {
-      ...form.getFieldsValue(),
+      ...values,
       applyId: isEdit ? applyId : undefined,
       scmCategoryName: scmCategoryName,
       isFood:
@@ -306,7 +306,9 @@ export default function Page() {
             <Button
               type="primary"
               disabled={isEdit && !canEdit}
-              onClick={() => form.submit()}
+              onClick={() => {
+                form.submit();
+              }}
             >
               暫存
             </Button>

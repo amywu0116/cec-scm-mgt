@@ -62,6 +62,50 @@ export default function Page() {
 
   const perpetual = Form.useWatch("perpetual", form);
 
+  const validateWarningPrice = (_, value) => {
+    const priceBefore = Number(info.price);
+    const priceAfter = Number(value);
+    const isGreaterThan = priceAfter > priceBefore + priceBefore * 0.25;
+    const isLessThan = priceAfter < priceBefore - priceBefore * 0.25;
+
+    if (value && (isGreaterThan || isLessThan)) {
+      return Promise.reject(
+        new Error(
+          `原價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
+        )
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateWarningSpecialPrice = (_, value) => {
+    const priceBefore = Number(info.specialPrice);
+    const priceAfter = Number(value);
+    const isGreaterThan = priceAfter > priceBefore + priceBefore * 0.25;
+    const isLessThan = priceAfter < priceBefore - priceBefore * 0.25;
+
+    if (priceBefore && value && (isGreaterThan || isLessThan)) {
+      return Promise.reject(
+        new Error(
+          `原價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
+        )
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateSpecialPrice = (_, value) => {
+    const price = form.getFieldValue("price");
+
+    if (value > price) {
+      return Promise.reject(new Error("促銷價需低於原價"));
+    }
+
+    return Promise.resolve();
+  };
+
   // 詳細內容
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
@@ -99,10 +143,14 @@ export default function Page() {
       });
   };
 
+  // 確認修改
   const handleFinish = (values) => {
     const data = {
-      ...info,
       ...values,
+      price: values.price ? Number(values.price) : undefined,
+      specialPrice: values.specialPrice
+        ? Number(values.specialPrice)
+        : undefined,
     };
 
     setLoading((state) => ({ ...state, page: true }));
@@ -305,13 +353,29 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="price" label="原價">
+                  <Form.Item
+                    name="price"
+                    label="原價"
+                    rules={[
+                      { validator: validateWarningPrice, warningOnly: true },
+                    ]}
+                  >
                     <Input placeholder="請輸入原價" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="specialPrice" label="促銷價">
+                  <Form.Item
+                    name="specialPrice"
+                    label="促銷價"
+                    rules={[
+                      {
+                        validator: validateWarningSpecialPrice,
+                        warningOnly: true,
+                      },
+                      { validator: validateSpecialPrice },
+                    ]}
+                  >
                     <Input placeholder="請輸入促銷價" />
                   </Form.Item>
                 </Col>
