@@ -571,6 +571,14 @@ export default function Page(props) {
                   </Form.Item>
                 </Col>
               </Row>
+
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="shippingFee" label="運費">
+                    <Input disabled />
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
 
             <Col span={24}>
