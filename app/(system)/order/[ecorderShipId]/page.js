@@ -834,7 +834,7 @@ export default function Page(props) {
                           }))
                         }
                       >
-                        設定退貨結果
+                        設定退貨收貨結果
                       </Button>
                     )}
                   </Space>

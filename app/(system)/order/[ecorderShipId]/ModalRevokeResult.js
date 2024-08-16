@@ -45,7 +45,7 @@ export default function ModalRevokeResult(props) {
 
   return (
     <Modal
-      title="設定退貨結果"
+      title="設定退貨收貨結果"
       centered
       closeIcon={false}
       width={800}
