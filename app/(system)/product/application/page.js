@@ -56,6 +56,7 @@ export default function Page() {
     applyDate: parseAsArrayOf({
       parse: (query) => dayjs(query),
     }),
+    productnumber: parseAsString,
   });
 
   const [loading, setLoading] = useState({
@@ -140,9 +141,17 @@ export default function Page() {
       },
     },
     {
-      title: "條碼",
-      dataIndex: "itemEan",
+      title: "商品編號/條碼",
+      dataIndex: "",
       align: "center",
+      render: (text, record) => {
+        return (
+          <>
+            <div>{record.productnumber ?? "-"}</div>
+            <div>{record.itemEan ?? "-"}</div>
+          </>
+        );
+      },
     },
     {
       title: "價格",
@@ -233,6 +242,7 @@ export default function Page() {
       applyStatus: values.applyStatus,
       itemEan: values.itemEan ? values.itemEan : undefined,
       itemName: values.itemName ? values.itemName : undefined,
+      productnumber: values.productnumber ? values.productnumber : undefined,
       offset: (values.page - 1) * values.pageSize,
       max: values.pageSize,
     };
@@ -351,6 +361,7 @@ export default function Page() {
       itemName: query.itemName,
       applyStatus: query.applyStatus,
       applyDate: query.applyDate,
+      productnumber: query.productnumber,
     });
   }, []);
 
@@ -385,14 +396,29 @@ export default function Page() {
           <Form
             form={form}
             autoComplete="off"
+            labelCol={{ flex: "80px" }}
+            labelWrap
             colon={false}
             disabled={loading.table}
             onFinish={handleFinish}
           >
-            <Row>
-              <Col span={12}>
+            <Row gutter={16}>
+              <Col span={6}>
                 <Form.Item name="applyDate" label="日期">
-                  <RangePicker placeholder={["日期起", "日期迄"]} />
+                  <RangePicker
+                    style={{ width: "100%" }}
+                    placeholder={["日期起", "日期迄"]}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={6}>
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="productnumber"
+                  label="商城商品編號"
+                >
+                  <Input placeholder="請輸入商城商品編號" />
                 </Form.Item>
               </Col>
             </Row>

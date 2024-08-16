@@ -109,8 +109,8 @@ export default function Page() {
       render: (text, record) => {
         return (
           <>
-            <div>{record.productnumber}</div>
-            <div>{record.itemEan}</div>
+            <div>{record.productnumber ?? "-"}</div>
+            <div>{record.itemEan ?? "-"}</div>
           </>
         );
       },
@@ -238,8 +238,6 @@ export default function Page() {
     });
   }, []);
 
-  console.log("query", query);
-
   return (
     <>
       <LayoutHeader>
@@ -251,6 +249,8 @@ export default function Page() {
           <Form
             form={form}
             autoComplete="off"
+            labelWrap
+            labelCol={{ flex: "80px" }}
             colon={false}
             disabled={loading.table}
             onFinish={handleFinish}
@@ -260,9 +260,9 @@ export default function Page() {
                 <Form.Item
                   style={{ marginBottom: 0 }}
                   name="productnumber"
-                  label="商品ID"
+                  label="商城商品編號"
                 >
-                  <Input placeholder="請輸入商品ID" />
+                  <Input placeholder="請輸入商城商品編號" />
                 </Form.Item>
               </Col>
 
