@@ -57,9 +57,8 @@ export default function Page() {
     (isAdd && params.slug[1] === "non-food") ||
     (isEdit && form.getFieldValue("isFood") === false);
 
-  const canEdit = ["暫存", "審核退件"].includes(
-    form.getFieldValue("applyStatusName")
-  );
+  const applyStatusName = form.getFieldValue("applyStatusName");
+  const canEdit = ["暫存", "審核退件"].includes(applyStatusName);
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -236,7 +235,6 @@ export default function Page() {
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
         message.success(res.message);
-        router.push(PATH_PRODUCT_APPLICATION);
       })
       .catch((err) => {
         message.error(err.message);
@@ -358,6 +356,19 @@ export default function Page() {
           <Row gutter={[0, 16]}>
             <Col span={24}>
               <Title>分類設定</Title>
+
+              {["審核通過"].includes(applyStatusName) && (
+                <Row gutter={32}>
+                  <Col span={12}>
+                    <Form.Item name="productnumber" label="商城商品編號">
+                      <div style={{ lineHeight: "42px" }}>
+                        {form.getFieldValue("productnumber")}
+                      </div>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
+
               <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item
@@ -441,13 +452,13 @@ export default function Page() {
 
                 <Col span={12}></Col>
 
-                <Col span={8}>
+                <Col span={12}>
                   <Form.Item name="itemEan" label="條碼">
                     <Input placeholder="請輸入條碼" />
                   </Form.Item>
                 </Col>
 
-                <Col span={8}>
+                <Col span={12}>
                   <Form.Item
                     name="itemSpec"
                     label="規格"
@@ -457,7 +468,7 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                <Col span={8}>
+                <Col span={12}>
                   <Form.Item
                     name="isTax"
                     label="應/免稅"
