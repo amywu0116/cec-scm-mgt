@@ -26,7 +26,10 @@ import ModalPreviewPDP from "../../ModalPreviewPDP";
 import ApplyHistoryTable from "./ApplyHistoryTable";
 
 import api from "@/api";
-import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
+import {
+  PATH_PRODUCT_APPLICATION,
+  PATH_PRODUCT_IMAGE_MAINTENANCE,
+} from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const Title = styled.div`
@@ -327,6 +330,18 @@ export default function Page() {
             >
               PDP預覽
             </Button>
+
+            <Link
+              href={{
+                pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
+                query: {
+                  itemName: form.getFieldValue("itemName"),
+                  itemEan: form.getFieldValue("itemEan"),
+                },
+              }}
+            >
+              <Button type="secondary">商品相關圖檔維護</Button>
+            </Link>
           </Space>
         </LayoutHeader>
 
