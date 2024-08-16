@@ -37,8 +37,10 @@ const CategoryLabel = styled.div`
 
 export default function Page() {
   const { message } = App.useApp();
-  const params = useParams();
   const [form] = Form.useForm();
+
+  const params = useParams();
+  const productId = params.productId;
 
   const [loading, setLoading] = useState({
     page: false,
@@ -51,6 +53,7 @@ export default function Page() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [shippingList, setShippingList] = useState([]);
+  const [info, setInfo] = useState({});
 
   const scmCategoryCode = form.getFieldValue("scmCategoryCode");
   const scmCategoryName = form.getFieldValue("scmCategoryName");
@@ -65,11 +68,13 @@ export default function Page() {
     api
       .get(`v1/scm/product/${params.productId}`)
       .then((res) => {
+        console.log("res", res.data);
         const { stockStartdate } = res.data;
         form.setFieldsValue({
           ...res.data,
           stockStartdate: stockStartdate ? dayjs(stockStartdate) : undefined,
         });
+        setInfo({ ...res.data });
       })
       .catch((err) => {
         message.error(err.message);
@@ -95,7 +100,26 @@ export default function Page() {
       });
   };
 
-  const handleFinish = (values) => {};
+  const handleFinish = (values) => {
+    const data = {
+      ...info,
+      ...values,
+    };
+
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .patch(`v1/scm/product/${productId}`, data)
+      .then((res) => {
+        message.success(res.message);
+        setIsEditing(false);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, page: false }));
+      });
+  };
 
   useEffect(() => {
     fetchInfo();
@@ -122,7 +146,7 @@ export default function Page() {
                   取消
                 </Button>
 
-                <Button type="primary" onClick={() => setIsEditing(false)}>
+                <Button type="primary" onClick={() => form.submit()}>
                   確認修改
                 </Button>
               </>
@@ -207,7 +231,7 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemName" label="品牌">
+                  <Form.Item name="brand" label="品牌">
                     <Input />
                   </Form.Item>
                 </Col>
@@ -380,7 +404,7 @@ export default function Page() {
                     {perpetual === false && (
                       <>
                         <Col span={3}>
-                          <Form.Item style={{ width: "90%" }} name="">
+                          <Form.Item style={{ width: "90%" }} name="stock">
                             <Input placeholder="數量" />
                           </Form.Item>
                         </Col>
