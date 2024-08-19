@@ -1,18 +1,20 @@
 "use client";
-import React, { useState, useRef } from "react";
-import styled from "styled-components";
-import { redirect, useRouter } from "next/navigation";
-import { Form, Input, Typography } from "antd";
-import ReCAPTCHA from "react-google-recaptcha";
+import { App, Form, Input, Typography } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 
-import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Title from "../Title";
 
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div``;
 
@@ -28,11 +30,14 @@ const ForgotPasswordLink = styled(Link)`
   text-align: right;
 `;
 
-const Page = () => {
+export default function Page() {
+  const { message } = App.useApp();
   const router = useRouter();
   const [form] = Form.useForm();
 
   const recaptchaRef = useRef();
+
+  const updateUser = useBoundStore((state) => state.updateUser);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -42,7 +47,7 @@ const Page = () => {
 
   // 重置 recaptcha
   const resetRecaptcha = () => {
-    recaptchaRef.current.reset();
+    recaptchaRef.current?.reset();
     setRecaptchaValue("");
   };
 
@@ -57,8 +62,16 @@ const Page = () => {
         token: recaptchaValue,
       })
       .then((res) => {
-        localStorage.setItem("cec-scm-mgt-accessToken", res.data.accessToken);
+        updateUser(res.data);
         router.push("/");
+
+        const lastLoginTime = res.data.lastLoginTime;
+        if (lastLoginTime) {
+          const date = dayjs(lastLoginTime).format("YYYY-MM-DD HH:mm:ss");
+          message.success(`登入成功，上次登入時間: ${date}`);
+        } else {
+          message.success(`登入成功`);
+        }
       })
       .catch((err) => {
         setErrorMsg(err.message);
@@ -78,10 +91,6 @@ const Page = () => {
     );
     setIsSubmitDisabled(!isFormValid);
   };
-
-  // if (localStorage.getItem("cec-scm-mgt-accessToken")) {
-  //   redirect("/");
-  // }
 
   return (
     <Container>
@@ -118,10 +127,6 @@ const Page = () => {
             {
               required: true,
               message: "必填",
-            },
-            {
-              type: "email",
-              message: "錯誤的信箱格式",
             },
           ]}
         >
@@ -176,6 +181,4 @@ const Page = () => {
       </Form>
     </Container>
   );
-};
-
-export default Page;
+}

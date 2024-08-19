@@ -1,8 +1,6 @@
 import { Modal as AntdModal } from "antd";
 import styled from "styled-components";
 
-import Button from "@/components/Button";
-
 const StyledModal = styled(AntdModal)`
   &.ant-modal .ant-modal-content {
     padding: 20px 24px 90px;
@@ -28,29 +26,6 @@ const StyledModal = styled(AntdModal)`
   }
 `;
 
-const Modal = (props) => {
-  const {
-    okText = "",
-    onOk = () => {},
-    okButtonProps = {},
-    cancelText = "",
-    onCancel = () => {},
-    cancelButtonProps = {},
-  } = props;
-
-  return (
-    <StyledModal
-      // footer={[
-      //   <Button key="cancel" {...cancelButtonProps} onClick={onCancel}>
-      //     {cancelText}
-      //   </Button>,
-      //   <Button key="ok" {...okButtonProps} type="primary" onClick={onOk}>
-      //     {okText}
-      //   </Button>,
-      // ]}
-      {...props}
-    />
-  );
-};
-
-export default Modal;
+export default function Modal(props) {
+  return <StyledModal maskClosable={false} {...props} />;
+}

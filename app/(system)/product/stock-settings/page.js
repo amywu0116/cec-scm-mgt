@@ -1,109 +1,76 @@
 "use client";
-import React, { useState } from "react";
-import { Breadcrumb, Tabs } from "antd";
-import styled from "styled-components";
+import { App, Breadcrumb, Col, Form, Radio, Row, Space } from "antd";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
-import DatePicker from "@/components/DatePicker";
+import FunctionBtn from "@/components/Button/FunctionBtn";
+import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
-import FunctionBtn from "@/components/Button/FunctionBtn";
+import Tabs from "@/components/Tabs";
 
+import api from "@/api";
 import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    padding: 12px 48px;
-  }
-
-  .ant-tabs .ant-tabs-tab + .ant-tabs-tab {
-    margin: 0;
-  }
-
-  .ant-tabs .ant-tabs-tab {
-    font-size: 14px;
-    font-weight: 700;
-    color: #7b8093;
-  }
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: #7b8093;
-  flex-shrink: 0;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-`;
 
 const SettingsCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
-  display: flex;
-  gap: 0 16px;
 `;
 
-const Page = () => {
+export default function Page() {
+  const { message } = App.useApp();
+  const [form] = Form.useForm();
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+  const itemName = searchParams.get("itemName");
+  const itemEan = searchParams.get("itemEan");
+
+  const perpetual = Form.useWatch("perpetual", form);
+
+  const [loading, setLoading] = useState({
+    table: false,
+    form: false,
+  });
+
   const [showSettings, setShowSettings] = useState(false);
 
   const columns = [
     {
-      title: "No",
-      dataIndex: "a",
+      title: "No.",
+      dataIndex: "id",
       align: "center",
     },
     {
-      title: "起始日期",
-      dataIndex: "b",
+      title: "日期",
+      dataIndex: "",
       align: "center",
+      render: (text, record) => {
+        if (record.stockStartdate && record.stockEnddate) {
+          return `${record.stockStartdate} ~ ${record.stockEnddate}`;
+        }
+        return "-";
+      },
     },
     {
       title: "庫存",
-      dataIndex: "c",
+      dataIndex: "perpetual",
       align: "center",
+      render: (text, record) => {
+        return text ? "不庫控" : record.stock;
+      },
     },
     {
       title: "已販售量",
-      dataIndex: "d",
+      dataIndex: "",
       align: "center",
       render: () => {
-        return <img width={40} height={40} src="https://fakeimg.pl/40x40/" />;
+        return "-";
       },
     },
     {
@@ -111,106 +78,224 @@ const Page = () => {
       dataIndex: "e",
       align: "center",
       render: (text, record, index) => {
-        return <FunctionBtn>刪除</FunctionBtn>;
+        return (
+          <FunctionBtn
+            loading={loading[`delete_${record.id}`]}
+            onClick={() => handleDelete(record.id)}
+          >
+            刪除
+          </FunctionBtn>
+        );
       },
     },
   ];
 
-  const data = [
-    {
-      a: "1",
-      b: "2024/05/01",
-      c: "3472860001492",
-      d: "30",
-      e: "",
-    },
-    {
-      a: "2",
-      b: "2024/04/23",
-      c: "3472860001492",
-      d: "35",
-      e: "",
-    },
-  ];
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
+
+  const fetchTableInfo = (pagination = { page: 1, pageSize: 10 }) => {
+    const params = {
+      productId,
+      offset: (pagination.page - 1) * pagination.pageSize,
+      max: pagination.pageSize,
+    };
+
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/product/stock`, { params })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }));
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, table: false }));
+      });
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ page, pageSize });
+  };
+
+  const handleDelete = (stockId) => {
+    setLoading((state) => ({ ...state, [`delete_${stockId}`]: true }));
+    api
+      .delete(`v1/scm/product/stock`, {
+        params: { productId, stockId },
+      })
+      .then((res) => {
+        message.success(res.message);
+        fetchTableInfo();
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, [`delete_${stockId}`]: false }));
+      });
+  };
+
+  const handleFinish = (values) => {
+    const data = {
+      perpetual: values.perpetual,
+      stock: values.perpetual ? undefined : values.stock,
+      stockStartdate: values.perpetual
+        ? undefined
+        : values.stockDate[0].format("YYYY-MM-DD"),
+      stockEnddate: values.perpetual
+        ? undefined
+        : values.stockDate[1].format("YYYY-MM-DD"),
+    };
+
+    setLoading((state) => ({ ...state, form: true }));
+    api
+      .post(`v1/scm/product/stock?productId=${productId}`, data)
+      .then((res) => {
+        message.success(res.message);
+        fetchTableInfo();
+        setShowSettings(false);
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setLoading((state) => ({ ...state, form: false }));
+      });
+  };
+
+  useEffect(() => {
+    fetchTableInfo();
+  }, []);
+
+  useEffect(() => {
+    if (!showSettings) {
+      form.resetFields();
+    }
+  }, [showSettings]);
 
   return (
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
           items={[
             {
-              title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
+              title: (
+                <Link href="javascript:;" onClick={() => router.back()}>
+                  商品列表
+                </Link>
+              ),
             },
-            {
-              title: "庫存設定",
-            },
+            { title: "庫存設定" },
           ]}
         />
       </LayoutHeader>
 
-      <Container>
-        <Card>
-          <Row>
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>條碼</ItemLabel>
-              <Input placeholder="請輸入條碼" />
-            </Item>
+      <Row gutter={[0, 16]}>
+        <Col span={24}>
+          <Form colon={false} layout="inline">
+            <Form.Item style={{ flex: 1 }} label="條碼">
+              <Input placeholder="請輸入條碼" disabled value={itemEan} />
+            </Form.Item>
 
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>品名</ItemLabel>
-              <Input placeholder="請輸入商品名稱" />
-            </Item>
+            <Form.Item style={{ flex: 1 }} label="品名">
+              <Input placeholder="請輸入商品名稱" disabled value={itemName} />
+            </Form.Item>
 
-            <ButtonGroup
-              style={{ marginLeft: "auto" }}
-              justifyContent="flex-end"
-            >
+            <Form.Item style={{ margin: 0 }}>
               <Button
-                style={{ width: 220 }}
+                style={{ width: "100%" }}
                 type="primary"
                 disabled={showSettings}
                 onClick={() => setShowSettings(true)}
               >
                 新增庫存設定
               </Button>
-            </ButtonGroup>
-          </Row>
-        </Card>
+            </Form.Item>
+          </Form>
+        </Col>
 
         {showSettings && (
-          <SettingsCard>
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>數量</ItemLabel>
-              <Input placeholder="請輸入數量" />
-            </Item>
-
-            <Item style={{ flex: 1 }}>
-              <ItemLabel>起始日期</ItemLabel>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="請選擇起始日期"
-              />
-            </Item>
-
-            <ButtonGroup>
-              <Button style={{ width: 86 }} type="secondary">
-                確認
-              </Button>
-
-              <Button
-                style={{ width: 86 }}
-                onClick={() => setShowSettings(false)}
+          <Col span={24}>
+            <SettingsCard>
+              <Form
+                form={form}
+                colon={false}
+                layout="inline"
+                requiredMark={false}
+                autoComplete="off"
+                disabled={loading.form}
+                onFinish={handleFinish}
               >
-                取消
-              </Button>
-            </ButtonGroup>
-          </SettingsCard>
+                <Form.Item
+                  style={{ flex: "0 0 250px" }}
+                  name="perpetual"
+                  label="庫存"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <Radio.Group>
+                    <Radio value={true}>不庫控</Radio>
+                    <Radio value={false}>活動庫存</Radio>
+                  </Radio.Group>
+                </Form.Item>
+
+                {perpetual === false && (
+                  <>
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="stock"
+                      label="數量"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
+                      <Input placeholder="請輸入數量" />
+                    </Form.Item>
+
+                    <Form.Item
+                      style={{ flex: 1 }}
+                      name="stockDate"
+                      label="日期"
+                      rules={[{ required: true, message: "必填" }]}
+                    >
+                      <RangePicker
+                        style={{ width: "100%" }}
+                        placeholder={["日期起", "日期迄"]}
+                      />
+                    </Form.Item>
+                  </>
+                )}
+
+                <Form.Item style={{ margin: "0 0 0 auto" }}>
+                  <Space size={16}>
+                    <Button
+                      type="secondary"
+                      htmlType="submit"
+                      disabled={false}
+                      loading={loading.form}
+                    >
+                      確認
+                    </Button>
+
+                    <Button onClick={() => setShowSettings(false)}>取消</Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+            </SettingsCard>
+          </Col>
         )}
 
-        <TableWrapper>
+        <Col span={24}>
           <Tabs
             defaultActiveKey="1"
             items={[
@@ -220,19 +305,23 @@ const Page = () => {
                 children: (
                   <>
                     <Table
+                      loading={loading.table}
                       columns={columns}
-                      dataSource={data}
-                      pagination={false}
+                      dataSource={tableInfo.rows}
+                      pageInfo={{
+                        total: tableInfo.total,
+                        page: tableInfo.page,
+                        pageSize: tableInfo.pageSize,
+                      }}
+                      onChange={handleChangeTable}
                     />
                   </>
                 ),
               },
             ]}
           />
-        </TableWrapper>
-      </Container>
+        </Col>
+      </Row>
     </>
   );
-};
-
-export default Page;
+}

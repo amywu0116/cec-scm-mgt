@@ -43,8 +43,6 @@ const StyledButton = styled(AntdButton)`
   }
 `;
 
-const Button = (props) => {
-  return <StyledButton {...props} />;
-};
-
-export default Button;
+export default function Button(props) {
+  return <StyledButton autoInsertSpace={false} {...props} />;
+}

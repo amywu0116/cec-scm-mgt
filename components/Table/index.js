@@ -6,8 +6,8 @@ const StyledTable = styled(AntdTable)`
   &.ant-table-wrapper .ant-table-tbody > tr > td {
     font-size: 14px;
     font-weight: 400;
-    color: #7b8093;
-    border-bottom: 1px solid #cccccc;
+    color: rgba(89, 89, 89, 1);
+    border-bottom: 1px solid rgba(204, 204, 204, 1);
   }
 
   &.ant-table-wrapper .ant-table-thead > tr > th {
@@ -41,25 +41,42 @@ const PaginationWrapper = styled.div`
   .total {
     font-size: 14px;
     font-weight: 400;
-    color: #7b8093;
+    color: rgba(89, 89, 89, 1);
   }
 `;
 
-const Table = (props) => {
-  const { pagination = true, size = "middle" } = props;
+export default function Table(props) {
+  const {
+    pagination = true,
+    size = "small",
+    loading,
+    onChange,
+    showSizeChanger = true,
+    pageInfo = {},
+  } = props;
 
   return (
     <TableWrapper>
-      <StyledTable size={size} pagination={false} {...props} />
+      <StyledTable
+        size={size}
+        pagination={false}
+        loading={loading}
+        {...props}
+      />
 
       {pagination && (
         <PaginationWrapper>
-          <div className="total">共500筆</div>
-          <Pagination defaultCurrent={1} total={500} />
+          <div className="total">共 {pageInfo.total} 筆</div>
+          <Pagination
+            defaultCurrent={1}
+            total={pageInfo.total}
+            current={pageInfo.page}
+            pageSize={pageInfo.pageSize}
+            showSizeChanger={showSizeChanger}
+            onChange={onChange}
+          />
         </PaginationWrapper>
       )}
     </TableWrapper>
   );
-};
-
-export default Table;
+}

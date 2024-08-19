@@ -1,8 +1,10 @@
 "use client";
-import { Suspense } from "react";
-import styled from "styled-components";
-import { App, Col, Row } from "antd";
+import { useBoundStore } from "@/store";
+import { Col, Row } from "antd";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   width: 100vw;
@@ -29,8 +31,18 @@ const LogoWrapper = styled.div`
   height: 107px;
 `;
 
-const Layout = (props) => {
+export default function Layout(props) {
   const { children } = props;
+  const router = useRouter();
+
+  const user = useBoundStore((state) => state.user);
+
+  // 已經登入的話不能再進入登入頁
+  useEffect(() => {
+    if (user?.token) {
+      router.push("/");
+    }
+  }, []);
 
   return (
     <Suspense>
@@ -51,6 +63,4 @@ const Layout = (props) => {
       </Container>
     </Suspense>
   );
-};
-
-export default Layout;
+}

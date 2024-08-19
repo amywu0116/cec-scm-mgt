@@ -6,12 +6,15 @@ const StyledInput = styled(AntdInput)`
     height: 42px;
     font-size: 14px;
     font-weight: 400;
-    color: #595959;
+  }
+
+  &.ant-input-affix-wrapper {
+    height: 42px;
+    font-size: 14px;
+    font-weight: 400;
   }
 `;
 
-const Input = (props) => {
-  return <StyledInput {...props} />;
-};
-
-export default Input;
+export default function Input(props) {
+  return <StyledInput allowClear {...props} />;
+}

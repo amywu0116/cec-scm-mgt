@@ -15,3 +15,144 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.ant-form-item-label > label,
+.ant-form-item-control .ant-input-affix-wrapper,
+.ant-form-item-control .ant-select-selector,
+.ant-form-item-control .ant-picker,
+.ant-pagination .ant-pagination-item a,
+.ant-pagination .ant-pagination-disabled .ant-pagination-item-link,
+.ant-select-single .ant-select-selector,
+.ant-radio-wrapper,
+.ant-checkbox-wrapper {
+  color: rgba(89, 89, 89, 1) !important;
+}
+
+/* ---------------------- Form ---------------------- */
+
+.ant-form-item-label > label {
+  height: 42px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.ant-form-item .ant-form-item-label > label::after {
+  margin-inline-end: 16px !important;
+}
+
+.ant-form-item-control .ant-input-disabled,
+.ant-form-item-control .ant-select-disabled *,
+.ant-form-item-control .ant-picker-disabled * {
+  color: rgba(89, 89, 89, 0.8) !important;
+}
+
+.ant-form-item-control input::placeholder,
+.ant-form-item-control textarea::placeholder,
+.ant-select-selection-placeholder {
+  color: rgba(89, 89, 89, 0.6) !important;
+}
+
+/* ---------------------- Form ---------------------- */
+
+/* ---------------------- Checkbox ---------------------- */
+
+.ant-checkbox-wrapper {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+.ant-checkbox .ant-checkbox-inner {
+  border: 1px solid rgba(144, 147, 153, 1) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  border-color: rgba(12, 111, 249, 1) !important;
+  background-color: rgba(12, 111, 249, 1) !important;
+}
+
+.ant-checkbox-disabled .ant-checkbox-inner {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(144, 147, 153, 1) !important;
+}
+
+/* ---------------------- Checkbox ---------------------- */
+
+/* ---------------------- Radio ---------------------- */
+
+.ant-radio-wrapper {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+
+  > span {
+    line-height: 42px !important;
+  }
+}
+
+.ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
+  border-color: rgba(12, 111, 249, 1) !important;
+  background-color: rgba(12, 111, 249, 1) !important;
+}
+
+.ant-radio-wrapper .ant-radio-disabled .ant-radio-inner {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(144, 147, 153, 1) !important;
+  cursor: not-allowed !important;
+}
+
+/* ---------------------- Radio ---------------------- */
+
+.toolbar-wrapper {
+  position: fixed;
+  bottom: 32px;
+  inset-inline-start: 50%;
+  padding: 0px 24px;
+  color: #fff;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 100px;
+  transform: translateX(-50%);
+}
+
+.toolbar-wrapper .anticon {
+  padding: 12px;
+  cursor: pointer;
+}
+
+.toolbar-wrapper .anticon[disabled] {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.toolbar-wrapper .anticon:hover {
+  opacity: 0.3;
+}
+
+.ant-modal-root .ant-modal-wrap {
+  z-index: 1100 !important;
+}
+
+.ant-upload-list-item-name {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(123, 128, 147, 1);
+}
+
+.ant-upload-wrapper .ant-upload-list .ant-upload-list-item {
+  margin-top: 0;
+}
+
+.ant-upload-icon {
+  .anticon svg {
+    display: none;
+  }
+}
+
+.ant-tag {
+  border-radius: 8px !important;
+  border: none !important;
+  line-height: 30px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  padding-inline: 8px !important;
+  margin-inline-end: 0 !important;
+}
