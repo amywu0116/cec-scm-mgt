@@ -70,6 +70,11 @@ a {
   background-color: rgba(12, 111, 249, 1) !important;
 }
 
+.ant-checkbox-disabled .ant-checkbox-inner {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(144, 147, 153, 1) !important;
+}
+
 /* ---------------------- Checkbox ---------------------- */
 
 /* ---------------------- Radio ---------------------- */
@@ -83,13 +88,15 @@ a {
   }
 }
 
-.ant-radio-inner {
-  border: 1px solid rgba(144, 147, 153, 1) !important;
-}
-
 .ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
   border-color: rgba(12, 111, 249, 1) !important;
   background-color: rgba(12, 111, 249, 1) !important;
+}
+
+.ant-radio-wrapper .ant-radio-disabled .ant-radio-inner {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(144, 147, 153, 1) !important;
+  cursor: not-allowed !important;
 }
 
 /* ---------------------- Radio ---------------------- */
