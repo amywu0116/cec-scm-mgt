@@ -61,15 +61,6 @@ export default function ModalImportError(props) {
       },
     },
     {
-      title: "供應商商品編號",
-      dataIndex: "vendorProdCode",
-      align: "center",
-      render: (text) => {
-        if ([null, undefined].includes(text)) return "-";
-        return text;
-      },
-    },
-    {
       title: "商品規格",
       dataIndex: "itemSpec",
       align: "center",

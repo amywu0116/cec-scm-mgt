@@ -621,7 +621,7 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item style={{ marginBottom: 0 }} label="規格(一)">
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(一)">
                     <Flex justify="space-between">
                       <Form.Item
                         style={{ display: "inline-block", width: "48%" }}
@@ -629,7 +629,7 @@ export default function Page() {
                       >
                         <Select
                           style={{ width: "100%" }}
-                          placeholder="請輸入規格(一)"
+                          placeholder="請輸入多規類型(一) "
                           options={variationType.map((v) => ({
                             ...v,
                             label: v.name,
@@ -650,7 +650,7 @@ export default function Page() {
                         rules={[{ validator: validateVariationType1Value }]}
                       >
                         <Input
-                          placeholder="請輸入規格(一)內容"
+                          placeholder="請輸入多規類型(一)內容"
                           disabled={!variationType1Code}
                         />
                       </Form.Item>
@@ -659,7 +659,7 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item style={{ marginBottom: 0 }} label="規格(二)">
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(二) ">
                     <Flex justify="space-between">
                       <Form.Item
                         style={{ display: "inline-block", width: "48%" }}
@@ -668,7 +668,7 @@ export default function Page() {
                       >
                         <Select
                           style={{ width: "100%" }}
-                          placeholder="請輸入規格(二)"
+                          placeholder="請輸入多規類型(二) "
                           options={variationType.map((v) => ({
                             ...v,
                             label: v.name,
@@ -689,7 +689,7 @@ export default function Page() {
                         rules={[{ validator: validateVariationType2Value }]}
                       >
                         <Input
-                          placeholder="請輸入規格(二)內容"
+                          placeholder="請輸入多規類型(二)內容"
                           disabled={!variationType2Code}
                         />
                       </Form.Item>
