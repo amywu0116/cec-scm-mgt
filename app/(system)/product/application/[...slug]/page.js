@@ -854,11 +854,23 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item
                     name="approvalId"
-                    label="食品業者登錄字號"
+                    label={
+                      isFood
+                        ? "食品業者登錄字號"
+                        : isNonFood
+                          ? "產品核准字號"
+                          : ""
+                    }
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                      placeholder={
+                        isFood
+                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                          : isNonFood
+                            ? "請輸入產品核准字號"
+                            : ""
+                      }
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
@@ -910,9 +922,9 @@ export default function Page() {
 
                 {isNonFood && (
                   <Col span={12}>
-                    <Form.Item name="energyEfficiency" label="能源效能">
+                    <Form.Item name="energyEfficiency" label="能源效率">
                       <TextArea
-                        placeholder="例如：能源效能登錄編號"
+                        placeholder="例如：能源效率登錄編號"
                         autoSize={{ minRows: 3, maxRows: 3 }}
                       />
                     </Form.Item>
