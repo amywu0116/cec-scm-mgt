@@ -18,6 +18,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
@@ -34,7 +35,6 @@ import ModalTax from "./ModalTax";
 import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
-import { PATH_ORDER_LIST } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
@@ -115,6 +115,7 @@ export default function Page(props) {
   const { params } = props;
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const router = useRouter();
   const ecorderShipId = params.ecorderShipId;
 
   const logisticsOptions = useBoundStore((state) => state.logistics) ?? [];
@@ -472,7 +473,13 @@ export default function Page(props) {
             separator=">"
             items={[
               { title: "訂單" },
-              { title: <Link href={PATH_ORDER_LIST}>訂單管理</Link> },
+              {
+                title: (
+                  <Link href="javascript:;" onClick={() => router.back()}>
+                    訂單管理
+                  </Link>
+                ),
+              },
               { title: "訂單明細" },
             ]}
           />

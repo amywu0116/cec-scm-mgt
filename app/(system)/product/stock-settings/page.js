@@ -1,7 +1,7 @@
 "use client";
 import { App, Breadcrumb, Col, Form, Radio, Row, Space } from "antd";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -24,6 +24,7 @@ const SettingsCard = styled.div`
 export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId");
@@ -190,7 +191,13 @@ export default function Page() {
         <Breadcrumb
           separator=">"
           items={[
-            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
+            {
+              title: (
+                <Link href="javascript:;" onClick={() => router.back()}>
+                  商品列表
+                </Link>
+              ),
+            },
             { title: "庫存設定" },
           ]}
         />

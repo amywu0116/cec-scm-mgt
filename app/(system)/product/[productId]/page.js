@@ -1,8 +1,18 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Radio, Row, Space, Spin } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Form,
+  Radio,
+  Row,
+  Space,
+  Spin,
+  Flex,
+} from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -20,6 +30,7 @@ import {
   PATH_PRODUCT_PRODUCT_LIST,
   PATH_PRODUCT_STOCK_SETTINGS,
 } from "@/constants/paths";
+import { useBoundStore } from "@/store";
 
 const Title = styled.div`
   font-size: 16px;
@@ -38,9 +49,13 @@ const CategoryLabel = styled.div`
 export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const params = useParams();
   const productId = params.productId;
+
+  const options = useBoundStore((state) => state.options);
+  const variationType = options?.variation_type ?? [];
 
   const [loading, setLoading] = useState({
     page: false,
@@ -59,8 +74,12 @@ export default function Page() {
   const scmCategoryName = form.getFieldValue("scmCategoryName");
   const itemName = form.getFieldValue("itemName");
   const itemEan = form.getFieldValue("itemEan");
+  const isFood = form.getFieldValue("isFood") === true;
+  const isNonFood = form.getFieldValue("isFood") === false;
 
   const perpetual = Form.useWatch("perpetual", form);
+  const variationType1Code = Form.useWatch("variationType1Code", form);
+  const variationType2Code = Form.useWatch("variationType2Code", form);
 
   const validateWarningPrice = (_, value) => {
     const priceBefore = Number(info.price);
@@ -103,6 +122,34 @@ export default function Page() {
       return Promise.reject(new Error("促銷價需低於原價"));
     }
 
+    return Promise.resolve();
+  };
+
+  // 驗證 規格(一)內容
+  const validateVariationType1Value = (_, value) => {
+    const variationType1Code = form.getFieldValue("variationType1Code");
+    if (variationType1Code && !value) {
+      return Promise.reject(new Error("必填"));
+    }
+    return Promise.resolve();
+  };
+
+  // 驗證 規格(二)內容
+  const validateVariationType2Value = (_, value) => {
+    const variationType2Code = form.getFieldValue("variationType2Code");
+    if (variationType2Code && !value) {
+      return Promise.reject(new Error("必填"));
+    }
+    return Promise.resolve();
+  };
+
+  // 驗證 規格(二)
+  const validateVariationType2Code = (_, value) => {
+    const variationType1Code = form.getFieldValue("variationType1Code");
+    const variationType2Code = form.getFieldValue("variationType2Code");
+    if (variationType1Code && variationType1Code === variationType2Code) {
+      return Promise.reject(new Error("不能與規格(一)相同"));
+    }
     return Promise.resolve();
   };
 
@@ -181,7 +228,13 @@ export default function Page() {
           <Breadcrumb
             separator=">"
             items={[
-              { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
+              {
+                title: (
+                  <Link href="javascript:;" onClick={() => router.back()}>
+                    商品列表
+                  </Link>
+                ),
+              },
               { title: "商品資料" },
             ]}
           />
@@ -301,7 +354,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemNameEn" label="英文品名">
+                  <Form.Item
+                    name="itemNameEn"
+                    label="英文品名"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入英文品名" />
                   </Form.Item>
                 </Col>
@@ -386,31 +443,51 @@ export default function Page() {
               <Title>容量和重量</Title>
               <Row gutter={32}>
                 <Col span={8}>
-                  <Form.Item name="productHeight" label="商品高度(cm)">
+                  <Form.Item
+                    name="productHeight"
+                    label="商品高度(cm)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入商品高度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="productWidth" label="商品寬度(cm)">
+                  <Form.Item
+                    name="productWidth"
+                    label="商品寬度(cm)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入商品寬度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="productLength" label="商品長度(cm)">
+                  <Form.Item
+                    name="productLength"
+                    label="商品長度(cm)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入商品長度(cm)" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="grossWeight" label="重量-毛重">
+                  <Form.Item
+                    name="grossWeight"
+                    label="重量-毛重"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input suffix="克(g)" placeholder="請輸入重量-毛重" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="netWeight" label="重量-淨重">
+                  <Form.Item
+                    name="netWeight"
+                    label="重量-淨重"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input suffix="克(g)" placeholder="請輸入重量-淨重" />
                   </Form.Item>
                 </Col>
@@ -439,8 +516,89 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemStoreway" label="保存方式(文字)">
+                  <Form.Item
+                    name="itemStoreway"
+                    label="保存方式(文字)"
+                    rules={[{ required: isFood, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入保存方式(文字)" />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(一)">
+                    <Flex justify="space-between">
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType1Code"
+                      >
+                        <Select
+                          style={{ width: "100%" }}
+                          placeholder="請輸入多規類型(一) "
+                          options={variationType.map((v) => ({
+                            ...v,
+                            label: v.name,
+                            value: v.value,
+                          }))}
+                          onChange={() => {
+                            form.setFieldValue(
+                              "variationType1Value",
+                              undefined
+                            );
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType1Value"
+                        rules={[{ validator: validateVariationType1Value }]}
+                      >
+                        <Input
+                          placeholder="請輸入多規類型(一)內容"
+                          disabled={!isEditing || !variationType1Code}
+                        />
+                      </Form.Item>
+                    </Flex>
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(二) ">
+                    <Flex justify="space-between">
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType2Code"
+                        rules={[{ validator: validateVariationType2Code }]}
+                      >
+                        <Select
+                          style={{ width: "100%" }}
+                          placeholder="請輸入多規類型(二) "
+                          options={variationType.map((v) => ({
+                            ...v,
+                            label: v.name,
+                            value: v.value,
+                          }))}
+                          onChange={() => {
+                            form.setFieldValue(
+                              "variationType2Value",
+                              undefined
+                            );
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: "inline-block", width: "48%" }}
+                        name="variationType2Value"
+                        rules={[{ validator: validateVariationType2Value }]}
+                      >
+                        <Input
+                          placeholder="請輸入多規類型(二)內容"
+                          disabled={!isEditing || !variationType2Code}
+                        />
+                      </Form.Item>
+                    </Flex>
                   </Form.Item>
                 </Col>
 
@@ -595,11 +753,23 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item
                     name="approvalId"
-                    label="產品核准字號"
+                    label={
+                      isFood
+                        ? "食品業者登錄字號"
+                        : isNonFood
+                          ? "產品核准字號"
+                          : ""
+                    }
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder="請輸入產品核准字號"
+                      placeholder={
+                        isFood
+                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                          : isNonFood
+                            ? "請輸入產品核准字號"
+                            : ""
+                      }
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>

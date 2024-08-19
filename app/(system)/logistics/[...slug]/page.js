@@ -128,7 +128,13 @@ export default function Page(props) {
         <Breadcrumb
           separator=">"
           items={[
-            { title: <Link href={PATH_LOGISTICS}>貨運公司維護</Link> },
+            {
+              title: (
+                <Link href="javascript:;" onClick={() => router.back()}>
+                  貨運公司維護
+                </Link>
+              ),
+            },
             { title: isAdd ? "新增" : isEdit ? "編輯" : "" },
           ]}
         />

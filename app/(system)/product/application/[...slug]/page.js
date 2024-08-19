@@ -286,7 +286,11 @@ export default function Page() {
             separator=">"
             items={[
               {
-                title: <Link href={PATH_PRODUCT_APPLICATION}>提品申請</Link>,
+                title: (
+                  <Link href="javascript:;" onClick={() => router.back()}>
+                    提品申請
+                  </Link>
+                ),
               },
               {
                 title: isEdit
@@ -299,9 +303,7 @@ export default function Page() {
           />
 
           <Space style={{ marginLeft: "auto" }} size={16}>
-            <Link href={PATH_PRODUCT_APPLICATION}>
-              <Button>關閉</Button>
-            </Link>
+            <Button onClick={() => router.back()}>關閉</Button>
 
             <Button
               type="primary"
@@ -621,7 +623,7 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item style={{ marginBottom: 0 }} label="規格(一)">
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(一)">
                     <Flex justify="space-between">
                       <Form.Item
                         style={{ display: "inline-block", width: "48%" }}
@@ -629,7 +631,7 @@ export default function Page() {
                       >
                         <Select
                           style={{ width: "100%" }}
-                          placeholder="請輸入規格(一)"
+                          placeholder="請輸入多規類型(一) "
                           options={variationType.map((v) => ({
                             ...v,
                             label: v.name,
@@ -650,7 +652,7 @@ export default function Page() {
                         rules={[{ validator: validateVariationType1Value }]}
                       >
                         <Input
-                          placeholder="請輸入規格(一)內容"
+                          placeholder="請輸入多規類型(一)內容"
                           disabled={!variationType1Code}
                         />
                       </Form.Item>
@@ -659,7 +661,7 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item style={{ marginBottom: 0 }} label="規格(二)">
+                  <Form.Item style={{ marginBottom: 0 }} label="多規類型(二) ">
                     <Flex justify="space-between">
                       <Form.Item
                         style={{ display: "inline-block", width: "48%" }}
@@ -668,7 +670,7 @@ export default function Page() {
                       >
                         <Select
                           style={{ width: "100%" }}
-                          placeholder="請輸入規格(二)"
+                          placeholder="請輸入多規類型(二) "
                           options={variationType.map((v) => ({
                             ...v,
                             label: v.name,
@@ -689,7 +691,7 @@ export default function Page() {
                         rules={[{ validator: validateVariationType2Value }]}
                       >
                         <Input
-                          placeholder="請輸入規格(二)內容"
+                          placeholder="請輸入多規類型(二)內容"
                           disabled={!variationType2Code}
                         />
                       </Form.Item>
@@ -854,11 +856,23 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item
                     name="approvalId"
-                    label="食品業者登錄字號"
+                    label={
+                      isFood
+                        ? "食品業者登錄字號"
+                        : isNonFood
+                          ? "產品核准字號"
+                          : ""
+                    }
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                      placeholder={
+                        isFood
+                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                          : isNonFood
+                            ? "請輸入產品核准字號"
+                            : ""
+                      }
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
@@ -910,9 +924,9 @@ export default function Page() {
 
                 {isNonFood && (
                   <Col span={12}>
-                    <Form.Item name="energyEfficiency" label="能源效能">
+                    <Form.Item name="energyEfficiency" label="能源效率">
                       <TextArea
-                        placeholder="例如：能源效能登錄編號"
+                        placeholder="例如：能源效率登錄編號"
                         autoSize={{ minRows: 3, maxRows: 3 }}
                       />
                     </Form.Item>
