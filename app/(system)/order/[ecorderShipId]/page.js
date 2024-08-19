@@ -28,6 +28,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import TextArea from "@/components/TextArea";
+
 import ModalAddress from "./ModalAddress";
 import ModalRevokeExamine from "./ModalRevokeExamine";
 import ModalRevokeResult from "./ModalRevokeResult";
@@ -35,7 +36,6 @@ import ModalTax from "./ModalTax";
 import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
-import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
@@ -118,8 +118,6 @@ export default function Page(props) {
   const router = useRouter();
   const ecorderShipId = params.ecorderShipId;
 
-  const logisticsOptions = useBoundStore((state) => state.logistics) ?? [];
-
   const [loading, setLoading] = useState({
     page: true,
     ship: false,
@@ -145,6 +143,9 @@ export default function Page(props) {
   const [info, setInfo] = useState({});
   const actionStatus = info.actionStatus ?? {};
   const product = info.product ?? [];
+
+  const [options, setOptions] = useState({});
+  const logisticsOptions = options.logistics ?? [];
 
   const [productTableInfo, setProductTableInfo] = useState({
     rows: [],
@@ -347,12 +348,8 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, ship: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, ship: false })));
   };
 
   // 異常
@@ -364,12 +361,8 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .then(() => {
-        setLoading((state) => ({ ...state, unusual: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .then(() => setLoading((state) => ({ ...state, unusual: false })));
   };
 
   // 已送達
@@ -381,12 +374,8 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .then(() => {
-        setLoading((state) => ({ ...state, arrived: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .then(() => setLoading((state) => ({ ...state, arrived: false })));
   };
 
   // 拒收
@@ -398,12 +387,8 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .then(() => {
-        setLoading((state) => ({ ...state, reject: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .then(() => setLoading((state) => ({ ...state, reject: false })));
   };
 
   // 訂單取消
@@ -419,12 +404,8 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .then(() => {
-        setLoading((state) => ({ ...state, cancel: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .then(() => setLoading((state) => ({ ...state, cancel: false })));
   };
 
   // 退貨收回
@@ -445,16 +426,22 @@ export default function Page(props) {
         message.success(res.message);
         fetchInfo();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, revoke: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, revoke: false })));
+  };
+
+  // 確保貨運公司下拉選單是最新狀態
+  const fetchOptions = () => {
+    api
+      .get("v1/system/option")
+      .then((res) => setOptions(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => {});
   };
 
   useEffect(() => {
     fetchInfo();
+    fetchOptions();
   }, []);
 
   // "退貨申請" 狀態下預設收合 "顧客配送信息" 和 "出貨設定" 區塊
