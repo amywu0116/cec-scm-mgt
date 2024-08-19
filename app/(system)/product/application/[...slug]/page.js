@@ -286,7 +286,11 @@ export default function Page() {
             separator=">"
             items={[
               {
-                title: <Link href={PATH_PRODUCT_APPLICATION}>提品申請</Link>,
+                title: (
+                  <Link href="javascript:;" onClick={() => router.back()}>
+                    提品申請
+                  </Link>
+                ),
               },
               {
                 title: isEdit
@@ -299,9 +303,7 @@ export default function Page() {
           />
 
           <Space style={{ marginLeft: "auto" }} size={16}>
-            <Link href={PATH_PRODUCT_APPLICATION}>
-              <Button>關閉</Button>
-            </Link>
+            <Button onClick={() => router.back()}>關閉</Button>
 
             <Button
               type="primary"
