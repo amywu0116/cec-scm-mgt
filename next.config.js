@@ -1,3 +1,16 @@
+switch (process.env.PROD) {
+  case "uat":
+    require("dotenv").config({
+      path: `.env.uat`,
+    });
+    break;
+  case "prod":
+    require("dotenv").config({
+      path: `.env.prod`,
+    });
+    break;
+}
+
 module.exports = {
   reactStrictMode: false,
   compiler: {
