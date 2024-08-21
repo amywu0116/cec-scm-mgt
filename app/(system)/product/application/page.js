@@ -132,12 +132,24 @@ export default function Page() {
       dataIndex: "",
       align: "center",
       render: (text, record) => {
+        let variationText = "";
         const list = [
           record.variationType1Value,
           record.variationType2Value,
         ].filter(Boolean);
-        if (list.length === 0) return "-";
-        return list.join(" / ");
+
+        if (list.length === 0) {
+          variationText = "-";
+        } else {
+          variationText = list.join(" / ");
+        }
+
+        return (
+          <div>
+            <div>{record.itemSpec ?? "-"}</div>
+            <div>{variationText}</div>
+          </div>
+        );
       },
     },
     {
