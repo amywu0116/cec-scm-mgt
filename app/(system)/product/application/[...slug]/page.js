@@ -385,13 +385,11 @@ export default function Page() {
                       placeholder="請選擇分車類型"
                       showSearch
                       allowClear
-                      options={
-                        shippingList?.map((opt) => ({
-                          ...opt,
-                          label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
-                          value: opt.cartType,
-                        })) ?? []
-                      }
+                      options={shippingList?.map((opt) => ({
+                        ...opt,
+                        label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
+                        value: opt.cartType,
+                      }))}
                     />
                   </Form.Item>
                 </Col>
@@ -401,11 +399,11 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item
                     name="scmCategoryCode"
-                    label="分類"
+                    label="商品分類"
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <Select
-                      placeholder="選擇分類"
+                      placeholder="選擇商品分類"
                       showSearch
                       allowClear
                       options={categoryList.map((c) => {
@@ -424,7 +422,9 @@ export default function Page() {
                     <Input placeholder="請輸入品牌" />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item
                     name="itemName"
@@ -436,15 +436,13 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item
-                    name="itemNameEn"
-                    label="英文品名"
-                    rules={[{ required: true, message: "必填" }]}
-                  >
+                  <Form.Item name="itemNameEn" label="英文品名">
                     <Input placeholder="請輸入英文品名" />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item
                     name="itemCountry"
@@ -454,26 +452,26 @@ export default function Page() {
                     <Input placeholder="請輸入生產國家" />
                   </Form.Item>
                 </Col>
+              </Row>
 
-                <Col span={12}></Col>
-
-                <Col span={12}>
+              <Row gutter={32}>
+                <Col span={8}>
                   <Form.Item name="itemEan" label="條碼">
                     <Input placeholder="請輸入條碼" />
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                <Col span={8}>
                   <Form.Item
                     name="itemSpec"
-                    label="規格"
+                    label="商品規格"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <Input placeholder="請輸入規格" />
+                    <Input placeholder="請輸入商品規格" />
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                <Col span={8}>
                   <Form.Item
                     name="isTax"
                     label="應/免稅"
@@ -490,38 +488,22 @@ export default function Page() {
                     />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item
                     name="price"
                     label="原價"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <Input
-                      placeholder="請輸入原價"
-                      value={form.getFieldValue("price")}
-                      onChange={(e) => {
-                        const value = removeLeadingZero(e.target.value);
-                        if (/^\d*$/.test(value)) {
-                          form.setFieldValue("price", value);
-                        }
-                      }}
-                    />
+                    <Input placeholder="請輸入原價" />
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
                   <Form.Item name="specialPrice" label="促銷價">
-                    <Input
-                      placeholder="請輸入促銷價"
-                      value={form.getFieldValue("specialPrice")}
-                      onChange={(e) => {
-                        const value = removeLeadingZero(e.target.value);
-                        if (/^\d*$/.test(value)) {
-                          form.setFieldValue("specialPrice", value);
-                        }
-                      }}
-                    />
+                    <Input placeholder="請輸入促銷價" />
                   </Form.Item>
                 </Col>
               </Row>
@@ -529,6 +511,7 @@ export default function Page() {
 
             <Col span={24}>
               <Title>容量和重量</Title>
+
               <Row gutter={32}>
                 <Col span={8}>
                   <Form.Item
@@ -559,7 +542,9 @@ export default function Page() {
                     <Input placeholder="請輸入商品長度(cm)" />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={8}>
                   <Form.Item
                     name="grossWeight"
@@ -584,8 +569,9 @@ export default function Page() {
 
             <Col span={24}>
               <Title>其他資訊</Title>
+
               <Row gutter={32}>
-                <Col span={12}>
+                <Col span={8}>
                   <Form.Item
                     name="expDateValue"
                     label="保存日期"
@@ -595,7 +581,7 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                <Col span={8}>
                   <Form.Item
                     name="expDateUnit"
                     label="保存日期單位"
@@ -605,6 +591,18 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
+                <Col span={8}>
+                  <Form.Item
+                    name="itemStoreway"
+                    label="保存方式"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Input placeholder="請輸入保存方式" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={32}>
                 {isNonFood && (
                   <Col span={12}>
                     <Form.Item name="powerSpec" label="電源規格">
@@ -612,17 +610,9 @@ export default function Page() {
                     </Form.Item>
                   </Col>
                 )}
+              </Row>
 
-                <Col span={12}>
-                  <Form.Item
-                    name="itemStoreway"
-                    label="保存方式(文字)"
-                    rules={[{ required: isFood, message: "必填" }]}
-                  >
-                    <Input placeholder="請輸入保存方式" />
-                  </Form.Item>
-                </Col>
-
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item style={{ marginBottom: 0 }} label="多規類型(一)">
                     <Flex justify="space-between">
@@ -699,17 +689,19 @@ export default function Page() {
                     </Flex>
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={24}>
                   <Form.Item
-                    style={{ display: "inline-block", width: 330 }}
+                    style={{ display: "inline-block", width: 250 }}
                     name="perpetual"
-                    label="庫存"
+                    label="是否庫控"
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <Radio.Group>
-                      <Radio value={true}>不庫控</Radio>
-                      <Radio value={false}>活動庫存</Radio>
+                      <Radio value={true}>否</Radio>
+                      <Radio value={false}>是</Radio>
                     </Radio.Group>
                   </Form.Item>
 
@@ -720,23 +712,26 @@ export default function Page() {
                         name="stock"
                         rules={[{ required: true, message: "必填" }]}
                       >
-                        <Input placeholder="數量" />
+                        <Input placeholder="活動庫存" />
                       </Form.Item>
 
                       <Form.Item
-                        style={{ display: "inline-block", width: 260 }}
+                        style={{ display: "inline-block", width: 350 }}
                         name="stockDate"
                         rules={[{ required: true, message: "必填" }]}
                       >
                         <RangePicker
-                          placeholder={["日期起", "日期迄"]}
+                          style={{ width: "100%" }}
+                          placeholder={["活動庫存開始日期", "活動庫存結束日期"]}
                           disabledDate={disabledStockDate}
                         />
                       </Form.Item>
                     </Space>
                   )}
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item name="itemShortdescription" label="商品特色說明">
                     <div style={{ lineHeight: "42px" }}>
@@ -748,16 +743,18 @@ export default function Page() {
                 <Col span={12}>
                   <Form.Item
                     name="itemDetail"
-                    label="商品完整說明(文字)"
+                    label="商品完整說明"
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder="請輸入商品完整說明(文字)"
+                      placeholder="請輸入商品完整說明"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 {isFood && (
                   <Col span={8}>
                     <Form.Item
@@ -774,10 +771,10 @@ export default function Page() {
                   <Col span={8}>
                     <Form.Item
                       name="manufacturerPhone"
-                      label="電話"
+                      label="國內負責廠商電話"
                       rules={[{ required: true, message: "必填" }]}
                     >
-                      <Input placeholder="請輸入電話" />
+                      <Input placeholder="請輸入國內負責廠商電話" />
                     </Form.Item>
                   </Col>
                 )}
@@ -786,14 +783,16 @@ export default function Page() {
                   <Col span={8}>
                     <Form.Item
                       name="manufacturerAddress"
-                      label="地址"
+                      label="國內負責廠商地址"
                       rules={[{ required: true, message: "必填" }]}
                     >
-                      <Input placeholder="請輸入地址" />
+                      <Input placeholder="請輸入國內負責廠商地址" />
                     </Form.Item>
                   </Col>
                 )}
+              </Row>
 
+              <Row gutter={32}>
                 {isFood && (
                   <Col span={12}>
                     <Form.Item name="veggieType" label="素食種類">
@@ -814,17 +813,19 @@ export default function Page() {
                   <Col span={12}>
                     <Form.Item
                       name="ingredients"
-                      label="產品成份及食品添加物(文字)"
+                      label="產品成份及食品添加物"
                       rules={[{ required: true, message: "必填" }]}
                     >
                       <TextArea
-                        placeholder="請輸入產品成份及食品添加物(文字)"
+                        placeholder="請輸入產品成份及食品添加物"
                         autoSize={{ minRows: 3, maxRows: 3 }}
                       />
                     </Form.Item>
                   </Col>
                 )}
+              </Row>
 
+              <Row gutter={32}>
                 {isFood && (
                   <Col span={12}>
                     <Form.Item
@@ -852,7 +853,9 @@ export default function Page() {
                     />
                   </Form.Item>
                 </Col>
+              </Row>
 
+              <Row gutter={32}>
                 <Col span={12}>
                   <Form.Item
                     name="approvalId"
@@ -874,20 +877,22 @@ export default function Page() {
 
                 {isNonFood && (
                   <Col span={12}>
-                    <Form.Item name="warrantyScope" label="保固範圍(文字)">
+                    <Form.Item name="warrantyScope" label="保固範圍">
                       <TextArea
-                        placeholder="請輸入保固範圍(文字)"
+                        placeholder="請輸入保固範圍"
                         autoSize={{ minRows: 3, maxRows: 3 }}
                       />
                     </Form.Item>
                   </Col>
                 )}
+              </Row>
 
+              <Row gutter={32}>
                 {isNonFood && (
                   <Col span={12}>
-                    <Form.Item name="warrantyPeriod" label="保固期間(文字)">
+                    <Form.Item name="warrantyPeriod" label="保固期間">
                       <TextArea
-                        placeholder="請輸入保固期間(文字)"
+                        placeholder="請輸入保固期間"
                         autoSize={{ minRows: 3, maxRows: 3 }}
                       />
                     </Form.Item>
@@ -904,7 +909,9 @@ export default function Page() {
                     </Form.Item>
                   </Col>
                 )}
+              </Row>
 
+              <Row gutter={32}>
                 {isNonFood && (
                   <Col span={12}>
                     <Form.Item name="certMark" label="標章">
