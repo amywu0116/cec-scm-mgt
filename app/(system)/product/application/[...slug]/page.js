@@ -308,9 +308,7 @@ export default function Page() {
             <Button
               type="primary"
               disabled={isEdit && !canEdit}
-              onClick={() => {
-                form.submit();
-              }}
+              onClick={() => form.submit()}
             >
               暫存
             </Button>
@@ -333,19 +331,22 @@ export default function Page() {
               PDP預覽
             </Button>
 
-            {isEdit && (
-              <Link
-                href={{
-                  pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
-                  query: {
-                    itemName: form.getFieldValue("itemName"),
-                    itemEan: form.getFieldValue("itemEan"),
-                  },
-                }}
+            <Link
+              href={{
+                pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
+                query: {
+                  itemName: form.getFieldValue("itemName"),
+                  itemEan: form.getFieldValue("itemEan"),
+                },
+              }}
+            >
+              <Button
+                type="secondary"
+                disabled={!isEdit || ["審核通過"].includes(applyStatusName)}
               >
-                <Button type="secondary">商品相關圖檔維護</Button>
-              </Link>
-            )}
+                商品相關圖檔維護
+              </Button>
+            </Link>
           </Space>
         </LayoutHeader>
 

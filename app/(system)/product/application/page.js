@@ -241,7 +241,12 @@ export default function Page() {
               },
             }}
           >
-            <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>
+            <FunctionBtn
+              color="green"
+              disabled={["審核通過"].includes(record.applyStatusName)}
+            >
+              商品相關圖檔維護
+            </FunctionBtn>
           </Link>
         );
       },
