@@ -868,13 +868,7 @@ export default function Page() {
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder={
-                        isFood
-                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
-                          : isNonFood
-                            ? "請輸入產品核准字號"
-                            : ""
-                      }
+                      placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
