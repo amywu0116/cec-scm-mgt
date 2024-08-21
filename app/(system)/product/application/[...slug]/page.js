@@ -86,7 +86,7 @@ export default function Page() {
     return current && current <= dayjs().endOf("day");
   };
 
-  // 驗證 規格(一)內容
+  // 驗證 多規類型(一)內容
   const validateVariationType1Value = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     if (variationType1Code && !value) {
@@ -95,7 +95,7 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(二)內容
+  // 驗證 多規類型(二)內容
   const validateVariationType2Value = (_, value) => {
     const variationType2Code = form.getFieldValue("variationType2Code");
     if (variationType2Code && !value) {
@@ -104,12 +104,12 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(二)
+  // 驗證 多規類型(二)
   const validateVariationType2Code = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     const variationType2Code = form.getFieldValue("variationType2Code");
     if (variationType1Code && variationType1Code === variationType2Code) {
-      return Promise.reject(new Error("不能與規格(一)相同"));
+      return Promise.reject(new Error("不能與多規類型(一)相同"));
     }
     return Promise.resolve();
   };
@@ -308,9 +308,7 @@ export default function Page() {
             <Button
               type="primary"
               disabled={isEdit && !canEdit}
-              onClick={() => {
-                form.submit();
-              }}
+              onClick={() => form.submit()}
             >
               暫存
             </Button>
@@ -342,7 +340,12 @@ export default function Page() {
                 },
               }}
             >
-              <Button type="secondary">商品相關圖檔維護</Button>
+              <Button
+                type="secondary"
+                disabled={!isEdit || ["審核通過"].includes(applyStatusName)}
+              >
+                商品相關圖檔維護
+              </Button>
             </Link>
           </Space>
         </LayoutHeader>
@@ -361,17 +364,15 @@ export default function Page() {
             <Col span={24}>
               <Title>分類設定</Title>
 
-              {["審核通過"].includes(applyStatusName) && (
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item name="productnumber" label="商城商品編號">
-                      <div style={{ lineHeight: "42px" }}>
-                        {form.getFieldValue("productnumber")}
-                      </div>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              )}
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="productnumber" label="商城商品編號">
+                    <div style={{ lineHeight: "42px" }}>
+                      {form.getFieldValue("productnumber") ?? "-"}
+                    </div>
+                  </Form.Item>
+                </Col>
+              </Row>
 
               <Row gutter={32}>
                 <Col span={12}>
@@ -738,10 +739,9 @@ export default function Page() {
 
                 <Col span={12}>
                   <Form.Item name="itemShortdescription" label="商品特色說明">
-                    <TextArea
-                      placeholder="請輸入商品特色說明"
-                      autoSize={{ minRows: 3, maxRows: 3 }}
-                    />
+                    <div style={{ lineHeight: "42px" }}>
+                      商品特色說明圖請至「圖片維護上傳」
+                    </div>
                   </Form.Item>
                 </Col>
 
@@ -866,13 +866,7 @@ export default function Page() {
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder={
-                        isFood
-                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
-                          : isNonFood
-                            ? "請輸入產品核准字號"
-                            : ""
-                      }
+                      placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>

@@ -3,12 +3,12 @@ import {
   App,
   Breadcrumb,
   Col,
+  Flex,
   Form,
   Radio,
   Row,
   Space,
   Spin,
-  Flex,
 } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -22,12 +22,13 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
+
 import ModalPreviewPDP from "../ModalPreviewPDP";
+import TableChange from "./TableChange";
 
 import api from "@/api";
 import {
   PATH_PRODUCT_IMAGE_MAINTENANCE,
-  PATH_PRODUCT_PRODUCT_LIST,
   PATH_PRODUCT_STOCK_SETTINGS,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
@@ -76,6 +77,7 @@ export default function Page() {
   const itemEan = form.getFieldValue("itemEan");
   const isFood = form.getFieldValue("isFood") === true;
   const isNonFood = form.getFieldValue("isFood") === false;
+  const changList = form.getFieldValue("changeList");
 
   const perpetual = Form.useWatch("perpetual", form);
   const variationType1Code = Form.useWatch("variationType1Code", form);
@@ -125,7 +127,7 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(一)內容
+  // 驗證 多規類型(一)內容
   const validateVariationType1Value = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     if (variationType1Code && !value) {
@@ -134,7 +136,7 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(二)內容
+  // 驗證 多規類型(二)內容
   const validateVariationType2Value = (_, value) => {
     const variationType2Code = form.getFieldValue("variationType2Code");
     if (variationType2Code && !value) {
@@ -143,12 +145,12 @@ export default function Page() {
     return Promise.resolve();
   };
 
-  // 驗證 規格(二)
+  // 驗證 多規類型(二)
   const validateVariationType2Code = (_, value) => {
     const variationType1Code = form.getFieldValue("variationType1Code");
     const variationType2Code = form.getFieldValue("variationType2Code");
     if (variationType1Code && variationType1Code === variationType2Code) {
-      return Promise.reject(new Error("不能與規格(一)相同"));
+      return Promise.reject(new Error("不能與多規類型(一)相同"));
     }
     return Promise.resolve();
   };
@@ -206,6 +208,7 @@ export default function Page() {
       .then((res) => {
         message.success(res.message);
         setIsEditing(false);
+        fetchInfo();
       })
       .catch((err) => {
         message.error(err.message);
@@ -317,7 +320,21 @@ export default function Page() {
               <Title>基本設定</Title>
               <Row gutter={32}>
                 <Col span={12}>
-                  <Form.Item name="cartType" label="分車類型">
+                  <Form.Item name="productnumber" label="商城商品編號">
+                    <div style={{ lineHeight: "42px" }}>
+                      {form.getFieldValue("productnumber") ?? "-"}
+                    </div>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item
+                    name="cartType"
+                    label="分車類型"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Select
                       placeholder="請選擇分車類型"
                       showSearch
@@ -348,7 +365,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemName" label="中文品名">
+                  <Form.Item
+                    name="itemName"
+                    label="中文品名"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入中文品名" />
                   </Form.Item>
                 </Col>
@@ -364,7 +385,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemCountry" label="生產國家">
+                  <Form.Item
+                    name="itemCountry"
+                    label="生產國家"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入生產國家" />
                   </Form.Item>
                 </Col>
@@ -390,13 +415,21 @@ export default function Page() {
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="itemSpec" label="規格">
+                  <Form.Item
+                    name="itemSpec"
+                    label="規格"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入規格" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="isTax" label="應/免稅">
+                  <Form.Item
+                    name="isTax"
+                    label="應/免稅"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Select
                       placeholder="請輸入應/免稅"
                       showSearch
@@ -414,7 +447,11 @@ export default function Page() {
                     name="price"
                     label="原價"
                     rules={[
-                      { validator: validateWarningPrice, warningOnly: true },
+                      { required: true, message: "必填" },
+                      {
+                        validator: validateWarningPrice,
+                        warningOnly: true,
+                      },
                     ]}
                   >
                     <Input placeholder="請輸入原價" />
@@ -498,7 +535,11 @@ export default function Page() {
               <Title>其他資訊</Title>
               <Row gutter={32}>
                 <Col span={12}>
-                  <Form.Item name="expDateValue" label="保存日期">
+                  <Form.Item
+                    name="expDateValue"
+                    label="保存日期"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入保存日期" />
                   </Form.Item>
                 </Col>
@@ -635,7 +676,11 @@ export default function Page() {
                 <Col span={24}>
                   <Row>
                     <Col span={6}>
-                      <Form.Item name="perpetual" label="庫存">
+                      <Form.Item
+                        name="perpetual"
+                        label="庫存"
+                        rules={[{ required: true, message: "必填" }]}
+                      >
                         <Radio.Group
                           options={[
                             { label: "不庫控", value: true },
@@ -665,15 +710,18 @@ export default function Page() {
 
                 <Col span={12}>
                   <Form.Item name="itemShortdescription" label="商品特色說明">
-                    <TextArea
-                      placeholder="請輸入商品特色說明"
-                      autoSize={{ minRows: 3, maxRows: 3 }}
-                    />
+                    <div style={{ lineHeight: "42px" }}>
+                      商品特色說明圖請至「圖片維護上傳」
+                    </div>
                   </Form.Item>
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemDetail" label="商品完整說明(文字)">
+                  <Form.Item
+                    name="itemDetail"
+                    label="商品完整說明(文字)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <TextArea
                       placeholder="請輸入商品完整說明(文字)"
                       autoSize={{ minRows: 3, maxRows: 3 }}
@@ -763,13 +811,7 @@ export default function Page() {
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <TextArea
-                      placeholder={
-                        isFood
-                          ? "例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
-                          : isNonFood
-                            ? "請輸入產品核准字號"
-                            : ""
-                      }
+                      placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
                       autoSize={{ minRows: 3, maxRows: 3 }}
                     />
                   </Form.Item>
@@ -811,6 +853,11 @@ export default function Page() {
                   </Form.Item>
                 </Col>
               </Row>
+            </Col>
+
+            <Col span={24}>
+              <Title>異動紀錄</Title>
+              <TableChange data={changList} />
             </Col>
           </Row>
         </Form>

@@ -24,6 +24,7 @@ import Table from "@/components/Table";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 import ModalAddProduct from "./ModalAddProduct";
 import ModalImportError from "./ModalImportError";
+import ModalLoading from "./ModalLoading";
 
 import api from "@/api";
 import {
@@ -132,12 +133,24 @@ export default function Page() {
       dataIndex: "",
       align: "center",
       render: (text, record) => {
+        let variationText = "";
         const list = [
           record.variationType1Value,
           record.variationType2Value,
         ].filter(Boolean);
-        if (list.length === 0) return "-";
-        return list.join(" / ");
+
+        if (list.length === 0) {
+          variationText = "-";
+        } else {
+          variationText = list.join(" / ");
+        }
+
+        return (
+          <div>
+            <div>{record.itemSpec ?? "-"}</div>
+            <div>{variationText}</div>
+          </div>
+        );
       },
     },
     {
@@ -228,7 +241,12 @@ export default function Page() {
               },
             }}
           >
-            <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>
+            <FunctionBtn
+              color="green"
+              disabled={["審核通過"].includes(record.applyStatusName)}
+            >
+              商品相關圖檔維護
+            </FunctionBtn>
           </Link>
         );
       },
@@ -335,6 +353,8 @@ export default function Page() {
   };
 
   const handleImport = (file) => {
+    setOpenModal((state) => ({ ...state, loading: true }));
+
     if (file.file.status === "done") {
       const formData = new FormData();
       formData.append("file", file.file.originFileObj);
@@ -355,6 +375,7 @@ export default function Page() {
         })
         .finally(() => {
           setLoading((state) => ({ ...state, import: false }));
+          setOpenModal((state) => ({ ...state, loading: false }));
         });
     }
   };
@@ -553,6 +574,13 @@ export default function Page() {
         open={openModal.pdpPreview}
         onCancel={() => {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));
+        }}
+      />
+
+      <ModalLoading
+        open={openModal.loading}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, loading: false }));
         }}
       />
     </>

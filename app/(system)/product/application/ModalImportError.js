@@ -7,6 +7,24 @@ export default function ModalImportError(props) {
 
   const columns = [
     {
+      title: "狀態",
+      dataIndex: "statusName",
+      align: "center",
+      render: (text) => {
+        return <div style={{ color: "red" }}>{text}</div>;
+      },
+    },
+    {
+      title: "處理情形",
+      dataIndex: "messages",
+      align: "left",
+      render: (text) => {
+        return text.map((t, idx) => {
+          return <div key={idx}>- {t}</div>;
+        });
+      },
+    },
+    {
       title: "分車類型",
       dataIndex: "cartTypeStr",
       align: "center",
@@ -76,24 +94,6 @@ export default function ModalImportError(props) {
       render: (text) => {
         if ([null, undefined].includes(text)) return "-";
         return text;
-      },
-    },
-    {
-      title: "狀態",
-      dataIndex: "statusName",
-      align: "center",
-      render: (text) => {
-        return <div style={{ color: "red" }}>{text}</div>;
-      },
-    },
-    {
-      title: "處理情形",
-      dataIndex: "messages",
-      align: "left",
-      render: (text) => {
-        return text.map((t, idx) => {
-          return <div key={idx}>- {t}</div>;
-        });
       },
     },
   ];
