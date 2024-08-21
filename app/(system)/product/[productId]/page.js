@@ -3,12 +3,12 @@ import {
   App,
   Breadcrumb,
   Col,
+  Flex,
   Form,
   Radio,
   Row,
   Space,
   Spin,
-  Flex,
 } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -22,12 +22,13 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
+
 import ModalPreviewPDP from "../ModalPreviewPDP";
+import TableChange from "./TableChange";
 
 import api from "@/api";
 import {
   PATH_PRODUCT_IMAGE_MAINTENANCE,
-  PATH_PRODUCT_PRODUCT_LIST,
   PATH_PRODUCT_STOCK_SETTINGS,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
@@ -76,6 +77,7 @@ export default function Page() {
   const itemEan = form.getFieldValue("itemEan");
   const isFood = form.getFieldValue("isFood") === true;
   const isNonFood = form.getFieldValue("isFood") === false;
+  const changList = form.getFieldValue("changeList");
 
   const perpetual = Form.useWatch("perpetual", form);
   const variationType1Code = Form.useWatch("variationType1Code", form);
@@ -811,6 +813,11 @@ export default function Page() {
                   </Form.Item>
                 </Col>
               </Row>
+            </Col>
+
+            <Col span={24}>
+              <Title>異動紀錄</Title>
+              <TableChange data={changList} />
             </Col>
           </Row>
         </Form>

@@ -11,7 +11,7 @@ import api from "@/api";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
-  margin: 124px 36px 33px;
+  margin: 124px 36px 150px;
 `;
 
 export default function PageLayout(props) {
