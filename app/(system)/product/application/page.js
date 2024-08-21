@@ -24,6 +24,7 @@ import Table from "@/components/Table";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 import ModalAddProduct from "./ModalAddProduct";
 import ModalImportError from "./ModalImportError";
+import ModalLoading from "./ModalLoading";
 
 import api from "@/api";
 import {
@@ -347,6 +348,8 @@ export default function Page() {
   };
 
   const handleImport = (file) => {
+    setOpenModal((state) => ({ ...state, loading: true }));
+
     if (file.file.status === "done") {
       const formData = new FormData();
       formData.append("file", file.file.originFileObj);
@@ -367,6 +370,7 @@ export default function Page() {
         })
         .finally(() => {
           setLoading((state) => ({ ...state, import: false }));
+          setOpenModal((state) => ({ ...state, loading: false }));
         });
     }
   };
@@ -565,6 +569,13 @@ export default function Page() {
         open={openModal.pdpPreview}
         onCancel={() => {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));
+        }}
+      />
+
+      <ModalLoading
+        open={openModal.loading}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, loading: false }));
         }}
       />
     </>

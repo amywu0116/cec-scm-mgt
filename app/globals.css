@@ -156,3 +156,7 @@ a {
   padding-inline: 8px !important;
   margin-inline-end: 0 !important;
 }
+
+.ant-modal.modal-loading .ant-modal-content {
+  padding: 20px 24px !important;
+}
