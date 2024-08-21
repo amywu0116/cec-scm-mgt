@@ -16,6 +16,7 @@ a {
   text-decoration: none;
 }
 
+.ant-form-item,
 .ant-form-item-label > label,
 .ant-form-item-control .ant-input-affix-wrapper,
 .ant-form-item-control .ant-select-selector,

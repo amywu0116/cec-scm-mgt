@@ -671,10 +671,9 @@ export default function Page() {
 
                 <Col span={12}>
                   <Form.Item name="itemShortdescription" label="商品特色說明">
-                    <TextArea
-                      placeholder="請輸入商品特色說明"
-                      autoSize={{ minRows: 3, maxRows: 3 }}
-                    />
+                    <div style={{ lineHeight: "42px" }}>
+                      商品特色說明圖請至「圖片維護上傳」
+                    </div>
                   </Form.Item>
                 </Col>
 

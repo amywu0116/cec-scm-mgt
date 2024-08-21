@@ -269,11 +269,7 @@ const FeatureImagesList = styled.div`
   flex-direction: column;
 `;
 
-const FeatureImagesWrapper = styled.div`
-  flex: 1;
-  position: relative;
-  width: 100%;
-`;
+const FeatureImagesWrapper = styled.div``;
 
 const ProductDescriptionTable = styled.div`
   table {
@@ -675,14 +671,14 @@ export default function ModalPreviewPDP(props) {
                               <FeatureImagesList>
                                 {info.featureImages?.map((img, idx) => {
                                   return (
-                                    <FeatureImagesWrapper key={idx}>
-                                      <Image
-                                        key={idx}
-                                        src={img}
-                                        fill
-                                        objectFit="contain"
-                                      />
-                                    </FeatureImagesWrapper>
+                                    <Image
+                                      style={{ width: "100%", height: "auto" }}
+                                      key={idx}
+                                      src={img}
+                                      width={0}
+                                      height={0}
+                                      sizes="100vw"
+                                    />
                                   );
                                 })}
                               </FeatureImagesList>
