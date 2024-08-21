@@ -333,17 +333,19 @@ export default function Page() {
               PDP預覽
             </Button>
 
-            <Link
-              href={{
-                pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
-                query: {
-                  itemName: form.getFieldValue("itemName"),
-                  itemEan: form.getFieldValue("itemEan"),
-                },
-              }}
-            >
-              <Button type="secondary">商品相關圖檔維護</Button>
-            </Link>
+            {isEdit && (
+              <Link
+                href={{
+                  pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
+                  query: {
+                    itemName: form.getFieldValue("itemName"),
+                    itemEan: form.getFieldValue("itemEan"),
+                  },
+                }}
+              >
+                <Button type="secondary">商品相關圖檔維護</Button>
+              </Link>
+            )}
           </Space>
         </LayoutHeader>
 
