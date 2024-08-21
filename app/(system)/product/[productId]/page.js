@@ -330,7 +330,11 @@ export default function Page() {
 
               <Row gutter={32}>
                 <Col span={12}>
-                  <Form.Item name="cartType" label="分車類型">
+                  <Form.Item
+                    name="cartType"
+                    label="分車類型"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Select
                       placeholder="請選擇分車類型"
                       showSearch
@@ -361,7 +365,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemName" label="中文品名">
+                  <Form.Item
+                    name="itemName"
+                    label="中文品名"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入中文品名" />
                   </Form.Item>
                 </Col>
@@ -377,7 +385,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemCountry" label="生產國家">
+                  <Form.Item
+                    name="itemCountry"
+                    label="生產國家"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入生產國家" />
                   </Form.Item>
                 </Col>
@@ -403,13 +415,21 @@ export default function Page() {
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="itemSpec" label="規格">
+                  <Form.Item
+                    name="itemSpec"
+                    label="規格"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入規格" />
                   </Form.Item>
                 </Col>
 
                 <Col span={8}>
-                  <Form.Item name="isTax" label="應/免稅">
+                  <Form.Item
+                    name="isTax"
+                    label="應/免稅"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Select
                       placeholder="請輸入應/免稅"
                       showSearch
@@ -427,6 +447,7 @@ export default function Page() {
                     name="price"
                     label="原價"
                     rules={[
+                      { required: true, message: "必填" },
                       {
                         validator: validateWarningPrice,
                         warningOnly: true,
@@ -514,7 +535,11 @@ export default function Page() {
               <Title>其他資訊</Title>
               <Row gutter={32}>
                 <Col span={12}>
-                  <Form.Item name="expDateValue" label="保存日期">
+                  <Form.Item
+                    name="expDateValue"
+                    label="保存日期"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <Input placeholder="請輸入保存日期" />
                   </Form.Item>
                 </Col>
@@ -651,7 +676,11 @@ export default function Page() {
                 <Col span={24}>
                   <Row>
                     <Col span={6}>
-                      <Form.Item name="perpetual" label="庫存">
+                      <Form.Item
+                        name="perpetual"
+                        label="庫存"
+                        rules={[{ required: true, message: "必填" }]}
+                      >
                         <Radio.Group
                           options={[
                             { label: "不庫控", value: true },
@@ -688,7 +717,11 @@ export default function Page() {
                 </Col>
 
                 <Col span={12}>
-                  <Form.Item name="itemDetail" label="商品完整說明(文字)">
+                  <Form.Item
+                    name="itemDetail"
+                    label="商品完整說明(文字)"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
                     <TextArea
                       placeholder="請輸入商品完整說明(文字)"
                       autoSize={{ minRows: 3, maxRows: 3 }}
