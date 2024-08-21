@@ -208,6 +208,7 @@ export default function Page() {
       .then((res) => {
         message.success(res.message);
         setIsEditing(false);
+        fetchInfo();
       })
       .catch((err) => {
         message.error(err.message);
@@ -416,7 +417,10 @@ export default function Page() {
                     name="price"
                     label="原價"
                     rules={[
-                      { validator: validateWarningPrice, warningOnly: true },
+                      {
+                        validator: validateWarningPrice,
+                        warningOnly: true,
+                      },
                     ]}
                   >
                     <Input placeholder="請輸入原價" />
