@@ -363,17 +363,15 @@ export default function Page() {
             <Col span={24}>
               <Title>分類設定</Title>
 
-              {["審核通過"].includes(applyStatusName) && (
-                <Row gutter={32}>
-                  <Col span={12}>
-                    <Form.Item name="productnumber" label="商城商品編號">
-                      <div style={{ lineHeight: "42px" }}>
-                        {form.getFieldValue("productnumber")}
-                      </div>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              )}
+              <Row gutter={32}>
+                <Col span={12}>
+                  <Form.Item name="productnumber" label="商城商品編號">
+                    <div style={{ lineHeight: "42px" }}>
+                      {form.getFieldValue("productnumber") ?? "-"}
+                    </div>
+                  </Form.Item>
+                </Col>
+              </Row>
 
               <Row gutter={32}>
                 <Col span={12}>

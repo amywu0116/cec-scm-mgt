@@ -320,6 +320,16 @@ export default function Page() {
               <Title>基本設定</Title>
               <Row gutter={32}>
                 <Col span={12}>
+                  <Form.Item name="productnumber" label="商城商品編號">
+                    <div style={{ lineHeight: "42px" }}>
+                      {form.getFieldValue("productnumber") ?? "-"}
+                    </div>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={32}>
+                <Col span={12}>
                   <Form.Item name="cartType" label="分車類型">
                     <Select
                       placeholder="請選擇分車類型"
