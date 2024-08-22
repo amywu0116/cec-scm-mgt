@@ -251,6 +251,22 @@ export default function FormProduct(props) {
                 <Input placeholder="請輸入生產國家" />
               </Form.Item>
             </Col>
+
+            {isProduct && (
+              <Col span={12}>
+                <Form.Item name="isPublushed" label="上下架狀態">
+                  <Select
+                    placeholder="請選擇上下架狀態"
+                    showSearch
+                    allowClear
+                    options={[
+                      { label: "上架", value: true },
+                      { label: "下架", value: false },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+            )}
           </Row>
 
           <Row gutter={32}>
