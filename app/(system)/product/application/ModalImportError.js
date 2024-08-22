@@ -15,9 +15,18 @@ export default function ModalImportError(props) {
       },
     },
     {
+      title: "提品類別",
+      dataIndex: "isFood",
+      align: "center",
+      render: (text) => {
+        return text ? "食品提品" : "非食品提品";
+      },
+    },
+    {
       title: "處理情形",
       dataIndex: "messages",
       align: "left",
+      width: 500,
       render: (text) => {
         return text.map((t, idx) => {
           return <div key={idx}>- {t}</div>;
@@ -98,12 +107,14 @@ export default function ModalImportError(props) {
     },
   ];
 
+  console.log("info", info);
+
   return (
     <Modal
       title="匯入結果"
       centered
       destroyOnClose
-      width="90vw"
+      width="80vw"
       open={open}
       onCancel={onCancel}
       footer={null}
@@ -112,7 +123,7 @@ export default function ModalImportError(props) {
         columns={columns}
         dataSource={info}
         pagination={false}
-        scroll={{ x: 2000 }}
+        scroll={{ x: 2000, y: 500 }}
       />
     </Modal>
   );
