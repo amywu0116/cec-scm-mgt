@@ -122,12 +122,8 @@ export default function Page() {
       .then((res) => {
         setCategoryList(res.data);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   // 分車類型
@@ -148,12 +144,8 @@ export default function Page() {
           setShippingList(shippingList ?? []);
         }
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   // 詳細內容
@@ -178,12 +170,8 @@ export default function Page() {
               : undefined,
         });
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   // 暫存
@@ -235,13 +223,10 @@ export default function Page() {
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
         message.success(res.message);
+        router.push(`${PATH_PRODUCT_APPLICATION}/edit/${res.data.applyId}`);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   // 送審
@@ -255,12 +240,8 @@ export default function Page() {
         message.success("送審成功");
         router.push(PATH_PRODUCT_APPLICATION);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   useEffect(() => {
