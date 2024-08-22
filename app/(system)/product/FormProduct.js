@@ -172,7 +172,7 @@ export default function FormProduct(props) {
                 rules={[{ required: true, message: "必填" }]}
               >
                 <Select
-                  placeholder="請選擇分車類型"
+                  placeholder="請依據下拉選單選擇分車類型"
                   showSearch
                   allowClear
                   options={shippingList?.map((opt) => ({
@@ -201,7 +201,7 @@ export default function FormProduct(props) {
 
                 {isApply && (
                   <Select
-                    placeholder="選擇商品分類"
+                    placeholder="請依據下拉選單選擇商品分類"
                     showSearch
                     allowClear
                     options={categoryList.map((c) => {
@@ -218,7 +218,7 @@ export default function FormProduct(props) {
 
             <Col span={12}>
               <Form.Item name="brand" label="品牌">
-                <Input placeholder="請輸入品牌" />
+                <Input placeholder="請輸入品牌文字" />
               </Form.Item>
             </Col>
           </Row>
@@ -248,13 +248,17 @@ export default function FormProduct(props) {
                 label="生產國家"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入生產國家" />
+                <Input placeholder="請輸入商品的生產國家" />
               </Form.Item>
             </Col>
 
             {isProduct && (
               <Col span={12}>
-                <Form.Item name="isPublushed" label="上下架狀態">
+                <Form.Item
+                  name="isPublushed"
+                  label="上下架狀態"
+                  rules={[{ required: true, message: "必填" }]}
+                >
                   <Select
                     placeholder="請選擇上下架狀態"
                     showSearch
@@ -272,7 +276,7 @@ export default function FormProduct(props) {
           <Row gutter={32}>
             <Col span={8}>
               <Form.Item name="itemEan" label="條碼">
-                <Input placeholder="請輸入條碼" />
+                <Input placeholder="請輸入商品條碼" />
               </Form.Item>
             </Col>
 
@@ -282,7 +286,7 @@ export default function FormProduct(props) {
                 label="商品規格"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品規格" />
+                <Input placeholder="請輸入規格，例如：14片 x 3包 x 1件" />
               </Form.Item>
             </Col>
 
@@ -293,7 +297,7 @@ export default function FormProduct(props) {
                 rules={[{ required: true, message: "必填" }]}
               >
                 <Select
-                  placeholder="請輸入應/免稅"
+                  placeholder="請依據下拉選單選擇稅別"
                   showSearch
                   allowClear
                   options={[
@@ -319,7 +323,7 @@ export default function FormProduct(props) {
                   { validator: validatePrice },
                 ]}
               >
-                <Input placeholder="請輸入原價" />
+                <Input placeholder="請輸入商品原價" />
               </Form.Item>
             </Col>
 
@@ -335,7 +339,7 @@ export default function FormProduct(props) {
                   { validator: validateSpecialPrice },
                 ]}
               >
-                <Input placeholder="請輸入促銷價" />
+                <Input placeholder="請輸入商品促銷價" />
               </Form.Item>
             </Col>
           </Row>
@@ -351,7 +355,7 @@ export default function FormProduct(props) {
                 label="商品高度(cm)"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品高度(cm)" />
+                <Input placeholder="請輸入商品高度" />
               </Form.Item>
             </Col>
 
@@ -361,7 +365,7 @@ export default function FormProduct(props) {
                 label="商品寬度(cm)"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品寬度(cm)" />
+                <Input placeholder="請輸入商品寬度" />
               </Form.Item>
             </Col>
 
@@ -371,7 +375,7 @@ export default function FormProduct(props) {
                 label="商品長度(cm)"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品長度(cm)" />
+                <Input placeholder="請輸入商品長度" />
               </Form.Item>
             </Col>
           </Row>
@@ -383,7 +387,10 @@ export default function FormProduct(props) {
                 label="重量-毛重"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入重量-毛重" suffix="克(g)" />
+                <Input
+                  placeholder="請輸入商品毛重，以克為單位，請輸入數字"
+                  suffix="克(g)"
+                />
               </Form.Item>
             </Col>
 
@@ -393,7 +400,10 @@ export default function FormProduct(props) {
                 label="重量-淨重"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入重量-淨重" suffix="克(g)" />
+                <Input
+                  placeholder="請輸入商品淨重，以克為單位，請輸入數字"
+                  suffix="克(g)"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -409,7 +419,7 @@ export default function FormProduct(props) {
                 label="保存日期"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入阿拉伯數字，例如：12" />
+                <Input placeholder="請輸入保存日期，請輸入數字，例如：12" />
               </Form.Item>
             </Col>
 
@@ -419,7 +429,7 @@ export default function FormProduct(props) {
                 label="保存日期單位"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入 小時 / 日 / 週 / 月 / 年，例如：月" />
+                <Input placeholder="請輸入保存日期單位：小時 / 日 / 週 / 月 / 年，例如：月" />
               </Form.Item>
             </Col>
 
@@ -454,7 +464,7 @@ export default function FormProduct(props) {
                   >
                     <Select
                       style={{ width: "100%" }}
-                      placeholder="請輸入多規類型(一) "
+                      placeholder="請依據下拉選單選擇第一個多規類型 "
                       options={variationType.map((v) => ({
                         ...v,
                         label: v.name,
@@ -472,7 +482,7 @@ export default function FormProduct(props) {
                     rules={[{ validator: validateVariationType1Value }]}
                   >
                     <Input
-                      placeholder="請輸入多規類型(一)內容"
+                      placeholder="請輸入第一個多規類型的值"
                       disabled={!variationType1Code}
                     />
                   </Form.Item>
@@ -490,7 +500,7 @@ export default function FormProduct(props) {
                   >
                     <Select
                       style={{ width: "100%" }}
-                      placeholder="請輸入多規類型(二) "
+                      placeholder="請依據下拉選單選擇第二個多規類型"
                       options={variationType.map((v) => ({
                         ...v,
                         label: v.name,
@@ -508,7 +518,7 @@ export default function FormProduct(props) {
                     rules={[{ validator: validateVariationType2Value }]}
                   >
                     <Input
-                      placeholder="請輸入多規類型(二)內容"
+                      placeholder="請輸入第二個多規類型的值"
                       disabled={!variationType2Code}
                     />
                   </Form.Item>
@@ -534,21 +544,24 @@ export default function FormProduct(props) {
               {perpetual === false && (
                 <Space size={10}>
                   <Form.Item
-                    style={{ display: "inline-block", width: 100 }}
+                    style={{ display: "inline-block", width: 250 }}
                     name="stock"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <Input placeholder="活動庫存" />
+                    <Input placeholder="請輸入活動庫存，請輸入整數數字" />
                   </Form.Item>
 
                   <Form.Item
-                    style={{ display: "inline-block", width: 350 }}
+                    style={{ display: "inline-block", width: 400 }}
                     name="stockDate"
                     rules={[{ required: true, message: "必填" }]}
                   >
                     <RangePicker
                       style={{ width: "100%" }}
-                      placeholder={["活動庫存開始日期", "活動庫存結束日期"]}
+                      placeholder={[
+                        "請輸入活動庫存開始時間",
+                        "請輸入活動庫存結束時間",
+                      ]}
                       disabledDate={disabledStockDate}
                     />
                   </Form.Item>
@@ -573,7 +586,7 @@ export default function FormProduct(props) {
                 rules={[{ required: true, message: "必填" }]}
               >
                 <TextArea
-                  placeholder="請輸入商品完整說明"
+                  placeholder="請輸入商品完整說明文字"
                   autoSize={{ minRows: 3, maxRows: 3 }}
                 />
               </Form.Item>
@@ -624,7 +637,7 @@ export default function FormProduct(props) {
                 <Form.Item name="veggieType" label="素食種類">
                   <Select
                     style={{ width: "100%" }}
-                    placeholder="請選擇素食種類"
+                    placeholder="請依據下拉選單選擇素食種類"
                     options={veggieType.map((v) => ({
                       ...v,
                       label: v.name,
@@ -643,7 +656,7 @@ export default function FormProduct(props) {
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入產品成份及食品添加物"
+                    placeholder="請輸入產品成份及食品添加物文字"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
@@ -660,7 +673,7 @@ export default function FormProduct(props) {
                   rules={[{ required: true, message: "必填" }]}
                 >
                   <TextArea
-                    placeholder="請輸入營養標示(文字)"
+                    placeholder="請輸入營養標示文字"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
