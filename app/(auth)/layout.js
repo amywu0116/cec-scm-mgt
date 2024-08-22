@@ -19,8 +19,11 @@ const Container = styled.div`
 `;
 
 const FormWrapper = styled.div`
-  width: 352px;
-  margin: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 110px auto;
 `;
 
 const LogoWrapper = styled.div`

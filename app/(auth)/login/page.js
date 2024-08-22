@@ -16,7 +16,9 @@ import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 350px;
+`;
 
 const RecaptchaWrapper = styled.div`
   transform: scale(1.16);
