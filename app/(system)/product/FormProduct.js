@@ -90,10 +90,20 @@ export default function FormProduct(props) {
     return Promise.resolve();
   };
 
+  const validatePrice = (_, value) => {
+    const specialPrice = form.getFieldValue("specialPrice");
+
+    if (specialPrice && value < specialPrice) {
+      return Promise.reject(new Error("原價需高於促銷價"));
+    }
+
+    return Promise.resolve();
+  };
+
   const validateSpecialPrice = (_, value) => {
     const price = form.getFieldValue("price");
 
-    if (value > price) {
+    if (price && value > price) {
       return Promise.reject(new Error("促銷價需低於原價"));
     }
 
@@ -289,6 +299,7 @@ export default function FormProduct(props) {
                     validator: validateWarningPrice,
                     warningOnly: true,
                   },
+                  { validator: validatePrice },
                 ]}
               >
                 <Input placeholder="請輸入原價" />
