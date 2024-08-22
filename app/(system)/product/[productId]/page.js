@@ -83,6 +83,20 @@ export default function Page() {
       specialPrice: values.specialPrice
         ? Number(values.specialPrice)
         : undefined,
+      productHeight: values.productHeight
+        ? Number(values.productHeight)
+        : undefined,
+      productWidth: values.productWidth
+        ? Number(values.productWidth)
+        : undefined,
+      productLength: values.productLength
+        ? Number(values.productLength)
+        : undefined,
+      grossWeight: values.grossWeight ? Number(values.grossWeight) : undefined,
+      netWeight: values.netWeight ? Number(values.netWeight) : undefined,
+      expDateValue: values.expDateValue
+        ? Number(values.expDateValue)
+        : undefined,
       stockStartdate: values.stockDate
         ? values.stockDate[0].format("YYYY-MM-DD")
         : undefined,

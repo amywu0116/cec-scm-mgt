@@ -13,6 +13,7 @@ import {
   Upload,
 } from "antd";
 import dayjs from "dayjs";
+import fileDownload from "js-file-download";
 import Link from "next/link";
 import {
   parseAsArrayOf,
@@ -153,6 +154,7 @@ export default function Page() {
     table: false,
     batchDelivered: false,
     importShip: false,
+    export: false,
   });
 
   const [showModalImportShip, setShowModalImportShip] = useState(false);
@@ -233,9 +235,7 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values) => {
-    updateQuery(values, setQuery);
-
+  const transformParams = (values) => {
     const orderStatusList = [];
     const pickingStatusList = [];
     const backStatusList = [];
@@ -273,10 +273,16 @@ export default function Page() {
       max: values.pageSize,
     };
 
+    return params;
+  };
+
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+    const newParams = transformParams(values);
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/order", { params })
+      .get("v1/scm/order", { params: newParams })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
@@ -286,12 +292,8 @@ export default function Page() {
           tableQuery: { ...values },
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleFinish = (values) => {
@@ -357,9 +359,7 @@ export default function Page() {
         message.success(res.message);
         fetchList({ ...tableInfo.tableQuery });
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
+      .catch((err) => message.error(err.message))
       .finally(() => {
         setLoading((state) => ({
           ...state,
@@ -393,6 +393,22 @@ export default function Page() {
           setLoading((state) => ({ ...state, importShip: false }));
         });
     }
+  };
+
+  // 導出客戶清單
+  const handleExport = () => {
+    const newParams = transformParams(form.getFieldsValue());
+    delete newParams.max;
+    delete newParams.offset;
+    setLoading((state) => ({ ...state, export: true }));
+    api
+      .get(`v1/scm/order/export`, {
+        params: newParams,
+        responseType: "arraybuffer",
+      })
+      .then((res) => fileDownload(res, "客戶清單.xlsx"))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, export: false })));
   };
 
   // // 進頁後先自動查詢一次
@@ -570,7 +586,11 @@ export default function Page() {
               <Col span={24}>
                 <Row gutter={16}>
                   <Col>
-                    <Button type="secondary" onClick={() => {}}>
+                    <Button
+                      type="secondary"
+                      loading={loading.export}
+                      onClick={handleExport}
+                    >
                       導出客戶清單
                     </Button>
                   </Col>
