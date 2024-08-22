@@ -51,6 +51,9 @@ export default function FormProduct(props) {
   const variationType1Code = Form.useWatch("variationType1Code", form);
   const variationType2Code = Form.useWatch("variationType2Code", form);
 
+  const price = Form.useWatch("price", form);
+  const specialPrice = Form.useWatch("specialPrice", form);
+
   // 禁用今天及今天之前的日期
   const disabledStockDate = (current) => {
     return current && current <= dayjs().endOf("day");
@@ -91,22 +94,20 @@ export default function FormProduct(props) {
   };
 
   const validatePrice = (_, value) => {
-    const specialPrice = form.getFieldValue("specialPrice");
-
-    if (specialPrice && value < specialPrice) {
+    const p = Number(value);
+    const s = Number(specialPrice);
+    if (s && p < s) {
       return Promise.reject(new Error("原價需高於促銷價"));
     }
-
     return Promise.resolve();
   };
 
   const validateSpecialPrice = (_, value) => {
-    const price = form.getFieldValue("price");
-
-    if (price && value > price) {
+    const s = Number(value);
+    const p = Number(price);
+    if (p && s > p) {
       return Promise.reject(new Error("促銷價需低於原價"));
     }
-
     return Promise.resolve();
   };
 
