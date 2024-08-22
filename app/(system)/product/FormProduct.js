@@ -720,17 +720,6 @@ export default function FormProduct(props) {
                 </Form.Item>
               </Col>
             )}
-
-            {isNonFood && (
-              <Col span={12}>
-                <Form.Item name="approvalOther" label="其他證明(文字)">
-                  <TextArea
-                    placeholder="請輸入其他證明(文字)"
-                    autoSize={{ minRows: 3, maxRows: 3 }}
-                  />
-                </Form.Item>
-              </Col>
-            )}
           </Row>
 
           <Row gutter={32}>
