@@ -462,6 +462,7 @@ export default function ModalPreviewPDP(props) {
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
   const [info, setInfo] = useState({});
+
   const columns = info.isFood ? isFoodColumns : isNonFoodColumns;
 
   const fetchInfo = () => {
@@ -521,12 +522,7 @@ export default function ModalPreviewPDP(props) {
                     <PreviewImgZoom src={selectedImg} />
 
                     <PreviewImgList>
-                      <Swiper
-                        spaceBetween={10}
-                        slidesPerView={4}
-                        onSlideChange={() => console.log("slide change")}
-                        onSwiper={(swiper) => console.log(swiper)}
-                      >
+                      <Swiper spaceBetween={10} slidesPerView={4}>
                         {info?.productImages?.map((img, idx) => {
                           return (
                             <SwiperSlide key={idx}>
