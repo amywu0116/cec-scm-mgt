@@ -6,6 +6,7 @@ import {
   Checkbox,
   Col,
   Divider,
+  Flex,
   Form,
   Radio,
   Row,
@@ -584,29 +585,25 @@ export default function Page() {
               </Col>
 
               <Col span={24}>
-                <Row gutter={16}>
-                  <Col>
-                    <Button
-                      type="secondary"
-                      loading={loading.export}
-                      onClick={handleExport}
-                    >
-                      導出客戶清單
-                    </Button>
-                  </Col>
+                <Flex gap={16}>
+                  <Button
+                    type="secondary"
+                    loading={loading.export}
+                    onClick={handleExport}
+                  >
+                    導出客戶清單
+                  </Button>
 
-                  <Col>
-                    <Badge count={shippingList.length}>
-                      <Button
-                        disabled={shippingList.length === 0}
-                        loading={loading.batchDelivered}
-                        onClick={handleBatchDelivered}
-                      >
-                        批次維護物流狀態為已送達
-                      </Button>
-                    </Badge>
-                  </Col>
-                </Row>
+                  <Badge count={shippingList.length}>
+                    <Button
+                      disabled={shippingList.length === 0}
+                      loading={loading.batchDelivered}
+                      onClick={handleBatchDelivered}
+                    >
+                      批次維護物流狀態為已送達
+                    </Button>
+                  </Badge>
+                </Flex>
               </Col>
 
               <Col span={24}>
