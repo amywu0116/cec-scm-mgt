@@ -1,9 +1,11 @@
 "use client";
+import { Flex } from "antd";
+
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 
 export default function ModalImportError(props) {
-  const { info, open, onCancel } = props;
+  const { info = {}, open, onCancel } = props;
 
   const columns = [
     {
@@ -26,7 +28,7 @@ export default function ModalImportError(props) {
       title: "處理情形",
       dataIndex: "messages",
       align: "left",
-      width: 500,
+      width: 400,
       render: (text) => {
         return text.map((t, idx) => {
           return <div key={idx}>- {t}</div>;
@@ -107,8 +109,6 @@ export default function ModalImportError(props) {
     },
   ];
 
-  console.log("info", info);
-
   return (
     <Modal
       title="匯入結果"
@@ -119,12 +119,19 @@ export default function ModalImportError(props) {
       onCancel={onCancel}
       footer={null}
     >
-      <Table
-        columns={columns}
-        dataSource={info}
-        pagination={false}
-        scroll={{ x: 2000, y: 500 }}
-      />
+      <Flex vertical gap={16}>
+        <div>
+          <div>成功筆數：{info.successCount}</div>
+          <div>失敗筆數：{info.errorCount}</div>
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={info.rows}
+          pagination={false}
+          scroll={{ x: 2000, y: 500 }}
+        />
+      </Flex>
     </Modal>
   );
 }

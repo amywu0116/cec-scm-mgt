@@ -1,6 +1,7 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { App, Col, Form, Image, Row, Space, Flex } from "antd";
+import { App, Col, Flex, Form, Image, Row, Space } from "antd";
+import fileDownload from "js-file-download";
 import Link from "next/link";
 import {
   parseAsBoolean,
@@ -15,9 +16,9 @@ import FunctionBtn from "@/components/Button/FunctionBtn";
 import ResetBtn from "@/components/Button/ResetBtn";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import Select from "@/components/Select";
 import Table from "@/components/Table";
 import Tabs from "@/components/Tabs";
-import Select from "@/components/Select";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
@@ -39,6 +40,7 @@ export default function Page() {
 
   const [loading, setLoading] = useState({
     table: false,
+    export: false,
   });
 
   const [openModal, setOpenModal] = useState({
@@ -208,9 +210,7 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values) => {
-    updateQuery(values, setQuery);
-
+  const transformParams = (values) => {
     const params = {
       productnumber: values.productnumber ? values.productnumber : undefined,
       itemEan: values.itemEan ? values.itemEan : undefined,
@@ -220,9 +220,15 @@ export default function Page() {
       max: values.pageSize,
     };
 
+    return params;
+  };
+
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+    const newParams = transformParams(values);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/product", { params })
+      .get("v1/scm/product", { params: newParams })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
@@ -248,6 +254,22 @@ export default function Page() {
     fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
 
+  // 商品清單匯出
+  const handleExport = () => {
+    const newParams = transformParams(form.getFieldsValue());
+    delete newParams.max;
+    delete newParams.offset;
+    setLoading((state) => ({ ...state, export: true }));
+    api
+      .get(`v1/scm/product/search/export`, {
+        params: newParams,
+        responseType: "arraybuffer",
+      })
+      .then((res) => fileDownload(res, "商品清單.xlsx"))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, export: false })));
+  };
+
   useEffect(() => {
     if (Object.values(query).every((q) => q === null)) return;
     fetchList(query);
@@ -265,94 +287,110 @@ export default function Page() {
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
       </LayoutHeader>
 
-      <Flex vertical>
-        <Form
-          form={form}
-          autoComplete="off"
-          labelWrap
-          labelCol={{ flex: "80px" }}
-          colon={false}
-          disabled={loading.table}
-          onFinish={handleFinish}
-        >
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item name="productnumber" label="商城商品編號">
-                <Input placeholder="請輸入商城商品編號" />
-              </Form.Item>
-            </Col>
+      <Row gutter={[0, 16]}>
+        <Col span={24}>
+          <Form
+            form={form}
+            autoComplete="off"
+            labelWrap
+            labelCol={{ flex: "80px" }}
+            colon={false}
+            disabled={loading.table}
+            onFinish={handleFinish}
+          >
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item name="productnumber" label="商城商品編號">
+                  <Input placeholder="請輸入商城商品編號" />
+                </Form.Item>
+              </Col>
 
-            <Col span={6}>
-              <Form.Item name="itemEan" label="條碼">
-                <Input placeholder="請輸入條碼" maxLength={13} />
-              </Form.Item>
-            </Col>
+              <Col span={6}>
+                <Form.Item name="itemEan" label="條碼">
+                  <Input placeholder="請輸入條碼" maxLength={13} />
+                </Form.Item>
+              </Col>
 
-            <Col span={6}>
-              <Form.Item name="itemName" label="品名">
-                <Input placeholder="請輸入商品名稱" />
-              </Form.Item>
-            </Col>
+              <Col span={6}>
+                <Form.Item name="itemName" label="品名">
+                  <Input placeholder="請輸入商品名稱" />
+                </Form.Item>
+              </Col>
 
-            <Col span={6}>
-              <Form.Item>
-                <Flex gap={16} align="center">
-                  <Button
-                    style={{ marginLeft: "auto" }}
-                    type="secondary"
+              <Col span={6}>
+                <Form.Item>
+                  <Flex gap={16} align="center">
+                    <Button
+                      style={{ marginLeft: "auto" }}
+                      type="secondary"
+                      loading={loading.table}
+                      disabled={false}
+                      htmlType="submit"
+                    >
+                      查詢
+                    </Button>
+
+                    <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+                  </Flex>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item name="isPublushed" label="上下架狀態">
+                  <Select
+                    placeholder="請選擇上下架狀態"
+                    showSearch
+                    allowClear
+                    options={[
+                      { label: "上架", value: true },
+                      { label: "下架", value: false },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Col>
+
+        <Col span={24}>
+          <Flex gap={16}>
+            <Button
+              type="secondary"
+              loading={loading.export}
+              onClick={handleExport}
+            >
+              商品清單匯出
+            </Button>
+          </Flex>
+        </Col>
+
+        <Col span={24}>
+          <Tabs
+            defaultActiveKey="1"
+            items={[
+              {
+                label: "全部",
+                key: "1",
+                children: (
+                  <Table
                     loading={loading.table}
-                    disabled={false}
-                    htmlType="submit"
-                  >
-                    查詢
-                  </Button>
-
-                  <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-                </Flex>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={6}>
-              <Form.Item name="isPublushed" label="上下架狀態">
-                <Select
-                  placeholder="請選擇上下架狀態"
-                  showSearch
-                  allowClear
-                  options={[
-                    { label: "上架", value: true },
-                    { label: "下架", value: false },
-                  ]}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-
-        <Tabs
-          defaultActiveKey="1"
-          items={[
-            {
-              label: "全部",
-              key: "1",
-              children: (
-                <Table
-                  loading={loading.table}
-                  columns={columns}
-                  dataSource={tableInfo.rows}
-                  pageInfo={{
-                    total: tableInfo.total,
-                    page: tableInfo.page,
-                    pageSize: tableInfo.pageSize,
-                  }}
-                  onChange={handleChangeTable}
-                />
-              ),
-            },
-          ]}
-        />
-      </Flex>
+                    columns={columns}
+                    dataSource={tableInfo.rows}
+                    pageInfo={{
+                      total: tableInfo.total,
+                      page: tableInfo.page,
+                      pageSize: tableInfo.pageSize,
+                    }}
+                    onChange={handleChangeTable}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Col>
+      </Row>
 
       <ModalPreviewPDP
         type="product"
