@@ -1,16 +1,6 @@
 # 使用官方的 Node.js 20 鏡像
 FROM node:20
 
-# 這兩行指令將容器的時區設定為台北時間（Asia/Taipei），通過刪除原有的時區設定並建立新的符號連結來完成。
-RUN rm /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Asia/Taipei /etc/localtime
-
-# 這些指令使用 sed 命令將 .env 檔案中已有的某些環境變數移除。
-RUN sed -i "/.*NEXT_PUBLIC_BUILD_DATE=.*/d" .env.prod
-
-# 這些指令使用 echo 命令將新的環境變數加入 .env 檔案中。
-RUN echo "\nNEXT_PUBLIC_BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> .env.prod
-
 # 設定工作目錄
 WORKDIR /app
 
@@ -22,6 +12,16 @@ RUN npm install
 
 # 複製項目代碼到工作目錄
 COPY . .
+
+# 這兩行指令將容器的時區設定為台北時間（Asia/Taipei），通過刪除原有的時區設定並建立新的符號連結來完成。
+RUN rm /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Asia/Taipei /etc/localtime
+
+# 這些指令使用 sed 命令將 .env 檔案中已有的某些環境變數移除。
+RUN sed -i "/.*NEXT_PUBLIC_BUILD_DATE=.*/d" .env.prod
+
+# 這些指令使用 echo 命令將新的環境變數加入 .env 檔案中。
+RUN echo "\nNEXT_PUBLIC_BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> .env.prod
 
 # 建立 Next.js 應用
 RUN npm run build-prod
