@@ -160,15 +160,9 @@ export default function Page() {
     setLoading((state) => ({ ...state, table: true }));
     api
       .get(apiUrl, { params })
-      .then((res) => {
-        setImageList(res.data);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .then((res) => setImageList(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleFinish = (values) => {
@@ -193,12 +187,8 @@ export default function Page() {
         fetchList();
         handleCancel();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleDelete = () => {
@@ -224,12 +214,8 @@ export default function Page() {
         setShowModalDelete(false);
         fetchList();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, delete: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, delete: false })));
   };
 
   const handleCancel = () => {
@@ -330,7 +316,7 @@ export default function Page() {
                               },
                             ]}
                           >
-                            <Upload maxCount={10} multiple>
+                            <Upload multiple>
                               <Button type="secondary">上傳</Button>
                             </Upload>
                           </Form.Item>

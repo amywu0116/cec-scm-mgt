@@ -1,10 +1,14 @@
 "use client";
-import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import { PATH_ANNOUNCEMENT_SETTINGS } from "@/constants/paths";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
-  return (
-    <LayoutHeader>
-      <LayoutHeaderTitle>首頁</LayoutHeaderTitle>
-    </LayoutHeader>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push(PATH_ANNOUNCEMENT_SETTINGS);
+  }, []);
+
+  return;
 }
