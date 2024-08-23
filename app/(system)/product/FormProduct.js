@@ -230,12 +230,16 @@ export default function FormProduct(props) {
                 label="中文品名"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
+                <Input placeholder="請輸入中文品名，請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
               </Form.Item>
             </Col>
 
             <Col span={12}>
-              <Form.Item name="itemNameEn" label="英文品名">
+              <Form.Item
+                name="itemNameEn"
+                label="英文品名"
+                rules={[{ required: true, message: "必填" }]}
+              >
                 <Input placeholder="請輸入英文品名" />
               </Form.Item>
             </Col>
@@ -352,7 +356,7 @@ export default function FormProduct(props) {
             <Col span={8}>
               <Form.Item
                 name="productHeight"
-                label="商品高度(cm)"
+                label="商品高度"
                 rules={[{ required: true, message: "必填" }]}
               >
                 <Input placeholder="請輸入商品高度" />
@@ -362,7 +366,7 @@ export default function FormProduct(props) {
             <Col span={8}>
               <Form.Item
                 name="productWidth"
-                label="商品寬度(cm)"
+                label="商品寬度"
                 rules={[{ required: true, message: "必填" }]}
               >
                 <Input placeholder="請輸入商品寬度" />
@@ -372,7 +376,7 @@ export default function FormProduct(props) {
             <Col span={8}>
               <Form.Item
                 name="productLength"
-                label="商品長度(cm)"
+                label="商品長度"
                 rules={[{ required: true, message: "必填" }]}
               >
                 <Input placeholder="請輸入商品長度" />
@@ -437,9 +441,9 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemStoreway"
                 label="保存方式"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[{ required: isFood, message: "必填" }]}
               >
-                <Input placeholder="請輸入保存方式" />
+                <Input placeholder="請輸入保存方式：常溫  / 冷凍 / 冷藏，例如：常溫" />
               </Form.Item>
             </Col>
           </Row>
@@ -448,7 +452,7 @@ export default function FormProduct(props) {
             {isNonFood && (
               <Col span={12}>
                 <Form.Item name="powerSpec" label="電源規格">
-                  <Input placeholder="例如：110V , 220V" />
+                  <Input placeholder="請輸入電源規格，例如：110V, 220V" />
                 </Form.Item>
               </Col>
             )}
@@ -687,7 +691,7 @@ export default function FormProduct(props) {
                 rules={[{ required: true, message: "必填" }]}
               >
                 <TextArea
-                  placeholder="請載明 : OO產物保險股份有限公司 保單號碼OOOO 字第OOOOO"
+                  placeholder="請輸入產品責任險，例如 : OO產物保險股份有限公司 保單號碼OOOO 字第OOOOO"
                   autoSize={{ minRows: 3, maxRows: 3 }}
                 />
               </Form.Item>
@@ -704,7 +708,13 @@ export default function FormProduct(props) {
                 rules={[{ required: true, message: "必填" }]}
               >
                 <TextArea
-                  placeholder="例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                  placeholder={
+                    isFood
+                      ? "請輸入食品業者登錄字號，例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                      : isNonFood
+                        ? "請輸入產品核准字號，例如：BSMI , NCC認證 , 衛部(署)粧輸字第OOOOOO號 ... 等等"
+                        : ""
+                  }
                   autoSize={{ minRows: 3, maxRows: 3 }}
                 />
               </Form.Item>
@@ -740,7 +750,7 @@ export default function FormProduct(props) {
               <Col span={12}>
                 <Form.Item name="certMark" label="標章">
                   <TextArea
-                    placeholder="例如：省水標章 , 環保標章 ... 等等"
+                    placeholder="請輸入標章，例如：省水標章, 環保標章 ... 等等。"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
@@ -751,7 +761,7 @@ export default function FormProduct(props) {
               <Col span={12}>
                 <Form.Item name="energyEfficiency" label="能源效率">
                   <TextArea
-                    placeholder="例如：能源效率登錄編號"
+                    placeholder="請輸入能源效率，例如：能源效率登錄編號"
                     autoSize={{ minRows: 3, maxRows: 3 }}
                   />
                 </Form.Item>
