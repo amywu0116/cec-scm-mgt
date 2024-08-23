@@ -13,7 +13,9 @@ import Subtitle from "../Subtitle";
 import { PATH_LOGIN } from "@/constants/paths";
 import api from "@/api";
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 350px;
+`;
 
 const RecaptchaWrapper = styled.div`
   transform: scale(1.16);
@@ -88,25 +90,12 @@ export default function Page() {
       >
         <Form.Item
           name="vendorCode"
-          rules={[
-            {
-              required: true,
-              message: "必填",
-            },
-          ]}
+          rules={[{ required: true, message: "必填" }]}
         >
           <Input size="large" placeholder="請輸入廠商" autoComplete="off" />
         </Form.Item>
 
-        <Form.Item
-          name="account"
-          rules={[
-            {
-              required: true,
-              message: "必填",
-            },
-          ]}
-        >
+        <Form.Item name="account" rules={[{ required: true, message: "必填" }]}>
           <Input size="large" placeholder="請輸入帳號" autoComplete="off" />
         </Form.Item>
 

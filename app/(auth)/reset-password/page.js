@@ -12,7 +12,9 @@ import Title from "../Title";
 import api from "@/api";
 import { PATH_LOGIN } from "@/constants/paths";
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 350px;
+`;
 
 export default function Page() {
   const [form] = Form.useForm();
