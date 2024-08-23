@@ -269,8 +269,6 @@ const FeatureImagesList = styled.div`
   flex-direction: column;
 `;
 
-const FeatureImagesWrapper = styled.div``;
-
 const ProductDescriptionTable = styled.div`
   table {
     width: 100%;
@@ -464,6 +462,7 @@ export default function ModalPreviewPDP(props) {
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
   const [info, setInfo] = useState({});
+
   const columns = info.isFood ? isFoodColumns : isNonFoodColumns;
 
   const fetchInfo = () => {
@@ -523,12 +522,7 @@ export default function ModalPreviewPDP(props) {
                     <PreviewImgZoom src={selectedImg} />
 
                     <PreviewImgList>
-                      <Swiper
-                        spaceBetween={10}
-                        slidesPerView={4}
-                        onSlideChange={() => console.log("slide change")}
-                        onSwiper={(swiper) => console.log(swiper)}
-                      >
+                      <Swiper spaceBetween={10} slidesPerView={4}>
                         {info?.productImages?.map((img, idx) => {
                           return (
                             <SwiperSlide key={idx}>
@@ -554,10 +548,10 @@ export default function ModalPreviewPDP(props) {
                   <Detail>
                     <ItemName>{info.itemName}</ItemName>
 
-                    <ItemText>
+                    {/* <ItemText>
                       <div>◎品牌：{info.brand}</div>
                       <div>◎規格：{info.itemSpec}</div>
-                    </ItemText>
+                    </ItemText> */}
 
                     <ItemPriceWrapper>
                       {info.specialPrice ? (
@@ -683,6 +677,8 @@ export default function ModalPreviewPDP(props) {
                                 })}
                               </FeatureImagesList>
                             )}
+
+                            {info.itemDetail && <div>{info.itemDetail}</div>}
 
                             <ProductDescriptionTable>
                               <table>
