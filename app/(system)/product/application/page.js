@@ -62,6 +62,7 @@ export default function Page() {
   });
 
   const [loading, setLoading] = useState({
+    page: true,
     table: false,
     import: false,
     export: false,
@@ -73,8 +74,11 @@ export default function Page() {
     pdpPreview: false,
   });
 
+  const [openFileDialogOnClick, setOpenFileDialogOnClick] = useState(false);
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [currentApplyId, setCurrentApplyId] = useState();
+  const [shipping, setShippingList] = useState([]);
 
   const [importErrorInfo, setImportErrorInfo] = useState();
 
@@ -298,6 +302,16 @@ export default function Page() {
       });
   };
 
+  // 分車類型下拉選單內容
+  const fetchShipping = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .get("v1/scm/vendor/shipping")
+      .then((res) => setShippingList(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
+  };
+
   const refreshTable = () => {
     fetchList({ ...tableInfo.tableQuery });
     setSelectedRows([]);
@@ -388,6 +402,15 @@ export default function Page() {
     }
   };
 
+  // 提品匯入前先檢核是否有分車
+  const handleClickUpload = () => {
+    if (shipping.length === 0) {
+      message.error("請先至 供應商>運費設定 功能頁面，進行運費設定！");
+      return;
+    }
+    setOpenFileDialogOnClick(true);
+  };
+
   // 提品清單匯出
   const handleExport = () => {
     const newParams = transformParams(form.getFieldsValue());
@@ -416,6 +439,10 @@ export default function Page() {
     });
   }, []);
 
+  useEffect(() => {
+    fetchShipping();
+  }, []);
+
   return (
     <>
       <LayoutHeader>
@@ -426,9 +453,14 @@ export default function Page() {
           <Upload
             disabled={loading.import}
             showUploadList={false}
+            openFileDialogOnClick={openFileDialogOnClick}
             onChange={handleImport}
           >
-            <Button type="secondary" loading={loading.import}>
+            <Button
+              type="secondary"
+              loading={loading.import}
+              onClick={handleClickUpload}
+            >
               提品匯入
             </Button>
           </Upload>
