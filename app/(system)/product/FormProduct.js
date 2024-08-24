@@ -230,7 +230,7 @@ export default function FormProduct(props) {
                 label="中文品名"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入中文品名，請在商品開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
+                <Input placeholder="請在品名開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
               </Form.Item>
             </Col>
 
@@ -290,7 +290,7 @@ export default function FormProduct(props) {
                 label="商品規格"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入規格，例如：14片 x 3包 x 1件" />
+                <Input placeholder="例如：14片 x 3包 x 1件" />
               </Form.Item>
             </Col>
 
@@ -359,7 +359,7 @@ export default function FormProduct(props) {
                 label="商品高度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品高度" />
+                <Input placeholder="以cm為單位，請輸入數字" />
               </Form.Item>
             </Col>
 
@@ -369,7 +369,7 @@ export default function FormProduct(props) {
                 label="商品寬度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品寬度" />
+                <Input placeholder="以cm為單位，請輸入數字" />
               </Form.Item>
             </Col>
 
@@ -379,7 +379,7 @@ export default function FormProduct(props) {
                 label="商品長度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入商品長度" />
+                <Input placeholder="以cm為單位，請輸入數字" />
               </Form.Item>
             </Col>
           </Row>
@@ -391,10 +391,7 @@ export default function FormProduct(props) {
                 label="重量-毛重"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input
-                  placeholder="請輸入商品毛重，以克為單位，請輸入數字"
-                  suffix="克(g)"
-                />
+                <Input placeholder="以克為單位，請輸入數字" suffix="克(g)" />
               </Form.Item>
             </Col>
 
@@ -404,10 +401,7 @@ export default function FormProduct(props) {
                 label="重量-淨重"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input
-                  placeholder="請輸入商品淨重，以克為單位，請輸入數字"
-                  suffix="克(g)"
-                />
+                <Input placeholder="以克為單位，請輸入數字" suffix="克(g)" />
               </Form.Item>
             </Col>
           </Row>
@@ -423,7 +417,7 @@ export default function FormProduct(props) {
                 label="保存日期"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入保存日期，請輸入數字，例如：12" />
+                <Input placeholder="請輸入數字，例如：12" />
               </Form.Item>
             </Col>
 
@@ -433,7 +427,7 @@ export default function FormProduct(props) {
                 label="保存日期單位"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="請輸入保存日期單位：小時 / 日 / 週 / 月 / 年，例如：月" />
+                <Input placeholder="例如：小時 / 日 / 週 / 月 / 年" />
               </Form.Item>
             </Col>
 
@@ -443,7 +437,7 @@ export default function FormProduct(props) {
                 label="保存方式"
                 rules={[{ required: isFood, message: "必填" }]}
               >
-                <Input placeholder="請輸入保存方式：常溫  / 冷凍 / 冷藏，例如：常溫" />
+                <Input placeholder="例如：常溫 / 冷凍 / 冷藏" />
               </Form.Item>
             </Col>
           </Row>
@@ -468,7 +462,7 @@ export default function FormProduct(props) {
                   >
                     <Select
                       style={{ width: "100%" }}
-                      placeholder="請依據下拉選單選擇第一個多規類型 "
+                      placeholder="請選擇多規類型(一) "
                       options={variationType.map((v) => ({
                         ...v,
                         label: v.name,
@@ -486,7 +480,7 @@ export default function FormProduct(props) {
                     rules={[{ validator: validateVariationType1Value }]}
                   >
                     <Input
-                      placeholder="請輸入第一個多規類型的值"
+                      placeholder="請輸入多規類型的值"
                       disabled={!variationType1Code}
                     />
                   </Form.Item>
@@ -504,7 +498,7 @@ export default function FormProduct(props) {
                   >
                     <Select
                       style={{ width: "100%" }}
-                      placeholder="請依據下拉選單選擇第二個多規類型"
+                      placeholder="請選擇多規類型(二)"
                       options={variationType.map((v) => ({
                         ...v,
                         label: v.name,
@@ -522,7 +516,7 @@ export default function FormProduct(props) {
                     rules={[{ validator: validateVariationType2Value }]}
                   >
                     <Input
-                      placeholder="請輸入第二個多規類型的值"
+                      placeholder="請輸入多規類型的值"
                       disabled={!variationType2Code}
                     />
                   </Form.Item>
