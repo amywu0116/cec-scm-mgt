@@ -105,17 +105,17 @@ export default function Sider() {
   const items = [
     {
       key: "announcement",
-      label: "訊息與公告",
+      label: "公告與訂單諮詢",
       icon: IconMenu("/announcement.png"),
       children: [
         {
           key: PATH_ANNOUNCEMENT_SETTINGS,
-          label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告設定</Link>,
+          label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
           icon: IconSubMenu(),
         },
         {
           key: PATH_ANNOUNCEMENT_MESSAGE,
-          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>訊息列表</Link>,
+          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
           icon: IconSubMenu(),
         },
       ],

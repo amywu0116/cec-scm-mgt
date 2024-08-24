@@ -359,7 +359,7 @@ export default function FormProduct(props) {
                 label="商品高度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" />
+                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
               </Form.Item>
             </Col>
 
@@ -369,7 +369,7 @@ export default function FormProduct(props) {
                 label="商品寬度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" />
+                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
               </Form.Item>
             </Col>
 
@@ -379,7 +379,7 @@ export default function FormProduct(props) {
                 label="商品長度"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" />
+                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
               </Form.Item>
             </Col>
           </Row>
