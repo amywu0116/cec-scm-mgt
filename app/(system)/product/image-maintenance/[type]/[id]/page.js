@@ -52,6 +52,7 @@ export default function Page() {
 
   const [loading, setLoading] = useState({
     table: false,
+    form: false,
     delete: false,
   });
 
@@ -166,8 +167,19 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
+    let apiUrl = "";
     const formData = new FormData();
-    formData.append("applyId", id);
+
+    if (isApply) {
+      formData.append("applyId", id);
+      apiUrl = `v1/scm/product/apply/img`;
+    }
+
+    if (isProduct) {
+      formData.append("productId", id);
+      apiUrl = `v1/scm/product/img/upload`;
+    }
+
     formData.append("imgType", values.imgType);
 
     const fileList = values.file.fileList.map((f) => f.originFileObj);
@@ -175,9 +187,9 @@ export default function Page() {
       formData.append("file", file);
     });
 
-    setLoading((state) => ({ ...state, table: true }));
+    setLoading((state) => ({ ...state, form: true }));
     api
-      .post(`v1/scm/product/apply/img`, formData, {
+      .post(apiUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -188,7 +200,7 @@ export default function Page() {
         handleCancel();
       })
       .catch((err) => message.error(err.message))
-      .finally(() => setLoading((state) => ({ ...state, table: false })));
+      .finally(() => setLoading((state) => ({ ...state, form: false })));
   };
 
   const handleDelete = () => {
@@ -268,16 +280,11 @@ export default function Page() {
                 </Form.Item>
               </Col>
 
-              {isApply && (
-                <Col span={8} xxl={{ span: 6 }}>
-                  <Button
-                    type="primary"
-                    onClick={() => setShowImageUpload(true)}
-                  >
-                    上傳圖片
-                  </Button>
-                </Col>
-              )}
+              <Col span={8} xxl={{ span: 6 }}>
+                <Button type="primary" onClick={() => setShowImageUpload(true)}>
+                  上傳圖片
+                </Button>
+              </Col>
             </Row>
 
             <Row>
