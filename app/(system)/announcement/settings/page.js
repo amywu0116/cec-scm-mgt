@@ -145,16 +145,16 @@ export default function Page() {
   return (
     <>
       <LayoutHeader>
-        <LayoutHeaderTitle>公告設定</LayoutHeaderTitle>
+        <LayoutHeaderTitle>公告訊息</LayoutHeaderTitle>
 
         <Breadcrumb
           separator=">"
           items={[
             {
-              title: "訊息與公告",
+              title: "公告與訂單諮詢",
             },
             {
-              title: "公告設定",
+              title: "公告訊息",
             },
           ]}
         />
