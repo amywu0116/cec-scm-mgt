@@ -11,14 +11,20 @@ import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
-import Tabs from "@/components/Tabs";
 
 import api from "@/api";
-import { PATH_PRODUCT_PRODUCT_LIST } from "@/constants/paths";
 
 const SettingsCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #56659b;
+  line-height: 35px;
+  margin-bottom: 16px;
 `;
 
 export default function Page() {
@@ -35,10 +41,27 @@ export default function Page() {
 
   const [loading, setLoading] = useState({
     table: false,
+    tableDelete: false,
     form: false,
   });
 
   const [showSettings, setShowSettings] = useState(false);
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
+
+  const [tableDeleteInfo, setTableDeleteInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
 
   const columns = [
     {
@@ -90,13 +113,42 @@ export default function Page() {
     },
   ];
 
-  const [tableInfo, setTableInfo] = useState({
-    rows: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-    tableQuery: {},
-  });
+  const columnsDelete = [
+    {
+      title: "No.",
+      dataIndex: "id",
+      align: "center",
+    },
+    {
+      title: "刪除日期",
+      dataIndex: "deletedAt",
+      align: "center",
+    },
+    {
+      title: "修改人",
+      dataIndex: "modifyUserName",
+      align: "center",
+    },
+    {
+      title: "日期",
+      dataIndex: "",
+      align: "center",
+      render: (text, record) => {
+        if (record.stockStartdate && record.stockEnddate) {
+          return `${record.stockStartdate} ~ ${record.stockEnddate}`;
+        }
+        return "-";
+      },
+    },
+    {
+      title: "庫存",
+      dataIndex: "perpetual",
+      align: "center",
+      render: (text, record) => {
+        return text ? "不庫控" : record.stock;
+      },
+    },
+  ];
 
   const fetchTableInfo = (pagination = { page: 1, pageSize: 10 }) => {
     const params = {
@@ -116,12 +168,8 @@ export default function Page() {
           pageSize: pagination.pageSize,
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -137,6 +185,7 @@ export default function Page() {
       .then((res) => {
         message.success(res.message);
         fetchTableInfo();
+        fetchTableDeleteInfo();
       })
       .catch((err) => {
         message.error(err.message);
@@ -174,8 +223,36 @@ export default function Page() {
       });
   };
 
+  const fetchTableDeleteInfo = (pagination = { page: 1, pageSize: 10 }) => {
+    const params = {
+      offset: (pagination.page - 1) * pagination.pageSize,
+      max: pagination.pageSize,
+      productId,
+      isDeleted: true,
+    };
+
+    setLoading((state) => ({ ...state, tableDelete: true }));
+    api
+      .get(`v1/scm/product/stock`, { params })
+      .then((res) => {
+        setTableDeleteInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+        }));
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, tableDelete: false })));
+  };
+
+  const handleChangeTableDelete = (page, pageSize) => {
+    fetchTableDeleteInfo({ page, pageSize });
+  };
+
   useEffect(() => {
     fetchTableInfo();
+    fetchTableDeleteInfo();
   }, []);
 
   useEffect(() => {
@@ -296,29 +373,33 @@ export default function Page() {
         )}
 
         <Col span={24}>
-          <Tabs
-            defaultActiveKey="1"
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <>
-                    <Table
-                      loading={loading.table}
-                      columns={columns}
-                      dataSource={tableInfo.rows}
-                      pageInfo={{
-                        total: tableInfo.total,
-                        page: tableInfo.page,
-                        pageSize: tableInfo.pageSize,
-                      }}
-                      onChange={handleChangeTable}
-                    />
-                  </>
-                ),
-              },
-            ]}
+          <Table
+            loading={loading.table}
+            columns={columns}
+            dataSource={tableInfo.rows}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
+            onChange={handleChangeTable}
+          />
+        </Col>
+      </Row>
+
+      <Row style={{ marginTop: 50 }}>
+        <Col span={24}>
+          <Title>庫存刪除人員記錄</Title>
+          <Table
+            loading={loading.tableDelete}
+            columns={columnsDelete}
+            dataSource={tableDeleteInfo.rows}
+            pageInfo={{
+              total: tableDeleteInfo.total,
+              page: tableDeleteInfo.page,
+              pageSize: tableDeleteInfo.pageSize,
+            }}
+            onChange={handleChangeTableDelete}
           />
         </Col>
       </Row>

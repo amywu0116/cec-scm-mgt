@@ -366,15 +366,6 @@ export default function Page() {
                         })}
                       />
                     </Form.Item>
-
-                    <div style={{ marginTop: 10 }}>
-                      <div>每張圖片大小上限：1MB</div>
-                      <div>
-                        建議圖片長寬：商品主圖（800x800
-                        px）、商品特色說明圖（寬度 880 px）
-                      </div>
-                      <div>每次上傳張數上限：50</div>
-                    </div>
                   </Col>
 
                   <Col>
@@ -411,6 +402,17 @@ export default function Page() {
                       </Button>
                     </Space>
                   </Col>
+                </Row>
+
+                <Row style={{ marginTop: 10 }}>
+                  <div>
+                    <div>每張圖片大小上限：1MB</div>
+                    <div>
+                      建議圖片長寬：商品主圖（800x800 px）、商品特色說明圖（寬度
+                      880 px）
+                    </div>
+                    <div>每次上傳張數上限：50</div>
+                  </div>
                 </Row>
               </ImageCard>
             </Form>
