@@ -26,6 +26,20 @@ import {
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
+const Container = styled.div`
+  .file-upload {
+    .ant-col.ant-form-item-control {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .ant-form-item-explain-error {
+      line-height: 42px;
+      margin-left: 10px;
+    }
+  }
+`;
+
 const ImageCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
@@ -145,6 +159,13 @@ export default function Page() {
     },
   ];
 
+  const validateFile = (_, value) => {
+    if (value.fileList.length > 10) {
+      return Promise.reject(new Error("每次上傳張數上限為 10 張"));
+    }
+    return Promise.resolve();
+  };
+
   const fetchList = () => {
     const apiUrl = isProduct
       ? `v1/scm/product/img`
@@ -240,7 +261,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>圖片維護</LayoutHeaderTitle>
         <Breadcrumb
@@ -314,6 +335,7 @@ export default function Page() {
                         <Space size={16}>
                           <Form.Item
                             style={{ marginBottom: 0 }}
+                            className="file-upload"
                             name="file"
                             label=""
                             rules={[
@@ -321,6 +343,7 @@ export default function Page() {
                                 required: true,
                                 message: "必須至少上傳一張圖片",
                               },
+                              { validator: validateFile },
                             ]}
                           >
                             <Upload multiple>
@@ -347,6 +370,17 @@ export default function Page() {
                           </Button>
                         </Space>
                       </Col>
+                    </Row>
+
+                    <Row style={{ marginTop: 10 }}>
+                      <div>
+                        <div>每張圖片大小上限：1MB</div>
+                        <div>
+                          建議圖片長寬：商品主圖（800x800
+                          px）、商品特色說明圖（寬度 880 px）
+                        </div>
+                        <div>每次上傳張數上限：10</div>
+                      </div>
                     </Row>
                   </ImageCard>
                 )}
@@ -378,6 +412,6 @@ export default function Page() {
           setDeleteImgIds(undefined);
         }}
       />
-    </>
+    </Container>
   );
 }
