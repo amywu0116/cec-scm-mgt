@@ -173,7 +173,7 @@ export default function Page() {
                 query: {
                   productId: record.productId,
                   itemName: record.itemName,
-                  itemEan: record.itemEan,
+                  productNumber: record.productnumber,
                 },
               }}
             >
