@@ -447,7 +447,10 @@ export default function Page() {
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
+
         <Space style={{ marginLeft: "auto" }} size={16}>
+          <div style={{ color: "#595959" }}>*匯入筆數一次最多 200 筆</div>
+
           <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 
           <Upload
