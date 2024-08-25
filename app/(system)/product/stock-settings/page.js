@@ -35,7 +35,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId");
   const itemName = searchParams.get("itemName");
-  const itemEan = searchParams.get("itemEan");
+  const productNumber = searchParams.get("productNumber");
 
   const perpetual = Form.useWatch("perpetual", form);
 
@@ -283,8 +283,12 @@ export default function Page() {
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <Form colon={false} layout="inline">
-            <Form.Item style={{ flex: 1 }} label="條碼">
-              <Input placeholder="請輸入條碼" disabled value={itemEan} />
+            <Form.Item style={{ flex: 1 }} label="商城商品編號">
+              <Input
+                placeholder="請輸入商城商品編號"
+                disabled
+                value={productNumber}
+              />
             </Form.Item>
 
             <Form.Item style={{ flex: 1 }} label="品名">
