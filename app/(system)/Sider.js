@@ -1,26 +1,22 @@
 import { App, Layout, Menu } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import styled from "styled-components";
 
 import api from "@/api";
 import {
   PATH_ACCOUNT_CHANGE_PASSWORD,
-  PATH_ANNOUNCEMENT_MESSAGE,
-  PATH_ANNOUNCEMENT_SETTINGS,
-  PATH_BILLING_RECONCILIATION_REPORT,
+  PATH_HOME,
   PATH_LOGIN,
   PATH_LOGISTICS,
   PATH_ORDER_LIST,
   PATH_PRODUCT_APPLICATION,
   PATH_PRODUCT_BATCH_IMG_UPLOAD,
   PATH_PRODUCT_PRODUCT_LIST,
-  PATH_PRODUCT_PROMOTION,
   PATH_SUPPLIER,
 } from "@/constants/paths";
-
 import { useBoundStore } from "@/store";
-import Link from "next/link";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -103,23 +99,23 @@ export default function Sider() {
   const clearUser = useBoundStore((state) => state.clearUser);
 
   const items = [
-    {
-      key: "announcement",
-      label: "公告與訂單諮詢",
-      icon: IconMenu("/announcement.png"),
-      children: [
-        {
-          key: PATH_ANNOUNCEMENT_SETTINGS,
-          label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
-          icon: IconSubMenu(),
-        },
-        // {
-        //   key: PATH_ANNOUNCEMENT_MESSAGE,
-        //   label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
-        //   icon: IconSubMenu(),
-        // },
-      ],
-    },
+    // {
+    //   key: "announcement",
+    //   label: "公告與訂單諮詢",
+    //   icon: IconMenu("/announcement.png"),
+    //   children: [
+    //     {
+    //       key: PATH_ANNOUNCEMENT_SETTINGS,
+    //       label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
+    //       icon: IconSubMenu(),
+    //     },
+    //     {
+    //       key: PATH_ANNOUNCEMENT_MESSAGE,
+    //       label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
+    //       icon: IconSubMenu(),
+    //     },
+    //   ],
+    // },
     {
       key: "product",
       label: "商品",
@@ -257,7 +253,11 @@ export default function Sider() {
       }}
       width={280}
     >
-      <Image src="/logo-1.svg" width={40} height={27} alt="" />
+      <div style={{ marginBottom: 20 }}>
+        <Link href={PATH_HOME}>
+          <Image src="/logo-1.svg" width={40} height={27} alt="" />
+        </Link>
+      </div>
 
       <Menu
         theme="dark"
