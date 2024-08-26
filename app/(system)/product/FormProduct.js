@@ -98,18 +98,18 @@ export default function FormProduct(props) {
   };
 
   const validatePrice = (_, value) => {
-    const p = Number(value);
-    const s = Number(specialPrice);
-    if (s && p < s) {
+    const numPrice = Number(value);
+    const numSpecialPrice = Number(specialPrice);
+    if (numSpecialPrice && numPrice < numSpecialPrice) {
       return Promise.reject(new Error("原價需高於促銷價"));
     }
     return Promise.resolve();
   };
 
   const validateSpecialPrice = (_, value) => {
-    const s = Number(value);
-    const p = Number(price);
-    if (p && s > p) {
+    const numSpecialPrice = Number(value);
+    const numPrice = Number(price);
+    if (numPrice && numSpecialPrice > numPrice) {
       return Promise.reject(new Error("促銷價需低於原價"));
     }
     return Promise.resolve();
