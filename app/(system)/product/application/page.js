@@ -1,7 +1,8 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { App, Col, Form, Image, Row, Space, Tag, Upload } from "antd";
+import { App, Col, Flex, Form, Image, Row, Space, Tag, Upload } from "antd";
 import dayjs from "dayjs";
+import fileDownload from "js-file-download";
 import Link from "next/link";
 import {
   parseAsArrayOf,
@@ -24,6 +25,7 @@ import Table from "@/components/Table";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 import ModalAddProduct from "./ModalAddProduct";
 import ModalImportError from "./ModalImportError";
+import ModalLoading from "./ModalLoading";
 
 import api from "@/api";
 import {
@@ -60,8 +62,10 @@ export default function Page() {
   });
 
   const [loading, setLoading] = useState({
+    page: true,
     table: false,
     import: false,
+    export: false,
   });
 
   const [openModal, setOpenModal] = useState({
@@ -70,8 +74,11 @@ export default function Page() {
     pdpPreview: false,
   });
 
+  const [openFileDialogOnClick, setOpenFileDialogOnClick] = useState(false);
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [currentApplyId, setCurrentApplyId] = useState();
+  const [shipping, setShippingList] = useState([]);
 
   const [importErrorInfo, setImportErrorInfo] = useState();
 
@@ -132,12 +139,24 @@ export default function Page() {
       dataIndex: "",
       align: "center",
       render: (text, record) => {
+        let variationText = "";
         const list = [
           record.variationType1Value,
           record.variationType2Value,
         ].filter(Boolean);
-        if (list.length === 0) return "-";
-        return list.join(" / ");
+
+        if (list.length === 0) {
+          variationText = "-";
+        } else {
+          variationText = list.join(" / ");
+        }
+
+        return (
+          <div>
+            <div>{record.itemSpec ?? "-"}</div>
+            <div>{variationText}</div>
+          </div>
+        );
       },
     },
     {
@@ -228,16 +247,19 @@ export default function Page() {
               },
             }}
           >
-            <FunctionBtn color="green">商品相關圖檔維護</FunctionBtn>
+            <FunctionBtn
+              color="green"
+              disabled={["審核通過"].includes(record.applyStatusName)}
+            >
+              商品相關圖檔維護
+            </FunctionBtn>
           </Link>
         );
       },
     },
   ];
 
-  const fetchList = (values) => {
-    updateQuery(values, setQuery);
-
+  const transformParams = (values) => {
     const params = {
       applyDateStart: values.applyDate
         ? values.applyDate[0].format("YYYY-MM-DD")
@@ -253,10 +275,16 @@ export default function Page() {
       max: values.pageSize,
     };
 
+    return params;
+  };
+
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+    const newParams = transformParams(values);
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/product/apply", { params })
+      .get("v1/scm/product/apply", { params: newParams })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
@@ -272,6 +300,16 @@ export default function Page() {
       .finally(() => {
         setLoading((state) => ({ ...state, table: false }));
       });
+  };
+
+  // 分車類型下拉選單內容
+  const fetchShipping = () => {
+    setLoading((state) => ({ ...state, page: true }));
+    api
+      .get("v1/scm/vendor/shipping")
+      .then((res) => setShippingList(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const refreshTable = () => {
@@ -325,6 +363,7 @@ export default function Page() {
       });
   };
 
+  // 提品匯入範例下載
   const handleDownloadFile = () => {
     const link = document.createElement("a");
     link.href = "/files/提品匯入範例.xlsx";
@@ -334,7 +373,10 @@ export default function Page() {
     document.body.removeChild(link);
   };
 
+  // 提品匯入
   const handleImport = (file) => {
+    setOpenModal((state) => ({ ...state, loading: true }));
+
     if (file.file.status === "done") {
       const formData = new FormData();
       formData.append("file", file.file.originFileObj);
@@ -355,8 +397,34 @@ export default function Page() {
         })
         .finally(() => {
           setLoading((state) => ({ ...state, import: false }));
+          setOpenModal((state) => ({ ...state, loading: false }));
         });
     }
+  };
+
+  // 提品匯入前先檢核是否有分車
+  const handleClickUpload = () => {
+    if (shipping.length === 0) {
+      message.error("請先至 供應商>運費設定 功能頁面，進行運費設定！");
+      return;
+    }
+    setOpenFileDialogOnClick(true);
+  };
+
+  // 提品清單匯出
+  const handleExport = () => {
+    const newParams = transformParams(form.getFieldsValue());
+    delete newParams.max;
+    delete newParams.offset;
+    setLoading((state) => ({ ...state, export: true }));
+    api
+      .get(`v1/scm/product/apply/search/export`, {
+        params: newParams,
+        responseType: "arraybuffer",
+      })
+      .then((res) => fileDownload(res, "提品清單.xlsx"))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, export: false })));
   };
 
   useEffect(() => {
@@ -371,19 +439,33 @@ export default function Page() {
     });
   }, []);
 
+  useEffect(() => {
+    fetchShipping();
+  }, []);
+
   return (
     <>
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
+
         <Space style={{ marginLeft: "auto" }} size={16}>
+          <div style={{ color: "#595959" }}>
+            *匯入筆數上限：食品200品，非食品200品
+          </div>
+
           <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 
           <Upload
             disabled={loading.import}
             showUploadList={false}
+            openFileDialogOnClick={openFileDialogOnClick}
             onChange={handleImport}
           >
-            <Button type="secondary" loading={loading.import}>
+            <Button
+              type="secondary"
+              loading={loading.import}
+              onClick={handleClickUpload}
+            >
               提品匯入
             </Button>
           </Upload>
@@ -490,23 +572,29 @@ export default function Page() {
               <TableTitle>申請列表</TableTitle>
             </Col>
 
-            {selectedRows.length > 0 && (
-              <Col span={24}>
-                <Row gutter={16}>
-                  <Col>
+            <Col span={24}>
+              <Flex gap={16}>
+                <Button
+                  type="secondary"
+                  loading={loading.export}
+                  onClick={handleExport}
+                >
+                  提品清單匯出
+                </Button>
+
+                {selectedRows.length > 0 && (
+                  <>
                     <Button type="default" onClick={handleApply}>
                       送審
                     </Button>
-                  </Col>
 
-                  <Col>
                     <Button type="default" onClick={handleDeleteApply}>
                       刪除
                     </Button>
-                  </Col>
-                </Row>
-              </Col>
-            )}
+                  </>
+                )}
+              </Flex>
+            </Col>
 
             <Col span={24}>
               <Table
@@ -553,6 +641,13 @@ export default function Page() {
         open={openModal.pdpPreview}
         onCancel={() => {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));
+        }}
+      />
+
+      <ModalLoading
+        open={openModal.loading}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, loading: false }));
         }}
       />
     </>

@@ -9,6 +9,10 @@ switch (process.env.PROD) {
       path: `.env.prod`,
     });
     break;
+  default:
+    require("dotenv").config({
+      path: `.env.uat`,
+    });
 }
 
 module.exports = {

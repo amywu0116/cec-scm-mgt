@@ -269,12 +269,6 @@ const FeatureImagesList = styled.div`
   flex-direction: column;
 `;
 
-const FeatureImagesWrapper = styled.div`
-  flex: 1;
-  position: relative;
-  width: 100%;
-`;
-
 const ProductDescriptionTable = styled.div`
   table {
     width: 100%;
@@ -468,6 +462,7 @@ export default function ModalPreviewPDP(props) {
   const [selectedImg, setSelectedImg] = useState();
   const [selectedTab, setSelectedTab] = useState("0");
   const [info, setInfo] = useState({});
+
   const columns = info.isFood ? isFoodColumns : isNonFoodColumns;
 
   const fetchInfo = () => {
@@ -527,12 +522,7 @@ export default function ModalPreviewPDP(props) {
                     <PreviewImgZoom src={selectedImg} />
 
                     <PreviewImgList>
-                      <Swiper
-                        spaceBetween={10}
-                        slidesPerView={4}
-                        onSlideChange={() => console.log("slide change")}
-                        onSwiper={(swiper) => console.log(swiper)}
-                      >
+                      <Swiper spaceBetween={10} slidesPerView={4}>
                         {info?.productImages?.map((img, idx) => {
                           return (
                             <SwiperSlide key={idx}>
@@ -558,10 +548,10 @@ export default function ModalPreviewPDP(props) {
                   <Detail>
                     <ItemName>{info.itemName}</ItemName>
 
-                    <ItemText>
+                    {/* <ItemText>
                       <div>◎品牌：{info.brand}</div>
                       <div>◎規格：{info.itemSpec}</div>
-                    </ItemText>
+                    </ItemText> */}
 
                     <ItemPriceWrapper>
                       {info.specialPrice ? (
@@ -675,18 +665,20 @@ export default function ModalPreviewPDP(props) {
                               <FeatureImagesList>
                                 {info.featureImages?.map((img, idx) => {
                                   return (
-                                    <FeatureImagesWrapper key={idx}>
-                                      <Image
-                                        key={idx}
-                                        src={img}
-                                        fill
-                                        objectFit="contain"
-                                      />
-                                    </FeatureImagesWrapper>
+                                    <Image
+                                      style={{ width: "100%", height: "auto" }}
+                                      key={idx}
+                                      src={img}
+                                      width={0}
+                                      height={0}
+                                      sizes="100vw"
+                                    />
                                   );
                                 })}
                               </FeatureImagesList>
                             )}
+
+                            {info.itemDetail && <div>{info.itemDetail}</div>}
 
                             <ProductDescriptionTable>
                               <table>

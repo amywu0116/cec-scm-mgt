@@ -1,6 +1,14 @@
 "use client";
-import { Col, Divider, Form, Row } from "antd";
+import { App, Col, Divider, Flex, Form, Row } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
@@ -10,50 +18,133 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
+import api from "@/api";
 import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
+import updateQuery from "@/utils/updateQuery";
 
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
 `;
 
 export default function Page() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    promotionId: parseAsString,
+    time: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+  });
+
+  const [loading, setLoading] = useState({
+    table: false,
+  });
+
+  const [discountOptions, setDiscountOptions] = useState([]);
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
 
   const columns = [
     {
       title: "促銷ID",
-      dataIndex: "a",
+      dataIndex: "promotionId",
       align: "center",
-    },
-    {
-      title: "促銷名稱",
-      dataIndex: "b",
-      align: "center",
-    },
-    {
-      title: "促銷英文名稱",
-      dataIndex: "c",
-      align: "center",
+      width: 500,
+      render: (text) => {
+        return discountOptions.find((opt) => opt.key === text)?.name ?? "-";
+      },
     },
     {
       title: "起日",
-      dataIndex: "d",
+      dataIndex: "startTime",
       align: "center",
+      width: 300,
     },
     {
       title: "迄日",
-      dataIndex: "e",
+      dataIndex: "endTime",
       align: "center",
+      width: 300,
     },
     {
       title: "狀態",
-      dataIndex: "f",
+      dataIndex: "activeStatus",
       align: "center",
+      width: 300,
+      render: (text) => {
+        return text ? "啟用" : "禁用";
+      },
     },
   ];
 
-  const handleFinish = () => {};
+  // 抓取 "促銷ID" 下拉選單內容
+  const fetchDiscount = () => {
+    api
+      .get(`v1/system/option/scmDiscount`)
+      .then((res) => setDiscountOptions(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => {});
+  };
+
+  const fetchTableInfo = (values) => {
+    updateQuery(values, setQuery);
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+      promotionId: values.promotionId,
+      startTime: values.time ? values.time[0].format("YYYY-MM-DD") : undefined,
+      endTime: values.time ? values.time[1].format("YYYY-MM-DD") : undefined,
+    };
+
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/vendor_promotion`, { params })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: values.page,
+          pageSize: values.pageSize,
+          tableQuery: { ...values },
+        }));
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  const handleFinish = (values) => {
+    fetchTableInfo({ ...values, page: 1, pageSize: 10 });
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
+  };
+
+  useEffect(() => {
+    fetchDiscount();
+  }, []);
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchTableInfo(query);
+    form.setFieldsValue({
+      promotionId: query.promotionId,
+      time: query.time,
+    });
+  }, []);
 
   return (
     <>
@@ -70,18 +161,29 @@ export default function Page() {
             labelWrap
             labelAlign="left"
             requiredMark={false}
+            disabled={loading.table}
             onFinish={handleFinish}
           >
             <Card>
               <Row gutter={32}>
                 <Col span={8} xxl={{ span: 6 }}>
-                  <Form.Item name="" label="促銷ID">
-                    <Select placeholder="選擇商品代碼或名稱" />
+                  <Form.Item
+                    style={{ margin: 0 }}
+                    name="promotionId"
+                    label="促銷ID"
+                  >
+                    <Select
+                      placeholder="選擇商品代碼或名稱"
+                      popupMatchSelectWidth={false}
+                      options={discountOptions.map((opt) => {
+                        return { ...opt, label: opt.name };
+                      })}
+                    />
                   </Form.Item>
                 </Col>
 
                 <Col span={8} xxl={{ span: 6 }}>
-                  <Form.Item name="" label="日期">
+                  <Form.Item style={{ margin: 0 }} name="time" label="日期">
                     <RangePicker
                       style={{ width: "100%" }}
                       placeholder={["日期起", "日期迄"]}
@@ -92,38 +194,35 @@ export default function Page() {
 
               <Divider style={{ margin: 0 }} />
 
-              <Row
-                style={{ marginTop: 16 }}
-                gutter={16}
-                justify="end"
-                align="middle"
-              >
-                <Col>
-                  <Button type="secondary" htmlType="submit">
-                    查詢
-                  </Button>
-                </Col>
+              <Flex style={{ marginLeft: "auto" }} gap={16} align="center">
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
 
-                <Col>
-                  <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-                </Col>
-              </Row>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Flex>
             </Card>
           </Form>
         </Col>
 
         <Col span={24}>
-          <Row gutter={[0, 16]}>
-            <Col span={24}>
-              <Link href={`${PATH_PRODUCT_PROMOTION}/add`}>
-                <Button type="primary">新增促銷方案商品</Button>
-              </Link>
-            </Col>
+          <Flex style={{ width: "100%" }} vertical gap={16}>
+            <Link href={`${PATH_PRODUCT_PROMOTION}/add`}>
+              <Button type="primary">新增促銷方案商品</Button>
+            </Link>
 
-            <Col span={24}>
-              <Table columns={columns} dataSource={[]} />
-            </Col>
-          </Row>
+            <Table
+              loading={loading.table}
+              columns={columns}
+              dataSource={tableInfo.rows}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              onChange={handleChangeTable}
+            />
+          </Flex>
         </Col>
       </Row>
     </>

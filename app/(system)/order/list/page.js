@@ -6,6 +6,7 @@ import {
   Checkbox,
   Col,
   Divider,
+  Flex,
   Form,
   Radio,
   Row,
@@ -13,6 +14,7 @@ import {
   Upload,
 } from "antd";
 import dayjs from "dayjs";
+import fileDownload from "js-file-download";
 import Link from "next/link";
 import {
   parseAsArrayOf,
@@ -149,10 +151,13 @@ export default function Page() {
     logisticsStatus: parseAsArrayOf(parseAsString),
   });
 
+  const [isPageInit, setIsPageInit] = useState(true);
+
   const [loading, setLoading] = useState({
     table: false,
     batchDelivered: false,
     importShip: false,
+    export: false,
   });
 
   const [showModalImportShip, setShowModalImportShip] = useState(false);
@@ -233,9 +238,7 @@ export default function Page() {
     },
   ];
 
-  const fetchList = (values) => {
-    updateQuery(values, setQuery);
-
+  const transformParams = (values) => {
     const orderStatusList = [];
     const pickingStatusList = [];
     const backStatusList = [];
@@ -273,10 +276,16 @@ export default function Page() {
       max: values.pageSize,
     };
 
+    return params;
+  };
+
+  const fetchList = (values) => {
+    updateQuery(values, setQuery);
+    const newParams = transformParams(values);
     setSelectedRows([]);
     setLoading((state) => ({ ...state, table: true }));
     api
-      .get("v1/scm/order", { params })
+      .get("v1/scm/order", { params: newParams })
       .then((res) => {
         setTableInfo((state) => ({
           ...state,
@@ -286,12 +295,8 @@ export default function Page() {
           tableQuery: { ...values },
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleFinish = (values) => {
@@ -357,9 +362,7 @@ export default function Page() {
         message.success(res.message);
         fetchList({ ...tableInfo.tableQuery });
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
+      .catch((err) => message.error(err.message))
       .finally(() => {
         setLoading((state) => ({
           ...state,
@@ -395,15 +398,31 @@ export default function Page() {
     }
   };
 
-  // // 進頁後先自動查詢一次
-  // useEffect(() => {
-  //   if (options && Object.keys(options).length > 0) {
-  //     // 等訂單物流狀態先設定好再查詢
-  //     setTimeout(() => {
-  //       form.submit();
-  //     }, 0);
-  //   }
-  // }, [options]);
+  // 導出客戶清單
+  const handleExport = () => {
+    const newParams = transformParams(form.getFieldsValue());
+    delete newParams.max;
+    delete newParams.offset;
+    setLoading((state) => ({ ...state, export: true }));
+    api
+      .get(`v1/scm/order/export`, {
+        params: newParams,
+        responseType: "arraybuffer",
+      })
+      .then((res) => fileDownload(res, "客戶清單.xlsx"))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, export: false })));
+  };
+
+  // 進頁後先自動查詢一次
+  useEffect(() => {
+    const list = form.getFieldValue("logisticsStatus");
+
+    if (isPageInit && list?.length > 0) {
+      form.submit();
+      setIsPageInit(false);
+    }
+  });
 
   // 選擇 "處理狀態" 後更新 "訂單物流狀態" 列表
   useEffect(() => {
@@ -568,25 +587,25 @@ export default function Page() {
               </Col>
 
               <Col span={24}>
-                <Row gutter={16}>
-                  <Col>
-                    <Button type="secondary" onClick={() => {}}>
-                      導出客戶清單
-                    </Button>
-                  </Col>
+                <Flex gap={16}>
+                  <Button
+                    type="secondary"
+                    loading={loading.export}
+                    onClick={handleExport}
+                  >
+                    導出客戶清單
+                  </Button>
 
-                  <Col>
-                    <Badge count={shippingList.length}>
-                      <Button
-                        disabled={shippingList.length === 0}
-                        loading={loading.batchDelivered}
-                        onClick={handleBatchDelivered}
-                      >
-                        批次維護物流狀態為已送達
-                      </Button>
-                    </Badge>
-                  </Col>
-                </Row>
+                  <Badge count={shippingList.length}>
+                    <Button
+                      disabled={shippingList.length === 0}
+                      loading={loading.batchDelivered}
+                      onClick={handleBatchDelivered}
+                    >
+                      批次維護物流狀態為已送達
+                    </Button>
+                  </Badge>
+                </Flex>
               </Col>
 
               <Col span={24}>

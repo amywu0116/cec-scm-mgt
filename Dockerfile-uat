@@ -18,13 +18,13 @@ RUN rm /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 
 # 這些指令使用 sed 命令將 .env 檔案中已有的某些環境變數移除。
-RUN sed -i "/.*NEXT_PUBLIC_BUILD_DATE=.*/d" .env.prod
+RUN sed -i "/.*NEXT_PUBLIC_BUILD_DATE=.*/d" .env.uat
 
 # 這些指令使用 echo 命令將新的環境變數加入 .env 檔案中。
-RUN echo "\nNEXT_PUBLIC_BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> .env.prod
+RUN echo "\nNEXT_PUBLIC_BUILD_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> .env.uat
 
 # 建立 Next.js 應用
-RUN npm run build-prod
+RUN npm run build-uat
 
 # 暴露端口
 EXPOSE 3000

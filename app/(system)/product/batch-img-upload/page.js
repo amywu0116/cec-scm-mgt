@@ -22,6 +22,20 @@ import api from "@/api";
 import { useBoundStore } from "@/store";
 import updateQuery from "@/utils/updateQuery";
 
+const Container = styled.div`
+  .file-upload {
+    .ant-col.ant-form-item-control {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .ant-form-item-explain-error {
+      line-height: 42px;
+      margin-left: 10px;
+    }
+  }
+`;
+
 const ImageCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
@@ -59,7 +73,10 @@ export default function Page() {
     total: 0,
     page: 1,
     pageSize: 10,
-    tableQuery: {},
+    tableQuery: {
+      page: 1,
+      pageSize: 10,
+    },
   });
 
   const [deleteImgIds, setDeleteImgIds] = useState();
@@ -167,6 +184,13 @@ export default function Page() {
     },
   ];
 
+  const validateFile = (_, value) => {
+    if (value.fileList.length > 50) {
+      return Promise.reject(new Error("每次上傳張數上限為 50 張"));
+    }
+    return Promise.resolve();
+  };
+
   const fetchList = (values) => {
     updateQuery(values, setQuery);
 
@@ -193,12 +217,8 @@ export default function Page() {
           tableQuery: { ...values },
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -209,6 +229,7 @@ export default function Page() {
     fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
+  // 上傳圖片
   const handleFinishUpload = (values) => {
     const formData = new FormData();
     formData.append("imgType", values.imgType);
@@ -230,12 +251,8 @@ export default function Page() {
         fetchList(tableInfo.tableQuery);
         handleCloseUpload();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, upload: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, upload: false })));
   };
 
   const handleCloseUpload = () => {
@@ -243,6 +260,7 @@ export default function Page() {
     uploadForm.resetFields();
   };
 
+  // 刪除
   const handleDelete = () => {
     const imgIds = deleteImgIds.join(",");
     setLoading((state) => ({ ...state, delete: true }));
@@ -255,12 +273,8 @@ export default function Page() {
         setShowModalDelete(false);
         fetchList(tableInfo.tableQuery);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, delete: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, delete: false })));
   };
 
   useEffect(() => {
@@ -272,7 +286,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>批次提品圖片上傳</LayoutHeaderTitle>
       </LayoutHeader>
@@ -358,13 +372,14 @@ export default function Page() {
                     <Space size={16}>
                       <Form.Item
                         style={{ marginBottom: 0 }}
+                        className="file-upload"
                         name="file"
-                        label=""
                         rules={[
                           { required: true, message: "必須至少上傳一張圖片" },
+                          { validator: validateFile },
                         ]}
                       >
-                        <Upload maxCount={10} multiple>
+                        <Upload multiple>
                           <Button type="secondary">上傳</Button>
                         </Upload>
                       </Form.Item>
@@ -374,7 +389,6 @@ export default function Page() {
                   <Col style={{ marginLeft: "auto" }}>
                     <Space size={16}>
                       <Button
-                        style={{ marginLeft: "auto" }}
                         type="secondary"
                         loading={loading.upload}
                         disabled={false}
@@ -388,6 +402,17 @@ export default function Page() {
                       </Button>
                     </Space>
                   </Col>
+                </Row>
+
+                <Row style={{ marginTop: 10 }}>
+                  <div>
+                    <div>每張圖片大小上限：1MB</div>
+                    <div>
+                      建議圖片長寬：商品主圖（800x800 px）、商品特色說明圖（寬度
+                      880 px）
+                    </div>
+                    <div>每次上傳張數上限：50</div>
+                  </div>
                 </Row>
               </ImageCard>
             </Form>
@@ -419,6 +444,6 @@ export default function Page() {
           setDeleteImgIds(undefined);
         }}
       />
-    </>
+    </Container>
   );
 }

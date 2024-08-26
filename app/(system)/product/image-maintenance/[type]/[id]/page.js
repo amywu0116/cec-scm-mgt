@@ -26,6 +26,20 @@ import {
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
+const Container = styled.div`
+  .file-upload {
+    .ant-col.ant-form-item-control {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .ant-form-item-explain-error {
+      line-height: 42px;
+      margin-left: 10px;
+    }
+  }
+`;
+
 const ImageCard = styled.div`
   background-color: #f1f3f6;
   padding: 16px;
@@ -52,6 +66,7 @@ export default function Page() {
 
   const [loading, setLoading] = useState({
     table: false,
+    form: false,
     delete: false,
   });
 
@@ -144,6 +159,13 @@ export default function Page() {
     },
   ];
 
+  const validateFile = (_, value) => {
+    if (value.fileList.length > 10) {
+      return Promise.reject(new Error("每次上傳張數上限為 10 張"));
+    }
+    return Promise.resolve();
+  };
+
   const fetchList = () => {
     const apiUrl = isProduct
       ? `v1/scm/product/img`
@@ -160,20 +182,25 @@ export default function Page() {
     setLoading((state) => ({ ...state, table: true }));
     api
       .get(apiUrl, { params })
-      .then((res) => {
-        setImageList(res.data);
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .then((res) => setImageList(res.data))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   const handleFinish = (values) => {
+    let apiUrl = "";
     const formData = new FormData();
-    formData.append("applyId", id);
+
+    if (isApply) {
+      formData.append("applyId", id);
+      apiUrl = `v1/scm/product/apply/img`;
+    }
+
+    if (isProduct) {
+      formData.append("productId", id);
+      apiUrl = `v1/scm/product/img/upload`;
+    }
+
     formData.append("imgType", values.imgType);
 
     const fileList = values.file.fileList.map((f) => f.originFileObj);
@@ -181,9 +208,9 @@ export default function Page() {
       formData.append("file", file);
     });
 
-    setLoading((state) => ({ ...state, table: true }));
+    setLoading((state) => ({ ...state, form: true }));
     api
-      .post(`v1/scm/product/apply/img`, formData, {
+      .post(apiUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -193,12 +220,8 @@ export default function Page() {
         fetchList();
         handleCancel();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, form: false })));
   };
 
   const handleDelete = () => {
@@ -224,12 +247,8 @@ export default function Page() {
         setShowModalDelete(false);
         fetchList();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, delete: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, delete: false })));
   };
 
   const handleCancel = () => {
@@ -242,7 +261,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>圖片維護</LayoutHeaderTitle>
         <Breadcrumb
@@ -282,16 +301,11 @@ export default function Page() {
                 </Form.Item>
               </Col>
 
-              {isApply && (
-                <Col span={8} xxl={{ span: 6 }}>
-                  <Button
-                    type="primary"
-                    onClick={() => setShowImageUpload(true)}
-                  >
-                    上傳圖片
-                  </Button>
-                </Col>
-              )}
+              <Col span={8} xxl={{ span: 6 }}>
+                <Button type="primary" onClick={() => setShowImageUpload(true)}>
+                  上傳圖片
+                </Button>
+              </Col>
             </Row>
 
             <Row>
@@ -321,6 +335,7 @@ export default function Page() {
                         <Space size={16}>
                           <Form.Item
                             style={{ marginBottom: 0 }}
+                            className="file-upload"
                             name="file"
                             label=""
                             rules={[
@@ -328,9 +343,10 @@ export default function Page() {
                                 required: true,
                                 message: "必須至少上傳一張圖片",
                               },
+                              { validator: validateFile },
                             ]}
                           >
-                            <Upload maxCount={10} multiple>
+                            <Upload multiple>
                               <Button type="secondary">上傳</Button>
                             </Upload>
                           </Form.Item>
@@ -354,6 +370,17 @@ export default function Page() {
                           </Button>
                         </Space>
                       </Col>
+                    </Row>
+
+                    <Row style={{ marginTop: 10 }}>
+                      <div>
+                        <div>每張圖片大小上限：1MB</div>
+                        <div>
+                          建議圖片長寬：商品主圖（800x800
+                          px）、商品特色說明圖（寬度 880 px）
+                        </div>
+                        <div>每次上傳張數上限：10</div>
+                      </div>
                     </Row>
                   </ImageCard>
                 )}
@@ -385,6 +412,6 @@ export default function Page() {
           setDeleteImgIds(undefined);
         }}
       />
-    </>
+    </Container>
   );
 }
