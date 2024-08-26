@@ -324,6 +324,7 @@ export default function FormProduct(props) {
                 label="原價"
                 rules={[
                   { required: true, message: "必填" },
+                  { pattern: /^[0-9]+$/, message: "只能輸入整數" },
                   {
                     validator: validateWarningPrice,
                     warningOnly: true,
@@ -340,6 +341,7 @@ export default function FormProduct(props) {
                 name="specialPrice"
                 label="促銷價"
                 rules={[
+                  { pattern: /^[0-9]+$/, message: "只能輸入整數" },
                   {
                     validator: validateWarningSpecialPrice,
                     warningOnly: true,
