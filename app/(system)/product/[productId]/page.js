@@ -39,6 +39,7 @@ export default function Page() {
   const [info, setInfo] = useState({});
 
   const itemName = form.getFieldValue("itemName");
+  const productNumber = form.getFieldValue("productnumber");
   const itemEan = form.getFieldValue("itemEan");
   const isFood = form.getFieldValue("isFood") === true;
   const isNonFood = form.getFieldValue("isFood") === false;
@@ -193,7 +194,7 @@ export default function Page() {
                 query: {
                   productId: params.productId,
                   itemName,
-                  itemEan,
+                  productNumber,
                 },
               }}
             >
