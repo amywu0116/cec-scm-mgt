@@ -1,6 +1,7 @@
 "use client";
 import { Col, Flex, Form, Radio, Row, Space } from "antd";
 import dayjs from "dayjs";
+import { useParams } from "next/navigation";
 import styled from "styled-components";
 
 import RangePicker from "@/components/DatePicker/RangePicker";
@@ -39,9 +40,12 @@ export default function FormProduct(props) {
     isNonFood,
     onFinish,
   } = props;
+  const params = useParams();
 
   const isApply = type === "apply";
   const isProduct = type === "product";
+
+  const isAdd = isApply && params.slug[0] === "add";
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -320,6 +324,7 @@ export default function FormProduct(props) {
                 label="原價"
                 rules={[
                   { required: true, message: "必填" },
+                  { pattern: /^[0-9]+$/, message: "只能輸入整數" },
                   {
                     validator: validateWarningPrice,
                     warningOnly: true,
@@ -336,6 +341,7 @@ export default function FormProduct(props) {
                 name="specialPrice"
                 label="促銷價"
                 rules={[
+                  { pattern: /^[0-9]+$/, message: "只能輸入整數" },
                   {
                     validator: validateWarningSpecialPrice,
                     warningOnly: true,
@@ -533,7 +539,7 @@ export default function FormProduct(props) {
                 label="是否庫控"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Radio.Group>
+                <Radio.Group disabled={!isAdd}>
                   <Radio value={true}>否</Radio>
                   <Radio value={false}>是</Radio>
                 </Radio.Group>
@@ -546,7 +552,10 @@ export default function FormProduct(props) {
                     name="stock"
                     rules={[{ required: true, message: "必填" }]}
                   >
-                    <Input placeholder="請輸入活動庫存，請輸入整數數字" />
+                    <Input
+                      placeholder="請輸入活動庫存，請輸入整數數字"
+                      disabled={!isAdd}
+                    />
                   </Form.Item>
 
                   <Form.Item
@@ -561,6 +570,7 @@ export default function FormProduct(props) {
                         "請輸入活動庫存結束時間",
                       ]}
                       disabledDate={disabledStockDate}
+                      disabled={!isAdd}
                     />
                   </Form.Item>
                 </Space>
@@ -761,6 +771,14 @@ export default function FormProduct(props) {
                 </Form.Item>
               </Col>
             )}
+          </Row>
+
+          <Row gutter={32}>
+            <Col span={6}>
+              <Form.Item name="commissionRate" label="佣金比例">
+                <Input placeholder="請輸入佣金比例" disabled suffix="%" />
+              </Form.Item>
+            </Col>
           </Row>
         </Col>
 
