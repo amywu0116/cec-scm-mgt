@@ -151,6 +151,8 @@ export default function Page() {
     logisticsStatus: parseAsArrayOf(parseAsString),
   });
 
+  const [isPageInit, setIsPageInit] = useState(true);
+
   const [loading, setLoading] = useState({
     table: false,
     batchDelivered: false,
@@ -412,15 +414,15 @@ export default function Page() {
       .finally(() => setLoading((state) => ({ ...state, export: false })));
   };
 
-  // // 進頁後先自動查詢一次
-  // useEffect(() => {
-  //   if (options && Object.keys(options).length > 0) {
-  //     // 等訂單物流狀態先設定好再查詢
-  //     setTimeout(() => {
-  //       form.submit();
-  //     }, 0);
-  //   }
-  // }, [options]);
+  // 進頁後先自動查詢一次
+  useEffect(() => {
+    const list = form.getFieldValue("logisticsStatus");
+
+    if (isPageInit && list?.length > 0) {
+      form.submit();
+      setIsPageInit(false);
+    }
+  });
 
   // 選擇 "處理狀態" 後更新 "訂單物流狀態" 列表
   useEffect(() => {
