@@ -90,11 +90,8 @@ export default function Page() {
     },
     {
       title: "已販售量",
-      dataIndex: "",
+      dataIndex: "salesQuantity",
       align: "center",
-      render: () => {
-        return "-";
-      },
     },
     {
       title: "功能",
