@@ -1,8 +1,15 @@
 "use client";
 import { App, Col, Divider, Flex, Form, Row } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
 
 import Button from "@/components/Button";
 import ResetBtn from "@/components/Button/ResetBtn";
@@ -11,17 +18,30 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
-import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
 import api from "@/api";
+import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
+import updateQuery from "@/utils/updateQuery";
 
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px 0;
 `;
 
 export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    promotionId: parseAsString,
+    time: parseAsArrayOf({
+      parse: (query) => dayjs(query),
+    }),
+  });
 
   const [loading, setLoading] = useState({
     table: false,
@@ -42,37 +62,35 @@ export default function Page() {
       title: "促銷ID",
       dataIndex: "promotionId",
       align: "center",
-    },
-    {
-      title: "促銷名稱",
-      dataIndex: "promotionName",
-      align: "center",
-    },
-    {
-      title: "促銷英文名稱",
-      dataIndex: "promotionNameEn",
-      align: "center",
+      width: 500,
+      render: (text) => {
+        return discountOptions.find((opt) => opt.key === text)?.name ?? "-";
+      },
     },
     {
       title: "起日",
       dataIndex: "startTime",
       align: "center",
+      width: 300,
     },
     {
       title: "迄日",
       dataIndex: "endTime",
       align: "center",
+      width: 300,
     },
     {
       title: "狀態",
       dataIndex: "activeStatus",
       align: "center",
+      width: 300,
       render: (text) => {
         return text ? "啟用" : "禁用";
       },
     },
   ];
 
+  // 抓取 "促銷ID" 下拉選單內容
   const fetchDiscount = () => {
     api
       .get(`v1/system/option/scmDiscount`)
@@ -82,8 +100,14 @@ export default function Page() {
   };
 
   const fetchTableInfo = (values) => {
-    console.log(values);
-    const params = {};
+    updateQuery(values, setQuery);
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+      promotionId: values.promotionId,
+      startTime: values.time ? values.time[0].format("YYYY-MM-DD") : undefined,
+      endTime: values.time ? values.time[1].format("YYYY-MM-DD") : undefined,
+    };
 
     setLoading((state) => ({ ...state, table: true }));
     api
@@ -113,6 +137,15 @@ export default function Page() {
     fetchDiscount();
   }, []);
 
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchTableInfo(query);
+    form.setFieldsValue({
+      promotionId: query.promotionId,
+      time: query.time,
+    });
+  }, []);
+
   return (
     <>
       <LayoutHeader>
@@ -134,21 +167,23 @@ export default function Page() {
             <Card>
               <Row gutter={32}>
                 <Col span={8} xxl={{ span: 6 }}>
-                  <Form.Item name="promotionId" label="促銷ID">
+                  <Form.Item
+                    style={{ margin: 0 }}
+                    name="promotionId"
+                    label="促銷ID"
+                  >
                     <Select
                       placeholder="選擇商品代碼或名稱"
+                      popupMatchSelectWidth={false}
                       options={discountOptions.map((opt) => {
-                        return {
-                          ...opt,
-                          label: opt.name,
-                        };
+                        return { ...opt, label: opt.name };
                       })}
                     />
                   </Form.Item>
                 </Col>
 
                 <Col span={8} xxl={{ span: 6 }}>
-                  <Form.Item name="time" label="日期">
+                  <Form.Item style={{ margin: 0 }} name="time" label="日期">
                     <RangePicker
                       style={{ width: "100%" }}
                       placeholder={["日期起", "日期迄"]}
@@ -159,22 +194,13 @@ export default function Page() {
 
               <Divider style={{ margin: 0 }} />
 
-              <Row
-                style={{ marginTop: 16 }}
-                gutter={16}
-                justify="end"
-                align="middle"
-              >
-                <Col>
-                  <Button type="secondary" htmlType="submit">
-                    查詢
-                  </Button>
-                </Col>
+              <Flex style={{ marginLeft: "auto" }} gap={16} align="center">
+                <Button type="secondary" htmlType="submit">
+                  查詢
+                </Button>
 
-                <Col>
-                  <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
-                </Col>
-              </Row>
+                <ResetBtn htmlType="reset">清除查詢條件</ResetBtn>
+              </Flex>
             </Card>
           </Form>
         </Col>
