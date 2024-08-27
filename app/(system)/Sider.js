@@ -7,6 +7,9 @@ import styled from "styled-components";
 import api from "@/api";
 import {
   PATH_ACCOUNT_CHANGE_PASSWORD,
+  PATH_ANNOUNCEMENT_MESSAGE,
+  PATH_ANNOUNCEMENT_SETTINGS,
+  PATH_BILLING_RECONCILIATION_REPORT,
   PATH_HOME,
   PATH_LOGIN,
   PATH_LOGISTICS,
@@ -14,6 +17,7 @@ import {
   PATH_PRODUCT_APPLICATION,
   PATH_PRODUCT_BATCH_IMG_UPLOAD,
   PATH_PRODUCT_PRODUCT_LIST,
+  PATH_PRODUCT_PROMOTION,
   PATH_SUPPLIER,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
@@ -99,23 +103,23 @@ export default function Sider() {
   const clearUser = useBoundStore((state) => state.clearUser);
 
   const items = [
-    // {
-    //   key: "announcement",
-    //   label: "公告與訂單諮詢",
-    //   icon: IconMenu("/announcement.png"),
-    //   children: [
-    //     {
-    //       key: PATH_ANNOUNCEMENT_SETTINGS,
-    //       label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
-    //       icon: IconSubMenu(),
-    //     },
-    //     {
-    //       key: PATH_ANNOUNCEMENT_MESSAGE,
-    //       label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
-    //       icon: IconSubMenu(),
-    //     },
-    //   ],
-    // },
+    {
+      key: "announcement",
+      label: "公告與訂單諮詢",
+      icon: IconMenu("/announcement.png"),
+      children: [
+        {
+          key: PATH_ANNOUNCEMENT_SETTINGS,
+          label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
+          icon: IconSubMenu(),
+        },
+        {
+          key: PATH_ANNOUNCEMENT_MESSAGE,
+          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
+          icon: IconSubMenu(),
+        },
+      ],
+    },
     {
       key: "product",
       label: "商品",
@@ -138,16 +142,16 @@ export default function Sider() {
           ),
           icon: IconSubMenu(),
         },
-        // {
-        //   key: PATH_PRODUCT_PROMOTION,
-        //   label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
-        //   icon: IconSubMenu(),
-        // },
-        // {
-        //   key: "",
-        //   label: "樣式商品",
-        //   icon: IconSubMenu(),
-        // },
+        {
+          key: PATH_PRODUCT_PROMOTION,
+          label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
+          icon: IconSubMenu(),
+        },
+        {
+          key: "",
+          label: "樣式商品",
+          icon: IconSubMenu(),
+        },
       ],
     },
     {
@@ -172,20 +176,20 @@ export default function Sider() {
       label: <Link href={PATH_SUPPLIER}>供應商</Link>,
       icon: IconMenu("/supplier.svg"),
     },
-    // {
-    //   key: "billing",
-    //   label: "帳務",
-    //   icon: IconMenu("/accounting.svg"),
-    //   children: [
-    //     {
-    //       key: PATH_BILLING_RECONCILIATION_REPORT,
-    //       label: (
-    //         <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
-    //       ),
-    //       icon: IconSubMenu(),
-    //     },
-    //   ],
-    // },
+    {
+      key: "billing",
+      label: "帳務",
+      icon: IconMenu("/accounting.svg"),
+      children: [
+        {
+          key: PATH_BILLING_RECONCILIATION_REPORT,
+          label: (
+            <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
+          ),
+          icon: IconSubMenu(),
+        },
+      ],
+    },
     {
       key: "account",
       label: "帳戶",
