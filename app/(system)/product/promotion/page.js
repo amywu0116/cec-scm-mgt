@@ -19,7 +19,10 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
+import {
+  PATH_PRODUCT_PROMOTION,
+  PATH_PRODUCT_PROMOTION_EDIT,
+} from "@/constants/paths";
 import updateQuery from "@/utils/updateQuery";
 
 const Card = styled.div`
@@ -63,8 +66,12 @@ export default function Page() {
       dataIndex: "promotionId",
       align: "center",
       width: 500,
-      render: (text) => {
-        return discountOptions.find((opt) => opt.key === text)?.name ?? "-";
+      render: (text, record) => {
+        return (
+          <Link href={`${PATH_PRODUCT_PROMOTION_EDIT}/${record.id}`}>
+            {discountOptions.find((opt) => opt.key === text)?.name ?? "-"}
+          </Link>
+        );
       },
     },
     {

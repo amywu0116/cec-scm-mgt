@@ -15,6 +15,8 @@ export const PATH_PRODUCT_PRODUCT_LIST = `${PATH_PRODUCT}/list`;
 export const PATH_PRODUCT_STOCK_SETTINGS = `${PATH_PRODUCT}/stock-settings`;
 export const PATH_PRODUCT_APPLICATION = `${PATH_PRODUCT}/application`;
 export const PATH_PRODUCT_PROMOTION = `${PATH_PRODUCT}/promotion`;
+export const PATH_PRODUCT_PROMOTION_ADD = `${PATH_PRODUCT}/promotion/add`;
+export const PATH_PRODUCT_PROMOTION_EDIT = `${PATH_PRODUCT}/promotion/edit`;
 export const PATH_PRODUCT_IMAGE_MAINTENANCE = `${PATH_PRODUCT}/image-maintenance`;
 export const PATH_PRODUCT_BATCH_IMG_UPLOAD = `${PATH_PRODUCT}/batch-img-upload`;
 
