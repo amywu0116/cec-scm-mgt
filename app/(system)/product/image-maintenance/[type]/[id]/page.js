@@ -4,7 +4,17 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
 } from "@ant-design/icons";
-import { App, Breadcrumb, Col, Form, Image, Row, Space, Upload } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Form,
+  Image,
+  Row,
+  Space,
+  Tooltip,
+  Upload,
+} from "antd";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -88,11 +98,6 @@ export default function Page() {
       align: "center",
     },
     {
-      title: "檔名",
-      dataIndex: "fileName",
-      align: "center",
-    },
-    {
       title: "圖片",
       dataIndex: "imgList",
       align: "center",
@@ -101,43 +106,44 @@ export default function Page() {
           <Space size={10}>
             {text.map((t) => {
               return (
-                <Image
-                  key={t.id}
-                  width={50}
-                  height={50}
-                  src={t.imgUrl}
-                  alt=""
-                  preview={{
-                    toolbarRender: (
-                      _,
-                      {
-                        image: { url },
-                        transform: { scale },
-                        actions: { onZoomOut, onZoomIn },
-                      }
-                    ) => (
-                      <Space size={12} className="toolbar-wrapper">
-                        <ZoomOutOutlined
-                          disabled={scale === 1}
-                          onClick={onZoomOut}
-                        />
+                <Tooltip key={t.id} title={t.fileName}>
+                  <Image
+                    width={50}
+                    height={50}
+                    src={t.imgUrl}
+                    alt=""
+                    preview={{
+                      toolbarRender: (
+                        _,
+                        {
+                          image: { url },
+                          transform: { scale },
+                          actions: { onZoomOut, onZoomIn },
+                        }
+                      ) => (
+                        <Space size={12} className="toolbar-wrapper">
+                          <ZoomOutOutlined
+                            disabled={scale === 1}
+                            onClick={onZoomOut}
+                          />
 
-                        <ZoomInOutlined
-                          disabled={scale === 50}
-                          onClick={onZoomIn}
-                        />
+                          <ZoomInOutlined
+                            disabled={scale === 50}
+                            onClick={onZoomIn}
+                          />
 
-                        <DeleteOutlined
-                          style={{ color: "red" }}
-                          onClick={() => {
-                            setDeleteImgIds([t.id]);
-                            setShowModalDelete(true);
-                          }}
-                        />
-                      </Space>
-                    ),
-                  }}
-                />
+                          <DeleteOutlined
+                            style={{ color: "red" }}
+                            onClick={() => {
+                              setDeleteImgIds([t.id]);
+                              setShowModalDelete(true);
+                            }}
+                          />
+                        </Space>
+                      ),
+                    }}
+                  />
+                </Tooltip>
               );
             })}
           </Space>
