@@ -88,6 +88,11 @@ export default function Page() {
       align: "center",
     },
     {
+      title: "檔名",
+      dataIndex: "fileName",
+      align: "center",
+    },
+    {
       title: "圖片",
       dataIndex: "imgList",
       align: "center",
