@@ -221,6 +221,14 @@ export default function Page() {
       .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
+  const beforeUpload = (file) => {
+    const isLt1M = file.size / 1024 / 1024 <= 1;
+    if (!isLt1M) {
+      message.error("每張圖片的大小最多只能 1MB");
+      return false;
+    }
+  };
+
   const handleChangeTable = (page, pageSize) => {
     fetchList({ ...tableInfo.tableQuery, page, pageSize });
   };
@@ -379,7 +387,17 @@ export default function Page() {
                           { validator: validateFile },
                         ]}
                       >
-                        <Upload multiple>
+                        <Upload
+                          multiple
+                          beforeUpload={beforeUpload}
+                          showUploadList={{
+                            extra: ({ size = 0 }) => (
+                              <span className="ant-upload-list-item-name">
+                                ({(size / 1024 / 1024).toFixed(2)}MB)
+                              </span>
+                            ),
+                          }}
+                        >
                           <Button type="secondary">上傳</Button>
                         </Upload>
                       </Form.Item>
