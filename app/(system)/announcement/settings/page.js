@@ -1,14 +1,15 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Dropdown } from "antd";
-import { MoreOutlined } from "@ant-design/icons";
+import { App, Breadcrumb, Tooltip } from "antd";
+import { parseAsInteger, useQueryStates } from "nuqs";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 
-import ModalHistory from "./ModalHistory";
+import api from "@/api";
+import { truncateString } from "@/utils/formatted";
+import updateQuery from "@/utils/updateQuery";
 
 const DropdownWrapper = styled.div`
   width: 160px;
@@ -33,114 +34,89 @@ const DropdownItem = styled.div`
 `;
 
 export default function Page() {
-  const [openModalHistory, setOpenModalHistory] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState({});
+  const { message } = App.useApp();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+  });
+
+  const [loading, setLoading] = useState({
+    table: false,
+  });
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {
+      page: 1,
+      pageSize: 10,
+    },
+  });
 
   const columns = [
     {
       title: "建立時間",
-      dataIndex: "a",
+      dataIndex: "createdAt",
       align: "center",
     },
     {
       title: "主題",
-      dataIndex: "b",
+      dataIndex: "announceName",
       align: "center",
     },
     {
       title: "公告內容",
-      dataIndex: "c",
+      dataIndex: "announceContent",
       align: "center",
-    },
-    {
-      title: "發送分類",
-      dataIndex: "d",
-      align: "center",
-    },
-    {
-      title: "備註",
-      dataIndex: "e",
-      align: "center",
-    },
-    {
-      title: "操作",
-      dataIndex: "h",
-      align: "center",
-      render: (text, record) => {
+      render: (text) => {
         return (
-          <Dropdown
-            trigger={["click"]}
-            menu={{
-              items: [
-                {
-                  key: "1",
-                  label: "歷程查詢",
-                },
-              ],
-            }}
-            open={openDropdown[record.id]}
-            dropdownRender={(menus) => {
-              return (
-                <DropdownWrapper>
-                  {menus.props.items.map((item) => {
-                    return (
-                      <DropdownItem
-                        key={item.key}
-                        onClick={() => {
-                          setOpenDropdown((state) => ({
-                            ...state,
-                            [record.id]: false,
-                          }));
-                          setOpenModalHistory(true);
-                        }}
-                      >
-                        {item.label}
-                      </DropdownItem>
-                    );
-                  })}
-                </DropdownWrapper>
-              );
-            }}
-            onOpenChange={(nextOpen, info) => {
-              if (info.source === "trigger" || nextOpen) {
-                setOpenDropdown((state) => ({
-                  ...state,
-                  [record.id]: nextOpen,
-                }));
-              }
-            }}
-          >
-            <Button
-              type="link"
-              size="large"
-              icon={<MoreOutlined style={{ fontSize: 30 }} />}
-            />
-          </Dropdown>
+          <Tooltip overlayStyle={{ maxWidth: 400 }} title={text}>
+            {truncateString(text, 20)}
+          </Tooltip>
         );
       },
     },
   ];
 
-  const data = [
-    {
-      id: 0,
-      a: "2024/05/01 17:40:00",
-      b: "廠商A公告",
-      c: "因應原物料上漲，蛋價每顆上漲1元!",
-      d: "菸酒飲料",
-      e: "",
-      f: "",
-    },
-    {
-      id: 1,
-      a: "2024/04/29 17:40:00",
-      b: "廠商B公告",
-      c: "因應原物料上漲，蛋價每顆上漲1元!",
-      d: "可樂",
-      e: "新款可樂上架，請踴躍試喝！",
-      f: "",
-    },
-  ];
+  const fetchTableInfo = (values) => {
+    updateQuery(values, setQuery);
+
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+    };
+
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/announce`, { params })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: values.page,
+          pageSize: values.pageSize,
+          tableQuery: { ...values },
+        }));
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
+  };
+
+  useEffect(() => {
+    fetchTableInfo({ ...tableInfo.tableQuery });
+  }, []);
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchTableInfo(query);
+  }, []);
 
   return (
     <>
@@ -149,22 +125,20 @@ export default function Page() {
 
         <Breadcrumb
           separator=">"
-          items={[
-            {
-              title: "公告與訂單諮詢",
-            },
-            {
-              title: "公告訊息",
-            },
-          ]}
+          items={[{ title: "公告與訂單諮詢" }, { title: "公告訊息" }]}
         />
       </LayoutHeader>
 
-      <Table columns={columns} dataSource={data} />
-
-      <ModalHistory
-        open={openModalHistory}
-        onCancel={() => setOpenModalHistory(false)}
+      <Table
+        columns={columns}
+        dataSource={tableInfo.rows}
+        loading={loading.table}
+        pageInfo={{
+          total: tableInfo.total,
+          page: tableInfo.page,
+          pageSize: tableInfo.pageSize,
+        }}
+        onChange={handleChangeTable}
       />
     </>
   );
