@@ -1,5 +1,16 @@
 "use client";
-import { App, Breadcrumb, Checkbox, Col, Form, Row, Space, Spin } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Checkbox,
+  Col,
+  Flex,
+  Form,
+  Radio,
+  Row,
+  Space,
+  Spin,
+} from "antd";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,16 +25,28 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import ModalConfirm from "@/components/Modal/ModalConfirm";
 import Select from "@/components/Select";
+
 import Transfer from "./Transfer";
 
 import api from "@/api";
-
 import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   .ant-checkbox-group {
     gap: 20px 18px;
+  }
+
+  .form-item-cartType {
+    .ant-col.ant-form-item-control {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .ant-form-item-explain-error {
+      margin-left: 10px;
+    }
   }
 `;
 
@@ -85,6 +108,9 @@ export default function Page() {
   const router = useRouter();
   const selectedKey = "productnumber";
 
+  const OPTION_CART_TYPE = 1;
+  const OPTION_PRODUCT = 2;
+
   const isAdd = params.slug[0] === "add";
   const isEdit = params.slug[0] === "edit";
   const id = isEdit && params.slug[1];
@@ -92,7 +118,7 @@ export default function Page() {
   const options = useBoundStore((state) => state.options);
   const scmCart = options?.SCM_cart ?? [];
 
-  const cartType = Form.useWatch("cartType", form);
+  const mode = Form.useWatch("mode", form);
 
   const columns = [
     {
@@ -136,7 +162,17 @@ export default function Page() {
           time: [dayjs(res.data.startTime), dayjs(res.data.endTime)],
           cartType: res.data.cartType,
         });
-        setProductTargetList(res.data.info);
+
+        // 以分車類型設定
+        if (res.data.cartType.length > 0) {
+          form.setFieldsValue({ mode: OPTION_CART_TYPE });
+        }
+
+        // 以商品設定
+        if (res.data.info.length > 0) {
+          form.setFieldsValue({ mode: OPTION_PRODUCT });
+          setProductTargetList(res.data.info);
+        }
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading((state) => ({ ...state, page: false })));
@@ -148,15 +184,20 @@ export default function Page() {
     return "";
   };
 
-  // 確認新增
+  // 確認新增/編輯
   const handleFinish = (values) => {
+    if (values.mode === OPTION_PRODUCT && productTargetList.length === 0) {
+      message.error("必須至少選取一筆商品");
+      return;
+    }
+
     const data = {
       vendorPromotionId: isEdit ? Number(id) : undefined,
       promotionId: values.promotionId,
       startTime: values.time ? values.time[0].format("YYYY-MM-DD") : undefined,
       endTime: values.time ? values.time[1].format("YYYY-MM-DD") : undefined,
-      cartType: values.cartType?.length === 0 ? undefined : values.cartType,
-      info: values.cartType?.length === 4 ? undefined : productTargetList,
+      cartType: values.mode === OPTION_CART_TYPE ? values.cartType : undefined,
+      info: values.mode === OPTION_PRODUCT ? productTargetList : undefined,
       isForce: isForce === true ? true : undefined,
     };
 
@@ -219,6 +260,7 @@ export default function Page() {
       .finally(() => setLoading((state) => ({ ...state, search: false })));
   };
 
+  // 清除查詢條件
   const handleResetSearch = () => {
     form.resetFields(["productnumber", "itemName"]);
   };
@@ -269,6 +311,19 @@ export default function Page() {
     fetchDiscount();
   }, []);
 
+  useEffect(() => {
+    if ([OPTION_CART_TYPE, undefined].includes(mode)) {
+      form.setFieldsValue({
+        productnumber: undefined,
+        itemName: undefined,
+      });
+    }
+
+    if ([OPTION_PRODUCT, undefined].includes(mode)) {
+      form.setFields([{ name: "cartType", errors: [], value: undefined }]);
+    }
+  }, [mode]);
+
   return (
     <>
       <Spin spinning={loading.page}>
@@ -293,7 +348,7 @@ export default function Page() {
             autoComplete="off"
             onFinish={handleFinish}
           >
-            <Row>
+            <Row style={{ width: "100%" }}>
               <Col span={24}>
                 <Card>
                   <Row gutter={32}>
@@ -334,15 +389,60 @@ export default function Page() {
                       </Form.Item>
                     </Col>
                   </Row>
+                </Card>
+              </Col>
 
-                  <Row>
-                    <Col span={24}>
+              <Col
+                style={{
+                  padding: "16px",
+                  borderBottom: "1px solid rgba(228, 231, 237, 1)",
+                }}
+                span={24}
+              >
+                <Button
+                  type="secondary"
+                  onClick={() => form.setFieldValue("mode", undefined)}
+                >
+                  重置設定方式
+                </Button>
+
+                <Flex>
+                  <Form.Item
+                    name="mode"
+                    rules={[{ required: true, message: "必填" }]}
+                  >
+                    <Radio.Group>
+                      <Space direction="vertical">
+                        <Radio value={OPTION_CART_TYPE}>
+                          <Flex gap={16} align="center">
+                            <div>設定方式1 - 以分車類型設定</div>
+                          </Flex>
+                        </Radio>
+
+                        <Radio value={OPTION_PRODUCT}>
+                          <Flex gap={16} align="center">
+                            <div>設定方式2 - 以商品設定</div>
+                          </Flex>
+                        </Radio>
+                      </Space>
+                    </Radio.Group>
+                  </Form.Item>
+
+                  <Space direction="vertical">
+                    <Flex gap={16}>
                       <Form.Item
-                        style={{ lineHeight: "42px" }}
+                        style={{ marginBottom: 0, lineHeight: "42px" }}
+                        className="form-item-cartType"
                         name="cartType"
-                        label="適用對象"
+                        rules={[
+                          {
+                            required: mode === OPTION_CART_TYPE,
+                            message: "必填",
+                          },
+                        ]}
                       >
                         <Checkbox.Group
+                          disabled={mode === OPTION_PRODUCT}
                           options={scmCart.map((opt) => {
                             return {
                               ...opt,
@@ -351,34 +451,21 @@ export default function Page() {
                           })}
                         />
                       </Form.Item>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
+                    </Flex>
 
-              <Col span={24}>
-                <div>
-                  <Row
-                    style={{
-                      padding: "12px 16px",
-                      borderBottom: "1px solid rgba(228, 231, 237, 1)",
-                    }}
-                    gutter={16}
-                  >
-                    <Col span={8} xxl={{ span: 6 }}>
+                    <Flex gap={16} align="center">
                       <Form.Item
                         style={{ marginBottom: 0 }}
                         name="productnumber"
                         label="商城商品編號"
+                        labelCol={{ flex: "106px" }}
                       >
                         <Input
                           placeholder="請輸入商城商品編號"
-                          disabled={loading.search}
+                          disabled={loading.search || mode === OPTION_CART_TYPE}
                         />
                       </Form.Item>
-                    </Col>
 
-                    <Col span={8} xxl={{ span: 6 }}>
                       <Form.Item
                         style={{ marginBottom: 0 }}
                         name="itemName"
@@ -386,83 +473,82 @@ export default function Page() {
                       >
                         <Input
                           placeholder="請輸入商品名稱"
-                          disabled={loading.search}
+                          disabled={loading.search || mode === OPTION_CART_TYPE}
                         />
                       </Form.Item>
-                    </Col>
 
-                    <Col>
-                      <Space size={16}>
-                        <Button
-                          type="secondary"
-                          loading={loading.search}
-                          onClick={handleSearch}
-                        >
-                          查詢
-                        </Button>
+                      <Button
+                        type="secondary"
+                        loading={loading.search}
+                        disabled={mode === OPTION_CART_TYPE}
+                        onClick={handleSearch}
+                      >
+                        查詢
+                      </Button>
 
-                        <ResetBtn onClick={handleResetSearch}>
-                          清除查詢條件
-                        </ResetBtn>
-                      </Space>
-                    </Col>
-                  </Row>
+                      <ResetBtn onClick={handleResetSearch}>
+                        清除查詢條件
+                      </ResetBtn>
+                    </Flex>
+                  </Space>
+                </Flex>
+              </Col>
 
-                  <Row>
-                    <Col span={24}>
-                      <Spin spinning={loading.search}>
-                        <TransferWrapper>
-                          <Transfer
-                            title="選擇要加入的商品"
-                            columns={columns}
-                            dataSource={productSourceList}
-                            selectedKey={selectedKey}
-                            selectedList={selectedSourceList}
-                            setSelectedList={setSelectedSourceList}
-                          />
+              <Col span={24}>
+                <Row>
+                  <Col span={24}>
+                    <Spin spinning={loading.search}>
+                      <TransferWrapper>
+                        <Transfer
+                          title="選擇要加入的商品"
+                          columns={columns}
+                          dataSource={productSourceList}
+                          selectedKey={selectedKey}
+                          selectedList={selectedSourceList}
+                          setSelectedList={setSelectedSourceList}
+                        />
 
-                          <TransferBtnGroup>
-                            <TransferBtn
-                              $active={selectedSourceList.length > 0}
-                              onClick={handleSourceToTarget}
-                            >
-                              <Image
-                                src="/arrow.svg"
-                                width={6}
-                                height={12}
-                                alt=""
-                              />
-                            </TransferBtn>
+                        <TransferBtnGroup>
+                          <TransferBtn
+                            $active={selectedSourceList.length > 0}
+                            onClick={handleSourceToTarget}
+                          >
+                            <Image
+                              src="/arrow.svg"
+                              width={6}
+                              height={12}
+                              alt=""
+                            />
+                          </TransferBtn>
 
-                            <TransferBtn
-                              style={{ transform: "rotate(180deg)" }}
-                              $active={selectedTargetList.length > 0}
-                              onClick={handleTargetToSource}
-                            >
-                              <Image
-                                src="/arrow.svg"
-                                width={6}
-                                height={12}
-                                alt=""
-                              />
-                            </TransferBtn>
-                          </TransferBtnGroup>
+                          <TransferBtn
+                            style={{ transform: "rotate(180deg)" }}
+                            $active={selectedTargetList.length > 0}
+                            onClick={handleTargetToSource}
+                          >
+                            <Image
+                              src="/arrow.svg"
+                              width={6}
+                              height={12}
+                              alt=""
+                            />
+                          </TransferBtn>
+                        </TransferBtnGroup>
 
-                          <Transfer
-                            title="已選取促銷商品"
-                            columns={columns}
-                            dataSource={productTargetList}
-                            selectedKey={selectedKey}
-                            selectedList={selectedTargetList}
-                            setSelectedList={setSelectedTargetList}
-                          />
-                        </TransferWrapper>
-                      </Spin>
-                    </Col>
-                  </Row>
+                        <Transfer
+                          title="已選取促銷商品"
+                          columns={columns}
+                          dataSource={productTargetList}
+                          selectedKey={selectedKey}
+                          selectedList={selectedTargetList}
+                          setSelectedList={setSelectedTargetList}
+                        />
+                      </TransferWrapper>
 
-                  <Mask $show={cartType?.length === 4} />
-                </div>
+                      <Mask $show={mode !== OPTION_PRODUCT} />
+                    </Spin>
+                  </Col>
+                </Row>
 
                 <Row justify="end">
                   <Button type="primary" htmlType="submit">
