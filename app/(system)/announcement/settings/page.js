@@ -11,6 +11,8 @@ import api from "@/api";
 import { truncateString } from "@/utils/formatted";
 import updateQuery from "@/utils/updateQuery";
 
+const Container = styled.div``;
+
 const DropdownWrapper = styled.div`
   width: 160px;
   padding: 4px;
@@ -119,7 +121,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>公告訊息</LayoutHeaderTitle>
 
@@ -140,6 +142,6 @@ export default function Page() {
         }}
         onChange={handleChangeTable}
       />
-    </>
+    </Container>
   );
 }

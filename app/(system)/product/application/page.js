@@ -35,6 +35,8 @@ import {
 import { useBoundStore } from "@/store";
 import updateQuery from "@/utils/updateQuery";
 
+const Container = styled.div``;
+
 const TableTitle = styled.div`
   font-size: 16px;
   font-weight: 700;
@@ -444,7 +446,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
 
@@ -650,6 +652,6 @@ export default function Page() {
           setOpenModal((state) => ({ ...state, loading: false }));
         }}
       />
-    </>
+    </Container>
   );
 }

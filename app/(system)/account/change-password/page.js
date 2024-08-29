@@ -9,7 +9,9 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 
 import api from "@/api";
 
-const Container = styled.div`
+const Container = styled.div``;
+
+const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
@@ -54,7 +56,7 @@ export default function Page() {
   };
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>修改密碼</LayoutHeaderTitle>
         <Breadcrumb
@@ -63,7 +65,7 @@ export default function Page() {
         />
       </LayoutHeader>
 
-      <Container>
+      <FormWrapper>
         <Form
           form={form}
           layout="vertical"
@@ -110,7 +112,7 @@ export default function Page() {
             </Button>
           </Form.Item>
         </Form>
-      </Container>
-    </>
+      </FormWrapper>
+    </Container>
   );
 }

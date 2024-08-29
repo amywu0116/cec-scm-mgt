@@ -27,6 +27,8 @@ import {
 } from "@/constants/paths";
 import updateQuery from "@/utils/updateQuery";
 
+const Container = styled.div``;
+
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
   padding: 16px;
@@ -202,7 +204,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>商品促銷</LayoutHeaderTitle>
       </LayoutHeader>
@@ -289,6 +291,6 @@ export default function Page() {
         onOk={handleDelete}
         onCancel={() => setOpenModal((state) => ({ ...state, delete: false }))}
       />
-    </>
+    </Container>
   );
 }
