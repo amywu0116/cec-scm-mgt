@@ -161,3 +161,12 @@ a {
 .ant-modal.modal-loading .ant-modal-content {
   padding: 20px 24px !important;
 }
+
+.ant-image .ant-image-mask-info {
+  font-size: 0 !important;
+}
+
+.ant-image .ant-image-mask-info span {
+  font-size: 14px !important;
+  margin-inline-end: 0 !important;
+}
