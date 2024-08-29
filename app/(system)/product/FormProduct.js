@@ -89,7 +89,7 @@ export default function FormProduct(props) {
     if (priceBefore && value && (isGreaterThan || isLessThan)) {
       return Promise.reject(
         new Error(
-          `原價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
+          `促銷價調整前:${priceBefore} / 調整後:${priceAfter}，調整幅度大於正負25%`
         )
       );
     }
@@ -310,7 +310,7 @@ export default function FormProduct(props) {
                   allowClear
                   options={[
                     { label: "應稅", value: true },
-                    { label: "未稅", value: false },
+                    { label: "免稅", value: false },
                   ]}
                 />
               </Form.Item>
