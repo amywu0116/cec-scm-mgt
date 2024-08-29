@@ -41,11 +41,16 @@ const Container = styled.div`
     .ant-col.ant-form-item-control {
       display: flex;
       flex-direction: row;
+
+      > div:nth-child(2) {
+        position: absolute;
+        left: 180px;
+        width: max-content;
+      }
     }
 
     .ant-form-item-explain-error {
       line-height: 42px;
-      margin-left: 10px;
     }
   }
 `;
@@ -170,18 +175,18 @@ export default function Page() {
     },
   ];
 
-  const beforeUpload = (file) => {
-    const isLt1M = file.size / 1024 / 1024 <= 1;
-    if (!isLt1M) {
-      message.error("每張圖片的大小最多只能 1MB");
-      return false;
-    }
-  };
-
   const validateFile = (_, value) => {
     if (value.fileList.length > 10) {
       return Promise.reject(new Error("每次上傳張數上限為 10 張"));
     }
+
+    const isInValid = value.fileList
+      .map((file) => file.size)
+      .some((s) => s / 1024 / 1024 > 1);
+    if (isInValid) {
+      return Promise.reject(new Error("每張圖片的大小最多只能 1MB"));
+    }
+
     return Promise.resolve();
   };
 
@@ -367,7 +372,6 @@ export default function Page() {
                           >
                             <Upload
                               multiple
-                              beforeUpload={beforeUpload}
                               showUploadList={{
                                 extra: ({ size = 0 }) => (
                                   <span className="ant-upload-list-item-name">

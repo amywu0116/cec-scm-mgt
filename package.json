@@ -16,7 +16,7 @@
     "@ant-design/icons": "5.4.0",
     "@ant-design/nextjs-registry": "1.0.0",
     "@react-pdf/renderer": "3.4.4",
-    "antd": "5.18.2",
+    "antd": "5.20.3",
     "axios": "1.7.2",
     "dayjs": "1.11.11",
     "dotenv": "16.4.5",
