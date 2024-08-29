@@ -199,11 +199,11 @@ export default function Sider() {
           ),
           icon: getOptionIcon(PATH_PRODUCT_BATCH_IMG_UPLOAD),
         },
-        {
-          key: PATH_PRODUCT_PROMOTION,
-          label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
-          icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
-        },
+        // {
+        //   key: PATH_PRODUCT_PROMOTION,
+        //   label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
+        //   icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
+        // },
         // {
         //   key: "",
         //   label: <Link href="">樣式商品</Link>,
