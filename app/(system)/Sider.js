@@ -204,11 +204,11 @@ export default function Sider() {
           label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
           icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
         },
-        {
-          key: "",
-          label: <Link href="">樣式商品</Link>,
-          icon: getOptionIcon(),
-        },
+        // {
+        //   key: "",
+        //   label: <Link href="">樣式商品</Link>,
+        //   icon: getOptionIcon(),
+        // },
       ],
     },
     {
@@ -233,20 +233,20 @@ export default function Sider() {
       label: <Link href={PATH_SUPPLIER}>供應商</Link>,
       icon: getMenuIcon(VENDOR),
     },
-    {
-      key: ACCOUNTING,
-      label: "帳務",
-      icon: getMenuIcon(ACCOUNTING),
-      children: [
-        {
-          key: PATH_BILLING_RECONCILIATION_REPORT,
-          label: (
-            <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
-          ),
-          icon: getOptionIcon(PATH_BILLING_RECONCILIATION_REPORT),
-        },
-      ],
-    },
+    // {
+    //   key: ACCOUNTING,
+    //   label: "帳務",
+    //   icon: getMenuIcon(ACCOUNTING),
+    //   children: [
+    //     {
+    //       key: PATH_BILLING_RECONCILIATION_REPORT,
+    //       label: (
+    //         <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
+    //       ),
+    //       icon: getOptionIcon(PATH_BILLING_RECONCILIATION_REPORT),
+    //     },
+    //   ],
+    // },
     {
       key: ACCOUNT,
       label: "帳戶",
