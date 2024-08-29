@@ -12,15 +12,22 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
+import FunctionBtn from "@/components/Button/FunctionBtn";
 import ResetBtn from "@/components/Button/ResetBtn";
 import RangePicker from "@/components/DatePicker/RangePicker";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import ModalConfirm from "@/components/Modal/ModalConfirm";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
+import {
+  PATH_PRODUCT_PROMOTION_ADD,
+  PATH_PRODUCT_PROMOTION_EDIT,
+} from "@/constants/paths";
 import updateQuery from "@/utils/updateQuery";
+
+const Container = styled.div``;
 
 const Card = styled.div`
   background-color: rgba(241, 243, 246, 1);
@@ -45,9 +52,16 @@ export default function Page() {
 
   const [loading, setLoading] = useState({
     table: false,
+    delete: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    delete: false,
   });
 
   const [discountOptions, setDiscountOptions] = useState([]);
+
+  const [deleteId, setDeleteId] = useState();
 
   const [tableInfo, setTableInfo] = useState({
     rows: [],
@@ -63,8 +77,12 @@ export default function Page() {
       dataIndex: "promotionId",
       align: "center",
       width: 500,
-      render: (text) => {
-        return discountOptions.find((opt) => opt.key === text)?.name ?? "-";
+      render: (text, record) => {
+        return (
+          <Link href={`${PATH_PRODUCT_PROMOTION_EDIT}/${record.id}`}>
+            {discountOptions.find((opt) => opt.key === text)?.name ?? "-"}
+          </Link>
+        );
       },
     },
     {
@@ -86,6 +104,25 @@ export default function Page() {
       width: 300,
       render: (text) => {
         return text ? "啟用" : "禁用";
+      },
+    },
+    {
+      title: "功能",
+      dataIndex: "",
+      align: "center",
+      width: 300,
+      render: (text, record, index) => {
+        return (
+          <FunctionBtn
+            loading={loading[`delete_${record.id}`]}
+            onClick={() => {
+              setDeleteId(record.id);
+              setOpenModal((state) => ({ ...state, delete: true }));
+            }}
+          >
+            刪除
+          </FunctionBtn>
+        );
       },
     },
   ];
@@ -133,6 +170,26 @@ export default function Page() {
     fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
   };
 
+  const handleDelete = () => {
+    const params = {
+      promotionIds: deleteId,
+    };
+
+    setLoading((state) => ({ ...state, delete: true }));
+    api
+      .delete(`v1/scm/vendor_promotion`, { params })
+      .then((res) => {
+        message.success(res.message);
+        setOpenModal((state) => ({ ...state, delete: false }));
+        form.submit();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => {
+        setLoading((state) => ({ ...state, delete: false }));
+        setDeleteId(undefined);
+      });
+  };
+
   useEffect(() => {
     fetchDiscount();
   }, []);
@@ -147,7 +204,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>商品促銷</LayoutHeaderTitle>
       </LayoutHeader>
@@ -207,7 +264,7 @@ export default function Page() {
 
         <Col span={24}>
           <Flex style={{ width: "100%" }} vertical gap={16}>
-            <Link href={`${PATH_PRODUCT_PROMOTION}/add`}>
+            <Link href={PATH_PRODUCT_PROMOTION_ADD}>
               <Button type="primary">新增促銷方案商品</Button>
             </Link>
 
@@ -225,6 +282,15 @@ export default function Page() {
           </Flex>
         </Col>
       </Row>
-    </>
+
+      <ModalConfirm
+        open={openModal.delete}
+        loading={loading.delete}
+        title="刪除促銷方案商品"
+        subtitle="確定要刪除促銷方案商品？"
+        onOk={handleDelete}
+        onCancel={() => setOpenModal((state) => ({ ...state, delete: false }))}
+      />
+    </Container>
   );
 }

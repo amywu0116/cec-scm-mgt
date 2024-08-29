@@ -4,7 +4,17 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
 } from "@ant-design/icons";
-import { App, Breadcrumb, Col, Form, Image, Row, Space, Upload } from "antd";
+import {
+  App,
+  Breadcrumb,
+  Col,
+  Form,
+  Image,
+  Row,
+  Space,
+  Tooltip,
+  Upload,
+} from "antd";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,11 +41,16 @@ const Container = styled.div`
     .ant-col.ant-form-item-control {
       display: flex;
       flex-direction: row;
+
+      > div:nth-child(2) {
+        position: absolute;
+        left: 180px;
+        width: max-content;
+      }
     }
 
     .ant-form-item-explain-error {
       line-height: 42px;
-      margin-left: 10px;
     }
   }
 `;
@@ -96,43 +111,44 @@ export default function Page() {
           <Space size={10}>
             {text.map((t) => {
               return (
-                <Image
-                  key={t.id}
-                  width={50}
-                  height={50}
-                  src={t.imgUrl}
-                  alt=""
-                  preview={{
-                    toolbarRender: (
-                      _,
-                      {
-                        image: { url },
-                        transform: { scale },
-                        actions: { onZoomOut, onZoomIn },
-                      }
-                    ) => (
-                      <Space size={12} className="toolbar-wrapper">
-                        <ZoomOutOutlined
-                          disabled={scale === 1}
-                          onClick={onZoomOut}
-                        />
+                <Tooltip key={t.id} title={t.fileName}>
+                  <Image
+                    width={50}
+                    height={50}
+                    src={t.imgUrl}
+                    alt=""
+                    preview={{
+                      toolbarRender: (
+                        _,
+                        {
+                          image: { url },
+                          transform: { scale },
+                          actions: { onZoomOut, onZoomIn },
+                        }
+                      ) => (
+                        <Space size={12} className="toolbar-wrapper">
+                          <ZoomOutOutlined
+                            disabled={scale === 1}
+                            onClick={onZoomOut}
+                          />
 
-                        <ZoomInOutlined
-                          disabled={scale === 50}
-                          onClick={onZoomIn}
-                        />
+                          <ZoomInOutlined
+                            disabled={scale === 50}
+                            onClick={onZoomIn}
+                          />
 
-                        <DeleteOutlined
-                          style={{ color: "red" }}
-                          onClick={() => {
-                            setDeleteImgIds([t.id]);
-                            setShowModalDelete(true);
-                          }}
-                        />
-                      </Space>
-                    ),
-                  }}
-                />
+                          <DeleteOutlined
+                            style={{ color: "red" }}
+                            onClick={() => {
+                              setDeleteImgIds([t.id]);
+                              setShowModalDelete(true);
+                            }}
+                          />
+                        </Space>
+                      ),
+                    }}
+                  />
+                </Tooltip>
               );
             })}
           </Space>
@@ -163,6 +179,14 @@ export default function Page() {
     if (value.fileList.length > 10) {
       return Promise.reject(new Error("每次上傳張數上限為 10 張"));
     }
+
+    const isInValid = value.fileList
+      .map((file) => file.size)
+      .some((s) => s / 1024 / 1024 > 1);
+    if (isInValid) {
+      return Promise.reject(new Error("每張圖片的大小最多只能 1MB"));
+    }
+
     return Promise.resolve();
   };
 
@@ -346,7 +370,16 @@ export default function Page() {
                               { validator: validateFile },
                             ]}
                           >
-                            <Upload multiple>
+                            <Upload
+                              multiple
+                              showUploadList={{
+                                extra: ({ size = 0 }) => (
+                                  <span className="ant-upload-list-item-name">
+                                    ({(size / 1024 / 1024).toFixed(2)}MB)
+                                  </span>
+                                ),
+                              }}
+                            >
                               <Button type="secondary">上傳</Button>
                             </Upload>
                           </Form.Item>

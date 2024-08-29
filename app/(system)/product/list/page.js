@@ -10,6 +10,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 import FunctionBtn from "@/components/Button/FunctionBtn";
@@ -24,6 +25,8 @@ import ModalPreviewPDP from "../ModalPreviewPDP";
 import api from "@/api";
 import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
 import updateQuery from "@/utils/updateQuery";
+
+const Container = styled.div``;
 
 export default function Page() {
   const { message } = App.useApp();
@@ -282,7 +285,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
       </LayoutHeader>
@@ -400,6 +403,6 @@ export default function Page() {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));
         }}
       />
-    </>
+    </Container>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { parseAsString, useQueryStates } from "nuqs";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Tabs from "@/components/Tabs";
@@ -14,6 +15,8 @@ import LoginRecord from "./LoginRecord";
 import Shipping from "./Shipping";
 
 import updateQuery from "@/utils/updateQuery";
+
+const Container = styled.div``;
 
 export default function Page() {
   const [query, setQuery] = useQueryStates({
@@ -33,7 +36,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>供應商</LayoutHeaderTitle>
       </LayoutHeader>
@@ -80,6 +83,6 @@ export default function Page() {
         activeKey={tabKey}
         onChange={handleChangeTab}
       />
-    </>
+    </Container>
   );
 }
