@@ -80,7 +80,7 @@ export default function Page() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [currentApplyId, setCurrentApplyId] = useState();
-  const [shipping, setShippingList] = useState([]);
+  const [shippingList, setShippingList] = useState([]);
 
   const [importErrorInfo, setImportErrorInfo] = useState();
 
@@ -406,7 +406,7 @@ export default function Page() {
 
   // 提品匯入前先檢核是否有分車
   const handleClickUpload = () => {
-    if (shipping.length === 0) {
+    if (shippingList.some((l) => l.shippingMethod === null)) {
       message.error("請先至 供應商>運費設定 功能頁面，進行運費設定！");
       return;
     }
