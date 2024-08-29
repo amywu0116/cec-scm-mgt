@@ -2,6 +2,7 @@
 import { App, Breadcrumb, Checkbox, Col, Row, Spin } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
@@ -9,6 +10,8 @@ import Table from "@/components/Table";
 
 import api from "@/api";
 import { PATH_LOGISTICS, PATH_PATH_LOGISTICS_ADD } from "@/constants/paths";
+
+const Container = styled.div``;
 
 export default function Page() {
   const { message } = App.useApp();
@@ -105,7 +108,7 @@ export default function Page() {
   }, []);
 
   return (
-    <>
+    <Container>
       <Spin spinning={loading.page}>
         <LayoutHeader>
           <LayoutHeaderTitle>貨運公司維護</LayoutHeaderTitle>
@@ -135,6 +138,6 @@ export default function Page() {
           </Col>
         </Row>
       </Spin>
-    </>
+    </Container>
   );
 }
