@@ -73,10 +73,16 @@ export default function Page() {
 
   const columns = [
     {
+      title: "No.",
+      align: "center",
+      render: (text, record, index) => {
+        return tableInfo.total - tableInfo.offset - index;
+      },
+    },
+    {
       title: "促銷ID",
       dataIndex: "promotionId",
       align: "center",
-      width: 500,
       render: (text, record) => {
         return (
           <Link href={`${PATH_PRODUCT_PROMOTION_EDIT}/${record.id}`}>
@@ -89,28 +95,15 @@ export default function Page() {
       title: "起日",
       dataIndex: "startTime",
       align: "center",
-      width: 300,
     },
     {
       title: "迄日",
       dataIndex: "endTime",
       align: "center",
-      width: 300,
-    },
-    {
-      title: "狀態",
-      dataIndex: "activeStatus",
-      align: "center",
-      width: 300,
-      render: (text) => {
-        return text ? "啟用" : "禁用";
-      },
     },
     {
       title: "功能",
-      dataIndex: "",
       align: "center",
-      width: 300,
       render: (text, record, index) => {
         return (
           <FunctionBtn
@@ -223,7 +216,7 @@ export default function Page() {
           >
             <Card>
               <Row gutter={32}>
-                <Col span={8} xxl={{ span: 6 }}>
+                <Col span={8}>
                   <Form.Item
                     style={{ margin: 0 }}
                     name="promotionId"
@@ -239,11 +232,12 @@ export default function Page() {
                   </Form.Item>
                 </Col>
 
-                <Col span={8} xxl={{ span: 6 }}>
+                <Col span={8}>
                   <Form.Item style={{ margin: 0 }} name="time" label="日期">
                     <RangePicker
                       style={{ width: "100%" }}
                       placeholder={["日期起", "日期迄"]}
+                      allowEmpty={[true, true]}
                     />
                   </Form.Item>
                 </Col>
@@ -269,6 +263,7 @@ export default function Page() {
             </Link>
 
             <Table
+              rowKey="id"
               loading={loading.table}
               columns={columns}
               dataSource={tableInfo.rows}
