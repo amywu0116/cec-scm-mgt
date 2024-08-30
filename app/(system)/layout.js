@@ -65,7 +65,7 @@ export default function PageLayout(props) {
               {children}
 
               <Footer>
-                <div>2024 © 家樂福集市+供應商服務系統</div>
+                <div>2024 © 家樂福線上商城供應商服務系統</div>
                 <Flex gap={20}>
                   <span>前端版本：{process.env.NEXT_PUBLIC_BUILD_DATE}</span>
                   <span>API版本：{buildDate}</span>
