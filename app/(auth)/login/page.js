@@ -96,7 +96,7 @@ export default function Page() {
 
   return (
     <Container>
-      <Title>歡迎，家樂福集市+供應商服務系統！</Title>
+      <Title>歡迎，家樂福線上商城供應商服務系統！</Title>
       <Subtitle>請輸入您的帳號密碼</Subtitle>
 
       <Form
