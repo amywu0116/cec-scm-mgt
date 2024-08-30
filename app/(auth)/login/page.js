@@ -1,9 +1,9 @@
 "use client";
-import { App, Form, Input, Typography } from "antd";
+import { App, Flex, Form, Input, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 
@@ -15,6 +15,7 @@ import Title from "../Title";
 import api from "@/api";
 import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import { isUAT } from "@/constants";
 
 const Container = styled.div`
   width: 350px;
@@ -96,7 +97,14 @@ export default function Page() {
 
   return (
     <Container>
+      {isUAT && (
+        <div style={{ marginBottom: 10 }}>
+          <Tag color="red">UAT</Tag>
+        </div>
+      )}
+
       <Title>歡迎，家樂福集市+供應商服務系統！</Title>
+
       <Subtitle>請輸入您的帳號密碼</Subtitle>
 
       <Form
