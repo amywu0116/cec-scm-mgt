@@ -19,7 +19,6 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
-import Tabs from "@/components/Tabs";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
@@ -54,7 +53,7 @@ export default function Page() {
     rows: [],
     total: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 100,
     tableQuery: {},
   });
 
@@ -250,7 +249,7 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
-    fetchList({ ...values, page: 1, pageSize: 10 });
+    fetchList({ ...values, page: 1, pageSize: 100 });
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -370,27 +369,16 @@ export default function Page() {
         </Col>
 
         <Col span={24}>
-          <Tabs
-            defaultActiveKey="1"
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <Table
-                    loading={loading.table}
-                    columns={columns}
-                    dataSource={tableInfo.rows}
-                    pageInfo={{
-                      total: tableInfo.total,
-                      page: tableInfo.page,
-                      pageSize: tableInfo.pageSize,
-                    }}
-                    onChange={handleChangeTable}
-                  />
-                ),
-              },
-            ]}
+          <Table
+            loading={loading.table}
+            columns={columns}
+            dataSource={tableInfo.rows}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
+            onChange={handleChangeTable}
           />
         </Col>
       </Row>
