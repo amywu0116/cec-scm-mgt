@@ -170,11 +170,11 @@ export default function Sider() {
           label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
           icon: getOptionIcon(PATH_ANNOUNCEMENT_SETTINGS),
         },
-        // {
-        //   key: PATH_ANNOUNCEMENT_MESSAGE,
-        //   label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
-        //   icon: getOptionIcon(PATH_ANNOUNCEMENT_MESSAGE),
-        // },
+        {
+          key: PATH_ANNOUNCEMENT_MESSAGE,
+          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
+          icon: getOptionIcon(PATH_ANNOUNCEMENT_MESSAGE),
+        },
       ],
     },
     {
