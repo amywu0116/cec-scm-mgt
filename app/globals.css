@@ -170,3 +170,7 @@ a {
   font-size: 14px !important;
   margin-inline-end: 0 !important;
 }
+
+.ant-modal-mask {
+  z-index: 1050 !important;
+}

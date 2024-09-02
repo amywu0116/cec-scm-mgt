@@ -1,23 +1,22 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Dropdown } from "antd";
-import styled, { css } from "styled-components";
 import { MoreOutlined } from "@ant-design/icons";
+import { App, Breadcrumb, Col, Dropdown, Flex, Form, Radio, Row } from "antd";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import ModalHistory from "./ModalHistory";
-import ModalMessageContent from "./ModalMessageContent";
+import ModalMessage from "./ModalMessage";
+
+import api from "@/api";
+import updateQuery from "@/utils/updateQuery";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-
   .ant-btn-link {
     padding: 0;
     min-width: 0;
@@ -37,36 +36,6 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px 0;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(89, 89, 89, 1);
-  width: 64px;
-  flex-shrink: 0;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-
-  ${(props) =>
-    props.justifyContent &&
-    css`
-      justify-content: ${props.justifyContent};
-    `}
 `;
 
 const DropdownWrapper = styled.div`
@@ -91,58 +60,80 @@ const DropdownItem = styled.div`
   }
 `;
 
-export default function Page(props) {
+export default function Page() {
+  const [form] = Form.useForm();
+  const { message } = App.useApp();
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    ecorderNo: parseAsString,
+    status: parseAsInteger,
+  });
+
   const [openDropdown, setOpenDropdown] = useState({});
-  const [openModalHistory, setOpenModalHistory] = useState(false);
-  const [openModalMessageContent, setOpenModalMessageContent] = useState(false);
+
+  const [openModal, setOpenModal] = useState({
+    message: false,
+    history: false,
+  });
+
+  const [loading, setLoading] = useState({
+    table: false,
+  });
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
+
+  const [rowInfo, setRowInfo] = useState({});
 
   const columns = [
     {
       title: "訂單編號",
-      dataIndex: "a",
+      dataIndex: "ecorderNo",
       align: "center",
     },
     {
       title: "提問時間",
-      dataIndex: "b",
+      dataIndex: "questionTime",
       align: "center",
     },
     {
       title: "問題類別",
-      dataIndex: "c",
+      dataIndex: "questionCategory",
       align: "center",
     },
     {
       title: "提問內容",
-      dataIndex: "d",
+      dataIndex: "questionContent",
       align: "center",
     },
     {
       title: "狀態",
-      dataIndex: "e",
+      dataIndex: "statusStr",
       align: "center",
     },
     {
       title: "操作",
-      dataIndex: "f",
+      dataIndex: "showOperate",
       align: "center",
       render: (text, record) => {
+        if (!text) return "-";
         return (
           <Dropdown
             trigger={["click"]}
             menu={{
               items: [
-                {
-                  key: "1",
-                  label: "歷程查詢",
-                },
-                {
-                  key: "2",
-                  label: "回覆訊息內容",
-                },
+                { key: "1", label: "回覆訊息內容" },
+                { key: "2", label: "歷程查詢" },
               ],
             }}
-            open={openDropdown[record.id]}
+            open={openDropdown[record.serviceId]}
             dropdownRender={(menus) => {
               return (
                 <DropdownWrapper>
@@ -151,17 +142,24 @@ export default function Page(props) {
                       <DropdownItem
                         key={item.key}
                         onClick={() => {
+                          setRowInfo(record);
                           setOpenDropdown((state) => ({
                             ...state,
                             [record.id]: false,
                           }));
 
                           if (item.key === "1") {
-                            setOpenModalHistory(true);
+                            setOpenModal((state) => ({
+                              ...state,
+                              message: true,
+                            }));
                           }
 
                           if (item.key === "2") {
-                            setOpenModalMessageContent(true);
+                            setOpenModal((state) => ({
+                              ...state,
+                              history: true,
+                            }));
                           }
                         }}
                       >
@@ -192,86 +190,144 @@ export default function Page(props) {
     },
   ];
 
-  const data = [
-    {
-      id: 0,
-      a: "10124881",
-      b: "2024/03/28 17:40:00",
-      c: "問題反應/服務品品質",
-      d: "購買時有效期限就過期，拿回換貨...",
-      e: "未回覆",
-      f: "",
-    },
-    {
-      id: 1,
-      a: "10124881",
-      b: "2024/03/28 17:40:00",
-      c: "問題反應/服務品品質",
-      d: "購買時有效期限就過期，拿回換貨...",
-      e: "未回覆",
-      f: "",
-    },
-  ];
+  const fetchTableInfo = (values) => {
+    updateQuery(values, setQuery);
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+      ecorderNo: values.ecorderNo,
+      status: values.status,
+    };
+
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/consultation`, { params })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: values.page,
+          pageSize: values.pageSize,
+          tableQuery: { ...values },
+        }));
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  const handleFinish = (values) => {
+    fetchTableInfo({ ...values, page: 1, pageSize: 10 });
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
+  };
+
+  const handleSendSuccess = () => {
+    form.submit();
+  };
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchTableInfo(query);
+    form.setFieldsValue({
+      ecorderNo: query.ecorderNo,
+      status: query.status ?? null,
+    });
+  }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>顧客訂單諮詢</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
-          items={[
-            {
-              title: "公告與訂單諮詢",
-            },
-            {
-              title: "顧客訂單諮詢",
-            },
-          ]}
+          items={[{ title: "公告與訂單諮詢" }, { title: "顧客訂單諮詢" }]}
         />
       </LayoutHeader>
 
-      <Container>
-        <Card>
-          <Row>
-            <Item>
-              <ItemLabel>問題類別</ItemLabel>
-              <Select
-                style={{ width: 285 }}
-                placeholder="請選擇問題類別"
-                options={[
-                  {
-                    value: "lucy",
-                    label: "Lucy",
-                  },
-                ]}
-              />
-            </Item>
+      <Flex vertical gap={16}>
+        <Form
+          form={form}
+          colon={false}
+          labelCol={{ flex: "80px" }}
+          labelWrap
+          requiredMark={false}
+          disabled={loading.table}
+          autoComplete="off"
+          initialValues={{
+            status: 0,
+          }}
+          onFinish={handleFinish}
+        >
+          <Card>
+            <Row gutter={16}>
+              <Col span={6}>
+                <Form.Item
+                  style={{ margin: 0 }}
+                  name="ecorderNo"
+                  label="訂單編號"
+                >
+                  <Input placeholder="輸入訂單編號" />
+                </Form.Item>
+              </Col>
 
-            <Item>
-              <ItemLabel>訂單編號</ItemLabel>
-              <Input style={{ width: 285 }} placeholder="輸入ID" />
-            </Item>
+              <Col span={6}>
+                <Form.Item style={{ margin: 0 }} name="status" label="狀態">
+                  <Radio.Group>
+                    <Radio value={null}>全部</Radio>
+                    <Radio value={0}>未結案</Radio>
+                    <Radio value={1}>已結案</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
 
-            <ButtonGroup style={{ marginLeft: "auto" }}>
-              <Button type="secondary">查詢</Button>
-              <Button type="link">清除查詢條件</Button>
-            </ButtonGroup>
-          </Row>
-        </Card>
+              <Col style={{ marginLeft: "auto" }} span={6}>
+                <Flex justify="flex-end" gap={16}>
+                  <Button
+                    type="secondary"
+                    htmlType="submit"
+                    disabled={false}
+                    loading={loading.table}
+                  >
+                    查詢
+                  </Button>
 
-        <Table columns={columns} dataSource={data} />
-      </Container>
+                  <Button type="link" htmlType="reset">
+                    清除查詢條件
+                  </Button>
+                </Flex>
+              </Col>
+            </Row>
+          </Card>
+        </Form>
+
+        <Table
+          rowKey="serviceId"
+          loading={loading.table}
+          columns={columns}
+          dataSource={tableInfo.rows}
+          pageInfo={{
+            total: tableInfo.total,
+            page: tableInfo.page,
+            pageSize: tableInfo.pageSize,
+          }}
+          onChange={handleChangeTable}
+        />
+      </Flex>
+
+      <ModalMessage
+        open={openModal.message}
+        rowInfo={rowInfo}
+        onOk={handleSendSuccess}
+        onCancel={() => setOpenModal((state) => ({ ...state, message: false }))}
+      />
 
       <ModalHistory
-        open={openModalHistory}
-        onCancel={() => setOpenModalHistory(false)}
+        open={openModal.history}
+        rowInfo={rowInfo}
+        onCancel={() => setOpenModal((state) => ({ ...state, history: false }))}
       />
-
-      <ModalMessageContent
-        open={openModalMessageContent}
-        onCancel={() => setOpenModalMessageContent(false)}
-      />
-    </>
+    </Container>
   );
 }
