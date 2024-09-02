@@ -27,7 +27,9 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import ModalDelete from "@/components/Modal/ModalDelete";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
+
 import SearchForm from "./SearchForm";
+import ModalOrderList from "./ModalOrderList";
 
 import api from "@/api";
 import {
@@ -83,6 +85,11 @@ export default function Page() {
     table: false,
     form: false,
     delete: false,
+    orderList: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    orderList: false,
   });
 
   const [showImageUpload, setShowImageUpload] = useState(false);
@@ -90,6 +97,8 @@ export default function Page() {
 
   const [imageList, setImageList] = useState();
   const [deleteImgIds, setDeleteImgIds] = useState();
+
+  const [rowInfo, setRowInfo] = useState({});
 
   const columns = [
     {
@@ -157,19 +166,29 @@ export default function Page() {
     },
     {
       title: "功能",
-      dataIndex: "",
       align: "center",
       render: (text, record, index) => {
         return (
-          <FunctionBtn
-            onClick={() => {
-              const ids = record.imgList.map((img) => img.id);
-              setDeleteImgIds(ids);
-              setShowModalDelete(true);
-            }}
-          >
-            刪除
-          </FunctionBtn>
+          <Space>
+            <FunctionBtn
+              onClick={() => {
+                setRowInfo(record);
+                setOpenModal((state) => ({ ...state, orderList: true }));
+              }}
+            >
+              編輯圖片順序
+            </FunctionBtn>
+
+            <FunctionBtn
+              onClick={() => {
+                const ids = record.imgList.map((img) => img.id);
+                setDeleteImgIds(ids);
+                setShowModalDelete(true);
+              }}
+            >
+              刪除
+            </FunctionBtn>
+          </Space>
         );
       },
     },
@@ -280,6 +299,30 @@ export default function Page() {
     form.resetFields();
   };
 
+  const handleUpdateOrderList = (type, list) => {
+    const imgMapping = {
+      ["商品圖"]: "productImg",
+      ["商品特色圖"]: "featureImg",
+    };
+
+    const data = {};
+    imageList.forEach((item) => {
+      data[imgMapping[item.imgType]] = item.imgList.map((img) => img.imgUrl);
+    });
+    data[imgMapping[type]] = list.map((img) => img.imgUrl);
+
+    setLoading((state) => ({ ...state, orderList: true }));
+    api
+      .post(`v1/scm/product/img/display-order?productId=${id}`, data)
+      .then((res) => {
+        message.success(res.message);
+        setOpenModal((state) => ({ ...state, orderList: false }));
+        fetchList();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, orderList: false })));
+  };
+
   useEffect(() => {
     fetchList();
   }, []);
@@ -313,31 +356,31 @@ export default function Page() {
         >
           <Space style={{ width: "100%" }} direction="vertical" size={16}>
             <Row gutter={16}>
-              <Col span={8} xxl={{ span: 6 }}>
+              <Col span={6}>
                 <Form.Item style={{ margin: 0 }} name="itemName" label="品名">
                   <Input disabled />
                 </Form.Item>
               </Col>
 
-              <Col span={8} xxl={{ span: 6 }}>
+              <Col span={6}>
                 <Form.Item style={{ margin: 0 }} name="itemEan" label="條碼">
                   <Input disabled />
                 </Form.Item>
               </Col>
 
-              <Col span={8} xxl={{ span: 6 }}>
+              <Col span={6}>
                 <Button type="primary" onClick={() => setShowImageUpload(true)}>
                   上傳圖片
                 </Button>
               </Col>
             </Row>
 
-            <Row>
-              <Col span={24}>
-                {showImageUpload && (
+            {showImageUpload && (
+              <Row>
+                <Col span={24}>
                   <ImageCard>
                     <Row gutter={16}>
-                      <Col span={8} xxl={{ span: 6 }}>
+                      <Col span={6}>
                         <Form.Item
                           style={{ marginBottom: 0 }}
                           name="imgType"
@@ -416,9 +459,9 @@ export default function Page() {
                       </div>
                     </Row>
                   </ImageCard>
-                )}
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            )}
 
             <Row>
               <Col span={24}>
@@ -443,6 +486,16 @@ export default function Page() {
         onCancel={() => {
           setShowModalDelete(false);
           setDeleteImgIds(undefined);
+        }}
+      />
+
+      <ModalOrderList
+        rowInfo={rowInfo}
+        open={openModal.orderList}
+        loading={loading.orderList}
+        onOk={handleUpdateOrderList}
+        onCancel={() => {
+          setOpenModal((state) => ({ ...state, orderList: false }));
         }}
       />
     </Container>
