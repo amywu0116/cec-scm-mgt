@@ -74,10 +74,8 @@ export default function Page() {
   const columns = [
     {
       title: "No.",
+      dataIndex: "id",
       align: "center",
-      render: (text, record, index) => {
-        return tableInfo.total - tableInfo.offset - index;
-      },
     },
     {
       title: "促銷ID",

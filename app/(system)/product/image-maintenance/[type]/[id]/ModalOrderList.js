@@ -1,9 +1,4 @@
-import {
-  DeleteOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
-} from "@ant-design/icons";
-import { Flex, Image, Space, Spin, Tooltip } from "antd";
+import { Flex, Image, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
