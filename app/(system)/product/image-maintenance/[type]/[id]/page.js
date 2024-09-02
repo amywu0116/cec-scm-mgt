@@ -90,10 +90,10 @@ export default function Page() {
 
   const [openModal, setOpenModal] = useState({
     orderList: false,
+    delete: false,
   });
 
   const [showImageUpload, setShowImageUpload] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
 
   const [imageList, setImageList] = useState();
   const [deleteImgIds, setDeleteImgIds] = useState();
@@ -150,7 +150,10 @@ export default function Page() {
                             style={{ color: "red" }}
                             onClick={() => {
                               setDeleteImgIds([t.id]);
-                              setShowModalDelete(true);
+                              setOpenModal((state) => ({
+                                ...state,
+                                delete: true,
+                              }));
                             }}
                           />
                         </Space>
@@ -183,7 +186,7 @@ export default function Page() {
               onClick={() => {
                 const ids = record.imgList.map((img) => img.id);
                 setDeleteImgIds(ids);
-                setShowModalDelete(true);
+                setOpenModal((state) => ({ ...state, delete: true }));
               }}
             >
               刪除
@@ -287,7 +290,7 @@ export default function Page() {
       .delete(apiUrl, { params })
       .then((res) => {
         message.success(res.message);
-        setShowModalDelete(false);
+        setOpenModal((state) => ({ ...state, delete: false }));
         fetchList();
       })
       .catch((err) => message.error(err.message))
@@ -480,11 +483,11 @@ export default function Page() {
       </Space>
 
       <ModalDelete
-        open={showModalDelete}
+        open={openModal.delete}
         loading={loading.delete}
         onOk={handleDelete}
         onCancel={() => {
-          setShowModalDelete(false);
+          setOpenModal((state) => ({ ...state, delete: false }));
           setDeleteImgIds(undefined);
         }}
       />
