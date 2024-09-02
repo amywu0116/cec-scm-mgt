@@ -34,6 +34,7 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import ModalImportShip from "./ModalImportShip";
+import ModalMessage from "./ModalMessage";
 
 import api from "@/api";
 import { useBoundStore } from "@/store";
@@ -158,6 +159,11 @@ export default function Page() {
     batchDelivered: false,
     importShip: false,
     export: false,
+    sendMsg: false,
+  });
+
+  const [openModal, setOpenModal] = useState({
+    msg: false,
   });
 
   const [showModalImportShip, setShowModalImportShip] = useState(false);
@@ -598,6 +604,16 @@ export default function Page() {
                     批次維護物流狀態為已送達
                   </Button>
                 </Badge>
+
+                <Button
+                  type="secondary"
+                  disabled={selectedRows.length === 0}
+                  onClick={() => {
+                    setOpenModal((state) => ({ ...state, msg: true }));
+                  }}
+                >
+                  發送訊息
+                </Button>
               </Flex>
             </Col>
 
@@ -643,6 +659,12 @@ export default function Page() {
         data={importShipData}
         open={showModalImportShip}
         onCancel={() => setShowModalImportShip(false)}
+      />
+
+      <ModalMessage
+        selectedRows={selectedRows}
+        open={openModal.msg}
+        onCancel={() => setOpenModal((state) => ({ ...state, msg: false }))}
       />
     </Container>
   );
