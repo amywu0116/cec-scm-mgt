@@ -19,7 +19,6 @@ import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
-import Tabs from "@/components/Tabs";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
@@ -370,27 +369,16 @@ export default function Page() {
         </Col>
 
         <Col span={24}>
-          <Tabs
-            defaultActiveKey="1"
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <Table
-                    loading={loading.table}
-                    columns={columns}
-                    dataSource={tableInfo.rows}
-                    pageInfo={{
-                      total: tableInfo.total,
-                      page: tableInfo.page,
-                      pageSize: tableInfo.pageSize,
-                    }}
-                    onChange={handleChangeTable}
-                  />
-                ),
-              },
-            ]}
+          <Table
+            loading={loading.table}
+            columns={columns}
+            dataSource={tableInfo.rows}
+            pageInfo={{
+              total: tableInfo.total,
+              page: tableInfo.page,
+              pageSize: tableInfo.pageSize,
+            }}
+            onChange={handleChangeTable}
           />
         </Col>
       </Row>

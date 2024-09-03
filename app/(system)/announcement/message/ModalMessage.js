@@ -1,4 +1,4 @@
-import { App, Col, Flex, Form, Row, Spin } from "antd";
+import { App, Checkbox, Col, Flex, Form, Row, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -17,19 +17,21 @@ const TableTitle = styled.div`
   line-height: 36px;
 `;
 
-export default function ModalHistory(props) {
-  const { open, rowInfo, onCancel } = props;
+export default function ModalMessage(props) {
+  const { open, rowInfo, onOk, onCancel } = props;
   const { message } = App.useApp();
 
   const [form] = Form.useForm();
   const itemList = form.getFieldValue("itemList");
-  const historyList = form.getFieldValue("historyList");
+  const status = form.getFieldValue("status");
 
   const [loading, setLoading] = useState({
     modal: false,
   });
 
-  const productColumns = [
+  const [isClosed, setIsClosed] = useState(false);
+
+  const columns = [
     {
       title: "商品編號",
       dataIndex: "productnumber",
@@ -47,36 +49,39 @@ export default function ModalHistory(props) {
     },
   ];
 
-  const columns = [
-    {
-      title: "回覆時間",
-      dataIndex: "answerTime",
-      align: "center",
-    },
-    {
-      title: "回覆內容",
-      dataIndex: "answer",
-      align: "center",
-    },
-    {
-      title: "回覆者",
-      dataIndex: "respondent",
-      align: "center",
-    },
-  ];
-
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, modal: true }));
     api
-      .get(`v1/scm/consultation/${rowInfo.serviceId}/history`)
+      .get(`v1/scm/consultation/${rowInfo.serviceId}`)
       .then((res) => {
         form.setFieldsValue({
           ecorderNo: res.data.ecorderNo,
           questionCategory: res.data.questionCategory,
           questionContent: res.data.questionContent,
           itemList: res.data.itemList,
-          historyList: res.data.historyList,
+          replyMsg: res.data.answer,
+          status: res.data.status,
         });
+        setIsClosed(!!res.data.status);
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, modal: false })));
+  };
+
+  // 送出回覆
+  const handleFinish = (values) => {
+    const data = {
+      replyMsg: values.replyMsg,
+      isClosed,
+    };
+
+    setLoading((state) => ({ ...state, modal: true }));
+    api
+      .post(`v1/scm/consultation/${rowInfo.serviceId}/reply`, data)
+      .then((res) => {
+        message.success(res.message);
+        fetchInfo();
+        onOk();
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading((state) => ({ ...state, modal: false })));
@@ -92,18 +97,35 @@ export default function ModalHistory(props) {
 
   return (
     <Modal
-      title="訊息歷程查詢"
+      title="回覆訊息內容"
       centered
       closeIcon={false}
       width={800}
       open={open}
       onCancel={onCancel}
       destroyOnClose
-      footer={[
-        <Button key="ok" type="primary" onClick={onCancel}>
-          了解
-        </Button>,
-      ]}
+      footer={(_, { OkBtn, CancelBtn }) => (
+        <Flex gap={16} justify="flex-end" align="center">
+          <Checkbox
+            disabled={loading.modal || !!status}
+            checked={isClosed}
+            onChange={(e) => setIsClosed(e.target.checked)}
+          >
+            結案
+          </Checkbox>
+
+          <Button onClick={onCancel}>取消</Button>
+
+          <Button
+            type="primary"
+            loading={loading.modal}
+            disabled={!!status}
+            onClick={() => form.submit()}
+          >
+            送出回覆
+          </Button>
+        </Flex>
+      )}
     >
       <Spin spinning={loading.modal}>
         <Form
@@ -112,9 +134,10 @@ export default function ModalHistory(props) {
           labelCol={{ flex: "80px" }}
           labelWrap
           requiredMark={false}
-          disabled={loading.modal}
+          disabled={loading.modal || !!status}
           autoComplete="off"
           preserve={false}
+          onFinish={handleFinish}
         >
           <Flex vertical>
             <Row gutter={32}>
@@ -151,7 +174,7 @@ export default function ModalHistory(props) {
                     <Table
                       rowKey="productnumber"
                       pagination={false}
-                      columns={productColumns}
+                      columns={columns}
                       dataSource={itemList}
                     />
                   </Form.Item>
@@ -161,15 +184,12 @@ export default function ModalHistory(props) {
 
             <Row gutter={32}>
               <Col span={24}>
-                <Form.Item name="itemList">
-                  <TableTitle>回覆歷程</TableTitle>
-                  <Table
-                    size="small"
-                    scroll={{ y: 240 }}
-                    columns={columns}
-                    dataSource={historyList}
-                    pagination={false}
-                  />
+                <Form.Item
+                  name="replyMsg"
+                  label="回覆內容"
+                  rules={[{ required: true, message: "必填" }]}
+                >
+                  <TextArea autoSize={{ minRows: 3, maxRows: 3 }} />
                 </Form.Item>
               </Col>
             </Row>
