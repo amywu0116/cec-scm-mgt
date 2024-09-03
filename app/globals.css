@@ -128,10 +128,6 @@ a {
   opacity: 0.3;
 }
 
-.ant-modal-root .ant-modal-wrap {
-  z-index: 1100 !important;
-}
-
 .ant-upload-list-item-name {
   font-size: 14px;
   font-weight: 400;
@@ -169,4 +165,12 @@ a {
 .ant-image .ant-image-mask-info span {
   font-size: 14px !important;
   margin-inline-end: 0 !important;
+}
+
+.ant-modal-mask {
+  z-index: 2000 !important;
+}
+
+.ant-modal-root .ant-modal-wrap {
+  z-index: 2100 !important;
 }

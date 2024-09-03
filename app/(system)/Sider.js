@@ -1,4 +1,4 @@
-import { App, Flex, Layout, Menu } from "antd";
+import { App, Flex, Layout, Menu, Space, Tag } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import {
   PATH_SUPPLIER,
 } from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import { isUAT } from "@/constants";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -170,11 +171,11 @@ export default function Sider() {
           label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
           icon: getOptionIcon(PATH_ANNOUNCEMENT_SETTINGS),
         },
-        // {
-        //   key: PATH_ANNOUNCEMENT_MESSAGE,
-        //   label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
-        //   icon: getOptionIcon(PATH_ANNOUNCEMENT_MESSAGE),
-        // },
+        {
+          key: PATH_ANNOUNCEMENT_MESSAGE,
+          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
+          icon: getOptionIcon(PATH_ANNOUNCEMENT_MESSAGE),
+        },
       ],
     },
     {
@@ -199,11 +200,11 @@ export default function Sider() {
           ),
           icon: getOptionIcon(PATH_PRODUCT_BATCH_IMG_UPLOAD),
         },
-        // {
-        //   key: PATH_PRODUCT_PROMOTION,
-        //   label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
-        //   icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
-        // },
+        {
+          key: PATH_PRODUCT_PROMOTION,
+          label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
+          icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
+        },
         // {
         //   key: "",
         //   label: <Link href="">樣式商品</Link>,
@@ -321,9 +322,17 @@ export default function Sider() {
       width={280}
     >
       <Flex vertical gap={20}>
-        <Link href={PATH_HOME} onClick={handleClickLogo}>
-          <Image src="/sider/logo.svg" width={40} height={27} alt="" />
-        </Link>
+        <Space size={20} align="center">
+          <Link
+            style={{ display: "flex" }}
+            href={PATH_HOME}
+            onClick={handleClickLogo}
+          >
+            <Image src="/sider/logo.svg" width={40} height={27} alt="" />
+          </Link>
+
+          {isUAT && <Tag color="red">UAT</Tag>}
+        </Space>
 
         <Menu
           theme="dark"
