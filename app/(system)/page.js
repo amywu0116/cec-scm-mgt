@@ -19,7 +19,7 @@ export default function Page() {
         <LayoutHeaderTitle>首頁</LayoutHeaderTitle>
         <Breadcrumb
           separator=">"
-          items={[{ title: "家樂福集市+供應商服務系統" }]}
+          items={[{ title: "家樂福線上商城供應商服務系統" }]}
         />
       </LayoutHeader>
 

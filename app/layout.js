@@ -1,6 +1,5 @@
-import React from "react";
-import { App } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { App } from "antd";
 
 import StyledComponentsRegistry from "../lib/registry";
 
