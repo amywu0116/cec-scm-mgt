@@ -605,7 +605,7 @@ export default function Page() {
                   </Button>
                 </Badge>
 
-                {/* <Button
+                <Button
                   type="secondary"
                   disabled={selectedRows.length === 0}
                   onClick={() => {
@@ -613,7 +613,7 @@ export default function Page() {
                   }}
                 >
                   發送訊息
-                </Button> */}
+                </Button>
               </Flex>
             </Col>
 
