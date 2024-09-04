@@ -53,7 +53,7 @@ export default function Page() {
     rows: [],
     total: 0,
     page: 1,
-    pageSize: 100,
+    pageSize: 10,
     tableQuery: {},
   });
 
@@ -249,7 +249,7 @@ export default function Page() {
   };
 
   const handleFinish = (values) => {
-    fetchList({ ...values, page: 1, pageSize: 100 });
+    fetchList({ ...values, page: 1, pageSize: 10 });
   };
 
   const handleChangeTable = (page, pageSize) => {

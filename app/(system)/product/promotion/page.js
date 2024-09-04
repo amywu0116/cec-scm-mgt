@@ -256,9 +256,11 @@ export default function Page() {
 
         <Col span={24}>
           <Flex style={{ width: "100%" }} vertical gap={16}>
-            <Link href={PATH_PRODUCT_PROMOTION_ADD}>
-              <Button type="primary">新增促銷方案商品</Button>
-            </Link>
+            <div>
+              <Link href={PATH_PRODUCT_PROMOTION_ADD}>
+                <Button type="primary">新增促銷方案商品</Button>
+              </Link>
+            </div>
 
             <Table
               rowKey="id"

@@ -173,14 +173,14 @@ export default function Page() {
       render: (text, record, index) => {
         return (
           <Space>
-            <FunctionBtn
+            {/* <FunctionBtn
               onClick={() => {
                 setRowInfo(record);
                 setOpenModal((state) => ({ ...state, orderList: true }));
               }}
             >
               編輯圖片順序
-            </FunctionBtn>
+            </FunctionBtn> */}
 
             <FunctionBtn
               onClick={() => {
