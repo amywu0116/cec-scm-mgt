@@ -28,10 +28,7 @@ import ModalImportError from "./ModalImportError";
 import ModalLoading from "./ModalLoading";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_APPLICATION,
-  PATH_PRODUCT_IMAGE_MAINTENANCE,
-} from "@/constants/paths";
+import { routes } from "@/routes";
 import { useBoundStore } from "@/store";
 import updateQuery from "@/utils/updateQuery";
 
@@ -73,7 +70,8 @@ export default function Page() {
   const [openModal, setOpenModal] = useState({
     add: false,
     import: false,
-    pdpPreview: false,
+    pdp: false,
+    loading: false,
   });
 
   const [openFileDialogOnClick, setOpenFileDialogOnClick] = useState(false);
@@ -84,11 +82,12 @@ export default function Page() {
 
   const [importErrorInfo, setImportErrorInfo] = useState();
 
+  const pageSizeDefault = 100;
   const [tableInfo, setTableInfo] = useState({
     rows: [],
     total: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: pageSizeDefault,
     tableQuery: {},
   });
 
@@ -130,7 +129,7 @@ export default function Page() {
       align: "center",
       render: (text, record) => {
         return (
-          <Link href={`${PATH_PRODUCT_APPLICATION}/edit/${record.applyId}`}>
+          <Link href={routes.product.applicationEdit(record.applyId)}>
             {text}
           </Link>
         );
@@ -138,7 +137,6 @@ export default function Page() {
     },
     {
       title: "規格",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         let variationText = "";
@@ -163,7 +161,6 @@ export default function Page() {
     },
     {
       title: "商品編號/條碼",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         return (
@@ -176,7 +173,6 @@ export default function Page() {
     },
     {
       title: "價格",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         if (record.price === null && record.specialPrice === null) {
@@ -219,14 +215,13 @@ export default function Page() {
     },
     {
       title: "預覽",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         return (
           <FunctionBtn
             onClick={() => {
               setCurrentApplyId(record.applyId);
-              setOpenModal((state) => ({ ...state, pdpPreview: true }));
+              setOpenModal((state) => ({ ...state, pdp: true }));
             }}
           >
             PDP
@@ -236,13 +231,12 @@ export default function Page() {
     },
     {
       title: "功能",
-      dataIndex: "",
       align: "center",
       render: (text, record, index) => {
         return (
           <Link
             href={{
-              pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${record.applyId}`,
+              pathname: routes.product.imageMaintenance(record.applyId),
               query: {
                 itemName: record.itemName,
                 itemEan: record.itemEan,
@@ -280,7 +274,7 @@ export default function Page() {
     return params;
   };
 
-  const fetchList = (values) => {
+  const fetchTableInfo = (values) => {
     updateQuery(values, setQuery);
     const newParams = transformParams(values);
     setSelectedRows([]);
@@ -296,12 +290,8 @@ export default function Page() {
           tableQuery: { ...values },
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   // 分車類型下拉選單內容
@@ -315,16 +305,16 @@ export default function Page() {
   };
 
   const refreshTable = () => {
-    fetchList({ ...tableInfo.tableQuery });
+    fetchTableInfo({ ...tableInfo.tableQuery });
     setSelectedRows([]);
   };
 
   const handleFinish = (values) => {
-    fetchList({ ...values, page: 1, pageSize: 10 });
+    fetchTableInfo({ ...values, page: 1, pageSize: pageSizeDefault });
   };
 
   const handleChangeTable = (page, pageSize) => {
-    fetchList({ ...tableInfo.tableQuery, page, pageSize });
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
   };
 
   // 送審
@@ -338,12 +328,8 @@ export default function Page() {
         message.success("送審成功");
         refreshTable();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   // 刪除
@@ -357,12 +343,8 @@ export default function Page() {
         message.success(res.message);
         refreshTable();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, table: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
   };
 
   // 提品匯入範例下載
@@ -394,9 +376,7 @@ export default function Page() {
           setImportErrorInfo(res.data);
           setOpenModal((state) => ({ ...state, import: true }));
         })
-        .catch((err) => {
-          message.error(err.message);
-        })
+        .catch((err) => message.error(err.message))
         .finally(() => {
           setLoading((state) => ({ ...state, import: false }));
           setOpenModal((state) => ({ ...state, loading: false }));
@@ -431,7 +411,7 @@ export default function Page() {
 
   useEffect(() => {
     if (Object.values(query).every((q) => q === null)) return;
-    fetchList(query);
+    fetchTableInfo(query);
     form.setFieldsValue({
       itemEan: query.itemEan,
       itemName: query.itemName,
@@ -446,43 +426,42 @@ export default function Page() {
   }, []);
 
   return (
-    <Container>
-      <LayoutHeader>
-        <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
+    <>
+      <Container>
+        <LayoutHeader>
+          <LayoutHeaderTitle>提品申請</LayoutHeaderTitle>
+          <Space style={{ marginLeft: "auto" }} size={16}>
+            <div style={{ color: "#595959" }}>
+              *匯入筆數上限：食品200品，非食品200品
+            </div>
 
-        <Space style={{ marginLeft: "auto" }} size={16}>
-          <div style={{ color: "#595959" }}>
-            *匯入筆數上限：食品200品，非食品200品
-          </div>
+            <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
 
-          <Button onClick={handleDownloadFile}>提品匯入範例下載</Button>
-
-          <Upload
-            disabled={loading.import}
-            showUploadList={false}
-            openFileDialogOnClick={openFileDialogOnClick}
-            onChange={handleImport}
-          >
-            <Button
-              type="secondary"
-              loading={loading.import}
-              onClick={handleClickUpload}
+            <Upload
+              disabled={loading.import}
+              showUploadList={false}
+              openFileDialogOnClick={openFileDialogOnClick}
+              onChange={handleImport}
             >
-              提品匯入
+              <Button
+                type="secondary"
+                loading={loading.import}
+                onClick={handleClickUpload}
+              >
+                提品匯入
+              </Button>
+            </Upload>
+
+            <Button
+              type="primary"
+              onClick={() => setOpenModal((state) => ({ ...state, add: true }))}
+            >
+              新增提品
             </Button>
-          </Upload>
+          </Space>
+        </LayoutHeader>
 
-          <Button
-            type="primary"
-            onClick={() => setOpenModal((state) => ({ ...state, add: true }))}
-          >
-            新增提品
-          </Button>
-        </Space>
-      </LayoutHeader>
-
-      <Row gutter={[0, 16]}>
-        <Col span={24}>
+        <Flex vertical gap={16}>
           <Form
             form={form}
             autoComplete="off"
@@ -566,92 +545,76 @@ export default function Page() {
               </Space>
             </Row>
           </Form>
-        </Col>
 
-        <Col span={24}>
-          <Row gutter={[0, 16]}>
-            <Col span={24}>
-              <TableTitle>申請列表</TableTitle>
-            </Col>
+          <Flex vertical gap={16}>
+            <TableTitle>申請列表</TableTitle>
 
-            <Col span={24}>
-              <Flex gap={16}>
-                <Button
-                  type="secondary"
-                  loading={loading.export}
-                  onClick={handleExport}
-                >
-                  提品清單匯出
-                </Button>
+            <Space size={16}>
+              <Button
+                type="secondary"
+                loading={loading.export}
+                onClick={handleExport}
+              >
+                提品清單匯出
+              </Button>
 
-                {selectedRows.length > 0 && (
-                  <>
-                    <Button type="default" onClick={handleApply}>
-                      送審
-                    </Button>
+              {selectedRows.length > 0 && (
+                <>
+                  <Button type="default" onClick={handleApply}>
+                    送審
+                  </Button>
 
-                    <Button type="default" onClick={handleDeleteApply}>
-                      刪除
-                    </Button>
-                  </>
-                )}
-              </Flex>
-            </Col>
+                  <Button type="default" onClick={handleDeleteApply}>
+                    刪除
+                  </Button>
+                </>
+              )}
+            </Space>
 
-            <Col span={24}>
-              <Table
-                rowKey="applyId"
-                loading={loading.table}
-                rowSelection={{
-                  selectedRowKeys: selectedRows.map((row) => row.applyId),
-                  onChange: (selectedRowKeys, selectedRows) => {
-                    setSelectedRows(selectedRows);
-                  },
-                }}
-                pageInfo={{
-                  total: tableInfo.total,
-                  page: tableInfo.page,
-                  pageSize: tableInfo.pageSize,
-                }}
-                columns={columns}
-                dataSource={tableInfo.rows}
-                onChange={handleChangeTable}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+            <Table
+              rowKey="applyId"
+              loading={loading.table}
+              rowSelection={{
+                selectedRowKeys: selectedRows.map((row) => row.applyId),
+                onChange: (selectedRowKeys, selectedRows) => {
+                  setSelectedRows(selectedRows);
+                },
+              }}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              columns={columns}
+              dataSource={tableInfo.rows}
+              onChange={handleChangeTable}
+            />
+          </Flex>
+        </Flex>
+      </Container>
 
       <ModalAddProduct
         open={openModal.add}
-        onCancel={() => {
-          setOpenModal((state) => ({ ...state, add: false }));
-        }}
+        onCancel={() => setOpenModal((state) => ({ ...state, add: false }))}
       />
 
       <ModalImportError
         info={importErrorInfo}
         open={openModal.import}
-        onCancel={() => {
-          setOpenModal((state) => ({ ...state, import: false }));
-        }}
+        onCancel={() => setOpenModal((state) => ({ ...state, import: false }))}
       />
 
       <ModalPreviewPDP
         type="apply"
         id={currentApplyId}
-        open={openModal.pdpPreview}
-        onCancel={() => {
-          setOpenModal((state) => ({ ...state, pdpPreview: false }));
-        }}
+        open={openModal.pdp}
+        onCancel={() => setOpenModal((state) => ({ ...state, pdp: false }))}
       />
 
       <ModalLoading
         open={openModal.loading}
-        onCancel={() => {
-          setOpenModal((state) => ({ ...state, loading: false }));
-        }}
+        onCancel={() => setOpenModal((state) => ({ ...state, loading: false }))}
       />
-    </Container>
+    </>
   );
 }
