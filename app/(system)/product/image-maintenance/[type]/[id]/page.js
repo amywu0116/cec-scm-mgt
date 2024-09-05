@@ -32,11 +32,8 @@ import SearchForm from "./SearchForm";
 import ModalOrderList from "./ModalOrderList";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_APPLICATION,
-  PATH_PRODUCT_PRODUCT_LIST,
-} from "@/constants/paths";
 import { useBoundStore } from "@/store";
+import { routes } from "@/routes";
 
 const Container = styled.div`
   .file-upload {
@@ -337,8 +334,14 @@ export default function Page() {
         <Breadcrumb
           separator=">"
           items={[
-            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
-            { title: <Link href={PATH_PRODUCT_APPLICATION}>商品資料</Link> },
+            { title: <Link href={routes.product.application}>提品申請</Link> },
+            {
+              title: (
+                <Link href={routes.product.applicationEdit(id)}>
+                  編輯提品資料
+                </Link>
+              ),
+            },
             { title: "圖片維護" },
           ]}
         />
