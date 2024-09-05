@@ -6,7 +6,9 @@ import styled, { css } from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import Modal from "@/components/Modal";
+
 import PreviewImgZoom from "./PreviewImgZoom";
+import ServiceDescription from "./ServiceDescription";
 
 import api from "@/api";
 
@@ -70,14 +72,6 @@ const ItemName = styled.div`
   font-weight: bold;
   color: #333;
   margin-bottom: 10px;
-`;
-
-const ItemText = styled.div`
-  display: flex;
-  gap: 0 20px;
-  font-size: 16px;
-  font-weight: 400;
-  color: #999;
 `;
 
 const ItemPriceWrapper = styled.div`
@@ -548,11 +542,6 @@ export default function ModalPreviewPDP(props) {
                   <Detail>
                     <ItemName>{info.itemName}</ItemName>
 
-                    {/* <ItemText>
-                      <div>◎品牌：{info.brand}</div>
-                      <div>◎規格：{info.itemSpec}</div>
-                    </ItemText> */}
-
                     <ItemPriceWrapper>
                       {info.specialPrice ? (
                         <>
@@ -702,7 +691,7 @@ export default function ModalPreviewPDP(props) {
                           </>
                         )}
 
-                        {selectedTab === "1" && <div>內容待補...</div>}
+                        {selectedTab === "1" && <ServiceDescription />}
                       </ProductDescriptionContent>
                     </ProductDescription>
 
