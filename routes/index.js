@@ -8,6 +8,7 @@ export const routes = {
     list: "/product/list",
     info: (id) => `/product/${id}`,
     application: "/product/application",
+    applicationEdit: (id) => `/product/application/edit/${id}`,
     batchImgUpload: "/product/batch-img-upload",
     promotion: "/product/promotion",
     stock: "/product/stock",

@@ -28,14 +28,11 @@ import ModalDelete from "@/components/Modal/ModalDelete";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 
-import SearchForm from "./SearchForm";
 import ModalOrderList from "./ModalOrderList";
+import SearchForm from "./SearchForm";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_APPLICATION,
-  PATH_PRODUCT_PRODUCT_LIST,
-} from "@/constants/paths";
+import { routes } from "@/routes";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
@@ -334,14 +331,35 @@ export default function Page() {
     <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>圖片維護</LayoutHeaderTitle>
-        <Breadcrumb
-          separator=">"
-          items={[
-            { title: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link> },
-            { title: <Link href={PATH_PRODUCT_APPLICATION}>商品資料</Link> },
-            { title: "圖片維護" },
-          ]}
-        />
+        {isProduct && (
+          <Breadcrumb
+            separator=">"
+            items={[
+              { title: <Link href={routes.product.list}>商品列表</Link> },
+              { title: <Link href={routes.product.info(id)}>商品資料</Link> },
+              { title: "圖片維護" },
+            ]}
+          />
+        )}
+
+        {isApply && (
+          <Breadcrumb
+            separator=">"
+            items={[
+              {
+                title: <Link href={routes.product.application}>提品申請</Link>,
+              },
+              {
+                title: (
+                  <Link href={routes.product.applicationEdit(id)}>
+                    編輯提品資料
+                  </Link>
+                ),
+              },
+              { title: "圖片維護" },
+            ]}
+          />
+        )}
       </LayoutHeader>
 
       <Space style={{ width: "100%" }} direction="vertical" size={100}>
