@@ -1,24 +1,25 @@
 export const routes = {
-  index: "/",
+  index: `/`,
   announcement: {
-    message: "/announcement/message",
-    inquiry: "/announcement/inquiry",
+    message: `/announcement/message`,
+    inquiry: `/announcement/inquiry`,
   },
   product: {
-    list: "/product/list",
+    list: `/product/list`,
     info: (id) => `/product/${id}`,
-    application: "/product/application",
+    application: `/product/application`,
     applicationEdit: (id) => `/product/application/edit/${id}`,
-    batchImgUpload: "/product/batch-img-upload",
-    promotion: "/product/promotion",
-    stock: "/product/stock",
+    batchImgUpload: `/product/batch-img-upload`,
+    promotion: `/product/promotion`,
+    stock: `/product/stock`,
+    imageMaintenance: (id) => `/product/image-maintenance/apply/${id}`,
   },
   order: {
-    list: "/order/list",
+    list: `/order/list`,
   },
-  logistics: "/logistics",
-  vendor: "/vendor",
+  logistics: `/logistics`,
+  vendor: `/vendor`,
   account: {
-    passwordChange: "/account/password-change",
+    passwordChange: `/account/password-change`,
   },
 };
