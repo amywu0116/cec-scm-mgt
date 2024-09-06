@@ -295,14 +295,19 @@ const Popular = styled.div`
   height: 370px;
 `;
 
+const TAB = {
+  INFO: "0", // 商品資訊
+  SERVICE: "1", // 配送售後服務說明
+};
+
 const descriptionTabList = [
   {
     label: "商品資訊",
-    key: "0",
+    key: TAB.INFO,
   },
   {
     label: "配送售後服務說明",
-    key: "1",
+    key: TAB.SERVICE,
   },
 ];
 
@@ -316,7 +321,7 @@ export default function ModalPreviewPDP(props) {
   const [loading, setLoading] = useState({ page: true });
 
   const [selectedImg, setSelectedImg] = useState();
-  const [selectedTab, setSelectedTab] = useState("0");
+  const [selectedTab, setSelectedTab] = useState(descriptionTabList[0].key);
   const [info, setInfo] = useState({});
 
   const columns = [
@@ -363,6 +368,32 @@ export default function ModalPreviewPDP(props) {
     {
       title: "尺寸",
       dataIndex: "vSize",
+    },
+    {
+      title: "產品成份及內容添加物",
+      dataIndex: "ingredients",
+      render: (text, record) => {
+        return (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: text,
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: "營養成份",
+      dataIndex: "nutrition",
+      render: (text, record) => {
+        return (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: text,
+            }}
+          />
+        );
+      },
     },
     {
       title: "產品責任險",
@@ -594,7 +625,7 @@ export default function ModalPreviewPDP(props) {
                       </ProductDescriptionTabs>
 
                       <ProductDescriptionContent>
-                        {selectedTab === "0" && (
+                        {selectedTab === TAB.INFO && (
                           <>
                             {info.featureImages?.length > 0 && (
                               <FeatureImagesList>
@@ -621,14 +652,6 @@ export default function ModalPreviewPDP(props) {
                               />
                             )}
 
-                            {info.ingredients && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: info.ingredients,
-                                }}
-                              />
-                            )}
-
                             <ProductDescriptionTable>
                               <table>
                                 <tbody>
@@ -648,18 +671,10 @@ export default function ModalPreviewPDP(props) {
                                 </tbody>
                               </table>
                             </ProductDescriptionTable>
-
-                            {info.nutrition && (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: info.nutrition,
-                                }}
-                              />
-                            )}
                           </>
                         )}
 
-                        {selectedTab === "1" && <ServiceDescription />}
+                        {selectedTab === TAB.SERVICE && <ServiceDescription />}
                       </ProductDescriptionContent>
                     </ProductDescription>
 
