@@ -19,6 +19,11 @@ const Container = styled.div`
   height: 70vh;
   overflow-y: scroll;
   padding: 20px;
+
+  p {
+    font-size: 16px;
+    color: #333;
+  }
 `;
 
 const ProductDetail = styled.div`
@@ -187,6 +192,7 @@ const PurchaseBtnWrapper = styled.div`
 `;
 
 const FavoriteBtn = styled.div`
+  display: flex;
   filter: grayscale(1);
   opacity: 0.22;
 `;
@@ -300,150 +306,6 @@ const descriptionTabList = [
   },
 ];
 
-const isFoodColumns = [
-  {
-    title: "顏色",
-    dataIndex: "vColor",
-  },
-  {
-    title: "尺寸",
-    dataIndex: "vSize",
-  },
-  {
-    title: "容量",
-    dataIndex: "vCapacity",
-  },
-  {
-    title: "入數",
-    dataIndex: "vUnit",
-  },
-  {
-    title: "款式",
-    dataIndex: "vStyle",
-  },
-  {
-    title: "商品來源國家",
-    dataIndex: "itemCountry",
-  },
-  {
-    title: "保存天數",
-    dataIndex: "expDate",
-  },
-  {
-    title: "保存方式",
-    dataIndex: "itemStoreway",
-  },
-  {
-    title: "應免稅",
-    dataIndex: "isTax",
-    render: (text, record) => {
-      return text ? "應稅" : "免稅";
-    },
-  },
-  {
-    title: "國內負責廠商名稱",
-    dataIndex: "manufacturer",
-  },
-  {
-    title: "國內負責廠商電話",
-    dataIndex: "manufacturerPhone",
-  },
-  {
-    title: "國內負責廠商地址",
-    dataIndex: "manufacturerAddress",
-  },
-  {
-    title: "素食種類",
-    dataIndex: "veggieType",
-  },
-  {
-    title: "產品成份及食品添加物",
-    dataIndex: "ingredients",
-  },
-  {
-    title: "營養標示",
-    dataIndex: "nutrition",
-  },
-  {
-    title: "產品責任險",
-    dataIndex: "dutyInsurance",
-  },
-  {
-    title: "食品業者登錄字號",
-    dataIndex: "approvalId",
-  },
-];
-
-const isNonFoodColumns = [
-  {
-    title: "顏色",
-    dataIndex: "vColor",
-  },
-  {
-    title: "尺寸",
-    dataIndex: "vSize",
-  },
-  {
-    title: "容量",
-    dataIndex: "vCapacity",
-  },
-  {
-    title: "入數",
-    dataIndex: "vUnit",
-  },
-  {
-    title: "款式",
-    dataIndex: "vStyle",
-  },
-  {
-    title: "商品來源國家",
-    dataIndex: "itemCountry",
-  },
-  {
-    title: "保存天數",
-    dataIndex: "expDate",
-  },
-  {
-    title: "保存方式",
-    dataIndex: "itemStoreway",
-  },
-  {
-    title: "應免稅",
-    dataIndex: "isTax",
-    render: (text, record) => {
-      return text ? "應稅" : "免稅";
-    },
-  },
-  {
-    title: "電源規格",
-    dataIndex: "powerSpec",
-  },
-  {
-    title: "產品責任險",
-    dataIndex: "dutyInsurance",
-  },
-  {
-    title: "產品核准字號",
-    dataIndex: "approvalId",
-  },
-  {
-    title: "保固範圍",
-    dataIndex: "warrantyScope",
-  },
-  {
-    title: "保固期間",
-    dataIndex: "warrantyPeriod",
-  },
-  {
-    title: "標章",
-    dataIndex: "certMark",
-  },
-  {
-    title: "能源效率",
-    dataIndex: "energyEfficiency",
-  },
-];
-
 export default function ModalPreviewPDP(props) {
   const { type, id, open, onCancel } = props;
   const { message } = App.useApp();
@@ -457,7 +319,91 @@ export default function ModalPreviewPDP(props) {
   const [selectedTab, setSelectedTab] = useState("0");
   const [info, setInfo] = useState({});
 
-  const columns = info.isFood ? isFoodColumns : isNonFoodColumns;
+  const columns = [
+    {
+      title: "商品來源國家",
+      dataIndex: "itemCountry",
+    },
+    {
+      title: "容量",
+      dataIndex: "vCapacity",
+    },
+    {
+      title: "款式",
+      dataIndex: "vStyle",
+    },
+    {
+      title: "入數",
+      dataIndex: "vUnit",
+    },
+    {
+      title: "素食種類",
+      dataIndex: "veggieType",
+    },
+    {
+      title: "能源效率",
+      dataIndex: "energyEfficiency",
+    },
+    {
+      title: "國內負責廠商名稱",
+      dataIndex: "manufacturer",
+    },
+    {
+      title: "國內負責廠商電話",
+      dataIndex: "manufacturerPhone",
+    },
+    {
+      title: "國內負責廠商地址",
+      dataIndex: "manufacturerAddress",
+    },
+    {
+      title: "顏色",
+      dataIndex: "vColor",
+    },
+    {
+      title: "尺寸",
+      dataIndex: "vSize",
+    },
+    {
+      title: "產品責任險",
+      dataIndex: "dutyInsurance",
+    },
+    {
+      title: info.isFood ? "食品業者登錄字號" : "產品核准字號",
+      dataIndex: "approvalId",
+    },
+    {
+      title: "保存天數",
+      dataIndex: "expDate",
+    },
+    {
+      title: "保存方式",
+      dataIndex: "itemStoreway",
+    },
+    {
+      title: "電源規格",
+      dataIndex: "powerSpec",
+    },
+    {
+      title: "保固範圍",
+      dataIndex: "warrantyScope",
+    },
+    {
+      title: "保固期間",
+      dataIndex: "warrantyPeriod",
+    },
+    {
+      title: "標章",
+      dataIndex: "certMark",
+    },
+    {
+      title: "應免稅",
+      dataIndex: "isTax",
+      render: (text, record) => {
+        return text ? "應稅" : "免稅";
+      },
+    },
+  ];
 
   const fetchInfo = () => {
     const apiUrl = isApply
@@ -667,7 +613,21 @@ export default function ModalPreviewPDP(props) {
                               </FeatureImagesList>
                             )}
 
-                            {info.itemDetail && <div>{info.itemDetail}</div>}
+                            {info.itemDetail && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: info.itemDetail,
+                                }}
+                              />
+                            )}
+
+                            {info.ingredients && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: info.ingredients,
+                                }}
+                              />
+                            )}
 
                             <ProductDescriptionTable>
                               <table>
@@ -688,6 +648,14 @@ export default function ModalPreviewPDP(props) {
                                 </tbody>
                               </table>
                             </ProductDescriptionTable>
+
+                            {info.nutrition && (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: info.nutrition,
+                                }}
+                              />
+                            )}
                           </>
                         )}
 
