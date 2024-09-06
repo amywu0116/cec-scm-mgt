@@ -35,6 +35,12 @@ module.exports = {
         port: "",
         pathname: "/on/demandware.static/**",
       },
+      {
+        protocol: "https",
+        hostname: "online.carrefour.com.tw",
+        port: "",
+        pathname: "/on/demandware.static/**",
+      },
     ],
   },
 };
