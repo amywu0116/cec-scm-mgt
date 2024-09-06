@@ -12,6 +12,7 @@ import TextArea from "@/components/TextArea";
 import TableApplyHistory from "./TableApplyHistory";
 import TableChange from "./TableChange";
 
+import { APPLY_STATUS } from "@/constants";
 import { useBoundStore } from "@/store";
 
 const Title = styled.div`
@@ -41,11 +42,13 @@ export default function FormProduct(props) {
     onFinish,
   } = props;
   const params = useParams();
+  console.log("params", params);
 
   const isApply = type === "apply";
   const isProduct = type === "product";
 
   const isAdd = isApply && params.slug[0] === "add";
+  const isEdit = isApply && params.slug[0] === "edit";
 
   const options = useBoundStore((state) => state.options);
   const veggieType = options?.veggie_type ?? [];
@@ -141,6 +144,18 @@ export default function FormProduct(props) {
       return Promise.reject(new Error("不能與多規類型(一)相同"));
     }
     return Promise.resolve();
+  };
+
+  // enable: 1.新增 2.提品編輯且狀態為暫存或審核退件
+  const isPerpetualEnable = () => {
+    return (
+      isAdd ||
+      (isEdit &&
+        isApply &&
+        [APPLY_STATUS.SAVE, APPLY_STATUS.REJECTED].includes(
+          info.applyStatusCode
+        ))
+    );
   };
 
   return (
@@ -539,7 +554,7 @@ export default function FormProduct(props) {
                 label="是否庫控"
                 rules={[{ required: true, message: "必填" }]}
               >
-                <Radio.Group disabled={!isAdd}>
+                <Radio.Group disabled={!isPerpetualEnable()}>
                   <Radio value={true}>否</Radio>
                   <Radio value={false}>是</Radio>
                 </Radio.Group>
@@ -554,7 +569,7 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入活動庫存，請輸入整數數字"
-                      disabled={!isAdd}
+                      disabled={!isPerpetualEnable()}
                     />
                   </Form.Item>
 
@@ -570,7 +585,7 @@ export default function FormProduct(props) {
                         "請輸入活動庫存結束時間",
                       ]}
                       disabledDate={disabledStockDate}
-                      disabled={!isAdd}
+                      disabled={!isPerpetualEnable()}
                     />
                   </Form.Item>
                 </Space>
