@@ -29,6 +29,22 @@ a {
   color: rgba(89, 89, 89, 1) !important;
 }
 
+/* ---------------------- z-index ---------------------- */
+
+.ant-modal-mask {
+  z-index: 2000 !important;
+}
+
+.ant-modal-root .ant-modal-wrap {
+  z-index: 2100 !important;
+}
+
+.ant-picker-dropdown {
+  z-index: 2500 !important;
+}
+
+/* ---------------------- z-index ---------------------- */
+
 /* ---------------------- Form ---------------------- */
 
 .ant-form-item-label > label {
@@ -165,12 +181,4 @@ a {
 .ant-image .ant-image-mask-info span {
   font-size: 14px !important;
   margin-inline-end: 0 !important;
-}
-
-.ant-modal-mask {
-  z-index: 2000 !important;
-}
-
-.ant-modal-root .ant-modal-wrap {
-  z-index: 2100 !important;
 }
