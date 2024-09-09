@@ -10,7 +10,7 @@ import Subtitle from "../Subtitle";
 import Title from "../Title";
 
 import api from "@/api";
-import { PATH_LOGIN } from "@/constants/paths";
+import { routes } from "@/routes";
 
 const Container = styled.div`
   width: 350px;
@@ -41,7 +41,7 @@ export default function Page() {
       .post("/auth/resetPassword", { token, newPassword: values.password })
       .then(() => {
         message.success("修改成功，請重新登入");
-        router.push(PATH_LOGIN);
+        router.push(routes.login);
       })
       .catch((err) => setErrorMsg(err.message))
       .finally(() => setLoading(false));
@@ -99,7 +99,7 @@ export default function Page() {
         </Form.Item>
 
         <Form.Item>
-          <Button block onClick={() => router.push(PATH_LOGIN)}>
+          <Button block onClick={() => router.push(routes.login)}>
             返回登入頁
           </Button>
         </Form.Item>

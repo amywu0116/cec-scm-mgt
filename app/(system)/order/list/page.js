@@ -39,6 +39,7 @@ import ModalMessage from "./ModalMessage";
 import api from "@/api";
 import { useBoundStore } from "@/store";
 import updateQuery from "@/utils/updateQuery";
+import { routes } from "@/routes";
 
 const Container = styled.div`
   .ant-checkbox-group {
@@ -200,7 +201,9 @@ export default function Page() {
       dataIndex: "ecorderNo",
       align: "center",
       render: (text, record, index) => {
-        return <Link href={`/order/${record.ecorderShipId}`}>{text}</Link>;
+        return (
+          <Link href={routes.order.info(record.ecorderShipId)}>{text}</Link>
+        );
       },
     },
     {

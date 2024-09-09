@@ -22,7 +22,7 @@ import Table from "@/components/Table";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
-import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
+import { routes } from "@/routes";
 import updateQuery from "@/utils/updateQuery";
 
 const Container = styled.div``;
@@ -97,7 +97,7 @@ export default function Page() {
       align: "center",
       render: (text, record) => {
         if ([null, undefined].includes(text)) return "-";
-        return <Link href={`${PATH_PRODUCT}/${record.productId}`}>{text}</Link>;
+        return <Link href={routes.product.info(record.productId)}>{text}</Link>;
       },
     },
     {
@@ -171,7 +171,7 @@ export default function Page() {
             <div>{text ? "不庫控" : record.stock}</div>
             <Link
               href={{
-                pathname: `${PATH_PRODUCT_STOCK_SETTINGS}`,
+                pathname: routes.product.stock,
                 query: {
                   productId: record.productId,
                   itemName: record.itemName,
