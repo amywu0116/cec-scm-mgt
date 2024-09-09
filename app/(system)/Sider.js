@@ -211,8 +211,8 @@ export default function Sider() {
       ],
     },
     {
-      key: routes.logistics,
-      label: <Link href={routes.logistics}>貨運公司維護</Link>,
+      key: routes.logistics.list,
+      label: <Link href={routes.logistics.list}>貨運公司維護</Link>,
       icon: getMenuIcon(LOGISTICS),
     },
     {
