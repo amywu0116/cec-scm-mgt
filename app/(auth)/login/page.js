@@ -1,9 +1,9 @@
 "use client";
-import { App, Flex, Form, Input, Tag, Typography } from "antd";
+import { App, Form, Input, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 
@@ -13,9 +13,9 @@ import Subtitle from "../Subtitle";
 import Title from "../Title";
 
 import api from "@/api";
-import { PATH_FORGOT_PASSWORD } from "@/constants/paths";
-import { useBoundStore } from "@/store";
 import { isUAT } from "@/constants";
+import { routes } from "@/routes";
+import { useBoundStore } from "@/store";
 
 const Container = styled.div`
   width: 350px;
@@ -66,7 +66,7 @@ export default function Page() {
       })
       .then((res) => {
         updateUser(res.data);
-        router.push("/");
+        router.push(routes.index);
 
         const lastLoginTime = res.data.lastLoginTime;
         if (lastLoginTime) {
@@ -156,7 +156,7 @@ export default function Page() {
         </Form.Item>
 
         <Form.Item style={{ textAlign: "right" }}>
-          <ForgotPasswordLink href={PATH_FORGOT_PASSWORD}>
+          <ForgotPasswordLink href={routes.passwordForgot}>
             忘記密碼
           </ForgotPasswordLink>
         </Form.Item>

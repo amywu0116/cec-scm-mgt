@@ -21,10 +21,7 @@ import Select from "@/components/Select";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_PROMOTION_ADD,
-  PATH_PRODUCT_PROMOTION_EDIT,
-} from "@/constants/paths";
+import { routes } from "@/routes";
 import updateQuery from "@/utils/updateQuery";
 
 const Container = styled.div``;
@@ -83,7 +80,7 @@ export default function Page() {
       align: "center",
       render: (text, record) => {
         return (
-          <Link href={`${PATH_PRODUCT_PROMOTION_EDIT}/${record.id}`}>
+          <Link href={routes.product.promotionEdit(record.id)}>
             {discountOptions.find((opt) => opt.key === text)?.name ?? "-"}
           </Link>
         );
@@ -257,7 +254,7 @@ export default function Page() {
         <Col span={24}>
           <Flex style={{ width: "100%" }} vertical gap={16}>
             <div>
-              <Link href={PATH_PRODUCT_PROMOTION_ADD}>
+              <Link href={routes.product.promotionAdd}>
                 <Button type="primary">新增促銷方案商品</Button>
               </Link>
             </div>

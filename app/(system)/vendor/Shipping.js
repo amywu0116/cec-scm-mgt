@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Row, Space, Spin } from "antd";
+import { App, Col, Flex, Space, Spin } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -86,12 +86,8 @@ export default function ShippingFeeSettings() {
         setShippingListDefault(res.data ?? list);
         setShippingList(res.data ?? list);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleSave = () => {
@@ -107,12 +103,8 @@ export default function ShippingFeeSettings() {
         message.success(res.message);
         setIsEdit(false);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleCancelEdit = () => {
@@ -127,23 +119,21 @@ export default function ShippingFeeSettings() {
 
   return (
     <Spin spinning={loading.page}>
-      <Row style={{ marginTop: 16 }} gutter={[0, 16]}>
-        <Col span={24}>
-          <Space size={16}>
-            {isEdit ? (
-              <>
-                <Button onClick={handleCancelEdit}>取消</Button>
-                <Button type="primary" onClick={handleSave}>
-                  保存
-                </Button>
-              </>
-            ) : (
-              <Button type="primary" onClick={() => setIsEdit(true)}>
-                編輯
+      <Flex style={{ marginTop: 16 }} vertical gap={16}>
+        <Space size={16}>
+          {isEdit ? (
+            <>
+              <Button onClick={handleCancelEdit}>取消</Button>
+              <Button type="primary" onClick={handleSave}>
+                保存
               </Button>
-            )}
-          </Space>
-        </Col>
+            </>
+          ) : (
+            <Button type="primary" onClick={() => setIsEdit(true)}>
+              編輯
+            </Button>
+          )}
+        </Space>
 
         {checkError(error) && (
           <Col span={24}>
@@ -151,72 +141,59 @@ export default function ShippingFeeSettings() {
           </Col>
         )}
 
-        <Col span={24}>
-          <Row gutter={[0, 16]}>
-            {scmCart.map((a, idx) => {
-              const item =
-                shippingList?.find((b) => b.cartType === a.value) ?? {};
+        {scmCart.map((a, idx) => {
+          const item = shippingList?.find((b) => b.cartType === a.value) ?? {};
 
-              let shippingMethod = {};
-              if (item.shippingMethod) {
-                shippingMethod = scmShippingMethod.find(
-                  (c) => c.value === item.shippingMethod
-                );
-              }
+          let shippingMethod = {};
+          if (item.shippingMethod) {
+            shippingMethod = scmShippingMethod.find(
+              (c) => c.value === item.shippingMethod
+            );
+          }
 
-              return (
-                <Col key={idx} span={24}>
-                  <Row gutter={[32]}>
-                    <Col span={6}>
-                      <Item>
-                        <ItemLabel>{a.name}</ItemLabel>
-                        <Input
-                          style={{ width: 200 }}
-                          disabled
-                          suffix="天"
-                          value={item.shippingDays}
-                        />
-                      </Item>
-                    </Col>
+          return (
+            <Flex gap={32}>
+              <Item>
+                <ItemLabel>{a.name}</ItemLabel>
+                <Input
+                  style={{ width: 200 }}
+                  disabled
+                  suffix="天"
+                  value={item.shippingDays}
+                />
+              </Item>
 
-                    <Col span={18}>
-                      <Item>
-                        <ItemLabel>運費促銷方式</ItemLabel>
-                        <Select
-                          style={{ width: 300 }}
-                          disabled={!isEdit}
-                          placeholder="選擇運費促銷方式"
-                          options={scmShippingMethod.map((a) => ({
-                            ...a,
-                            label: a.name,
-                          }))}
-                          status={
-                            error[item.cartType]?.shippingMethod
-                              ? "error"
-                              : undefined
-                          }
-                          value={shippingMethod}
-                          onChange={(value, option) => {
-                            const newList = shippingList.map((item, i) => {
-                              if (item.cartType !== a.value) return item;
-                              return {
-                                ...item,
-                                shippingMethod: option?.value,
-                                shippingMethodName: option?.name,
-                              };
-                            });
-                            setShippingList(newList);
-                          }}
-                        />
-                      </Item>
-                    </Col>
-                  </Row>
-                </Col>
-              );
-            })}
-          </Row>
-        </Col>
-      </Row>
+              <Item>
+                <ItemLabel>運費促銷方式</ItemLabel>
+                <Select
+                  style={{ width: 300 }}
+                  disabled={!isEdit}
+                  placeholder="選擇運費促銷方式"
+                  options={scmShippingMethod.map((a) => ({
+                    ...a,
+                    label: a.name,
+                  }))}
+                  status={
+                    error[item.cartType]?.shippingMethod ? "error" : undefined
+                  }
+                  value={shippingMethod}
+                  onChange={(value, option) => {
+                    const newList = shippingList.map((item, i) => {
+                      if (item.cartType !== a.value) return item;
+                      return {
+                        ...item,
+                        shippingMethod: option?.value,
+                        shippingMethodName: option?.name,
+                      };
+                    });
+                    setShippingList(newList);
+                  }}
+                />
+              </Item>
+            </Flex>
+          );
+        })}
+      </Flex>
     </Spin>
   );
 }
