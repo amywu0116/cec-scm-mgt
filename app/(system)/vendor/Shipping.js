@@ -152,7 +152,7 @@ export default function ShippingFeeSettings() {
           }
 
           return (
-            <Flex gap={32}>
+            <Flex key={idx} gap={32}>
               <Item>
                 <ItemLabel>{a.name}</ItemLabel>
                 <Input
