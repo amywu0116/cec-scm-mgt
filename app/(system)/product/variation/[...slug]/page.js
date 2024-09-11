@@ -10,7 +10,6 @@ import Button from "@/components/Button";
 import ResetBtn from "@/components/Button/ResetBtn";
 import Input from "@/components/Input";
 import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import ModalConfirm from "@/components/Modal/ModalConfirm";
 import Select from "@/components/Select";
 
 import Transfer from "./Transfer";
@@ -105,17 +104,11 @@ export default function Page() {
     confirm: false,
   });
 
-  const [openModal, setOpenModal] = useState({
-    confirm: false,
-  });
-
   const [productSourceList, setProductSourceList] = useState([]);
   const [productTargetList, setProductTargetList] = useState([]);
 
   const [selectedSourceList, setSelectedSourceList] = useState([]);
   const [selectedTargetList, setSelectedTargetList] = useState([]);
-
-  const [errMsg, setErrMsg] = useState("");
 
   const fetchInfo = () => {
     setLoading((state) => ({ ...state, page: true }));
@@ -123,6 +116,7 @@ export default function Page() {
       .get(`v1/scm/variation/${id}`)
       .then((res) => {
         form.setFieldsValue({
+          mainProductId: res.data.mainProductId,
           mainItemName: res.data.itemName,
           variationAttributeId1: res.data.variationAttributeId1,
           variationAttributeId2: res.data.variationAttributeId2,
@@ -168,14 +162,7 @@ export default function Page() {
         message.success(res.message);
         router.push(routes.product.variation);
       })
-      .catch((err) => {
-        if (err.code === "409") {
-          setErrMsg(err.message);
-          setOpenModal((state) => ({ ...state, confirm: true }));
-          return;
-        }
-        message.error(err.message);
-      })
+      .catch((err) => message.error(err.message))
       .finally(() => {
         setLoading((state) => ({ ...state, page: false, confirm: false }));
       });
@@ -257,10 +244,6 @@ export default function Page() {
     setSelectedTargetList([]);
   };
 
-  const handleConfirm = () => {
-    form.submit();
-  };
-
   // 清除查詢條件
   const handleResetSearch = () => {
     form.resetFields(["productnumber", "itemName"]);
@@ -290,15 +273,26 @@ export default function Page() {
           <Form
             form={form}
             colon={false}
-            labelCol={{ flex: "100px" }}
+            labelCol={{ flex: "120px" }}
             labelWrap
-            labelAlign="right"
             autoComplete="off"
             onFinish={handleFinish}
           >
             <Flex vertical>
               <Card>
                 <Row gutter={32}>
+                  {isEdit && (
+                    <Col span={8}>
+                      <Form.Item
+                        name="mainProductId"
+                        label="主商品編號"
+                        rules={[{ required: true, message: "必填" }]}
+                      >
+                        <Input placeholder="請輸入主商品編號" disabled />
+                      </Form.Item>
+                    </Col>
+                  )}
+
                   <Col span={8}>
                     <Form.Item
                       name="mainItemName"
@@ -308,7 +302,9 @@ export default function Page() {
                       <Input placeholder="請輸入主要商品" />
                     </Form.Item>
                   </Col>
+                </Row>
 
+                <Row gutter={32}>
                   <Col span={8}>
                     <Form.Item
                       name="variationAttributeId1"
@@ -339,47 +335,56 @@ export default function Page() {
                 </Row>
               </Card>
 
-              <Flex
+              <Row
                 style={{
                   padding: "12px 16px",
                   borderBottom: "1px solid rgba(228, 231, 237, 1)",
                 }}
-                gap={16}
-                align="center"
+                gutter={16}
               >
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="productnumber"
-                  label="商城商品編號"
-                  labelCol={{ flex: "106px" }}
-                >
-                  <Input
-                    placeholder="請輸入商城商品編號"
-                    disabled={loading.search}
-                  />
-                </Form.Item>
+                <Col span={6}>
+                  <Form.Item
+                    style={{ marginBottom: 0 }}
+                    name="productnumber"
+                    label="商城商品編號"
+                    labelCol={{ flex: "110px" }}
+                  >
+                    <Input
+                      placeholder="請輸入商城商品編號"
+                      disabled={loading.search}
+                    />
+                  </Form.Item>
+                </Col>
 
-                <Form.Item
-                  style={{ marginBottom: 0 }}
-                  name="itemName"
-                  label="商品名稱"
-                >
-                  <Input
-                    placeholder="請輸入商品名稱"
-                    disabled={loading.search}
-                  />
-                </Form.Item>
+                <Col span={6}>
+                  <Form.Item
+                    style={{ marginBottom: 0 }}
+                    name="itemName"
+                    label="商品名稱"
+                  >
+                    <Input
+                      placeholder="請輸入商品名稱"
+                      disabled={loading.search}
+                    />
+                  </Form.Item>
+                </Col>
 
-                <Button
-                  type="secondary"
-                  loading={loading.search}
-                  onClick={handleSearch}
-                >
-                  查詢
-                </Button>
+                <Col span={6}>
+                  <Flex gap={16} align="center">
+                    <Button
+                      type="secondary"
+                      loading={loading.search}
+                      onClick={handleSearch}
+                    >
+                      查詢
+                    </Button>
 
-                <ResetBtn onClick={handleResetSearch}>清除查詢條件</ResetBtn>
-              </Flex>
+                    <ResetBtn onClick={handleResetSearch}>
+                      清除查詢條件
+                    </ResetBtn>
+                  </Flex>
+                </Col>
+              </Row>
 
               <Spin spinning={loading.search}>
                 <TransferWrapper>
@@ -418,8 +423,6 @@ export default function Page() {
                     setSelectedList={setSelectedTargetList}
                   />
                 </TransferWrapper>
-
-                {/* <Mask $show={mode !== OPTION_PRODUCT} /> */}
               </Spin>
 
               <Row justify="end">
@@ -431,14 +434,6 @@ export default function Page() {
           </Form>
         </Container>
       </Spin>
-
-      <ModalConfirm
-        open={openModal.confirm}
-        loading={loading.confirm}
-        title={errMsg}
-        onOk={handleConfirm}
-        onCancel={() => setOpenModal((state) => ({ ...state, confirm: false }))}
-      />
     </>
   );
 }
