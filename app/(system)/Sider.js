@@ -226,11 +226,9 @@ export default function Sider() {
       icon: getMenuIcon(ACCOUNTING),
       children: [
         {
-          key: PATH_BILLING_RECONCILIATION_REPORT,
-          label: (
-            <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
-          ),
-          icon: getOptionIcon(PATH_BILLING_RECONCILIATION_REPORT),
+          key: routes.billing.report,
+          label: <Link href={routes.billing.report}>對帳報表</Link>,
+          icon: getOptionIcon(routes.billing.report),
         },
       ],
     },

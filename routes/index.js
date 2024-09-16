@@ -31,6 +31,9 @@ export const routes = {
     edit: (id) => `/logistics/edit/${id}`,
   },
   vendor: `/vendor`,
+  billing: {
+    report: `/billing/report`,
+  },
   account: {
     passwordChange: `/account/password-change`,
   },
