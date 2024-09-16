@@ -510,9 +510,9 @@ export default function ModalPreviewPDP(props) {
                     </PreviewImgList>
 
                     <ContactList>
-                      <Image src="/fb.svg" width={45} height={45} />
-                      <Image src="/line.svg" width={45} height={45} />
-                      <Image src="/mail.svg" width={45} height={45} />
+                      <Image src="/fb.svg" width={45} height={45} alt="" />
+                      <Image src="/line.svg" width={45} height={45} alt="" />
+                      <Image src="/mail.svg" width={45} height={45} alt="" />
                     </ContactList>
                   </Preview>
 
@@ -593,7 +593,7 @@ export default function ModalPreviewPDP(props) {
                   </Detail>
 
                   <Suggestion>
-                    <Image src="/suggestion.png" fill />
+                    <Image src="/suggestion.png" fill alt="" />
                   </Suggestion>
                 </ProductDetail>
               </Col>
@@ -601,12 +601,12 @@ export default function ModalPreviewPDP(props) {
               <Col span={24}>
                 <Commodity>
                   <Popularity>
-                    <Image src="/popularity.png" fill />
+                    <Image src="/popularity.png" fill alt="" />
                   </Popularity>
 
                   <ProductDescriptionWrapper>
                     <Related>
-                      <Image src="/related.png" fill />
+                      <Image src="/related.png" fill alt="" />
                     </Related>
 
                     <ProductDescription>
@@ -638,6 +638,7 @@ export default function ModalPreviewPDP(props) {
                                       width={0}
                                       height={0}
                                       sizes="100vw"
+                                      alt=""
                                     />
                                   );
                                 })}
@@ -679,7 +680,7 @@ export default function ModalPreviewPDP(props) {
                     </ProductDescription>
 
                     <Popular>
-                      <Image src="/popular.png" fill />
+                      <Image src="/popular.png" fill alt="" />
                     </Popular>
                   </ProductDescriptionWrapper>
                 </Commodity>
