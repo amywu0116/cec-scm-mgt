@@ -50,19 +50,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     padding: "20px 20px 40px",
   },
-  pageNumber: {
-    position: "absolute",
-    fontSize: 8,
-    bottom: 20,
-    right: 20,
-    color: "#000",
-  },
   invoiceWrapper: {
     paddingTop: pxToPt(24),
     paddingHorizontal: pxToPt(18),
     width: pxToPt(273),
     height: pxToPt(431),
-    border: "1px solid black",
+    position: "absolute",
+    top: 0,
+    left: 0,
   },
   logoWrapper: {
     alignItems: "center",
@@ -200,14 +195,6 @@ export default function MyDocument(props) {
                     <Text>單 {info.order_number}</Text>
                   </View>
                 </View>
-
-                <Text
-                  style={styles.pageNumber}
-                  render={({ pageNumber, totalPages }) =>
-                    `頁次 ${pageNumber} / ${totalPages}`
-                  }
-                  fixed
-                />
               </Page>
             </Document>
           </PDFViewer>
