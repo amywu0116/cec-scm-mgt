@@ -1,21 +1,23 @@
 "use client";
-import { useState } from "react";
-import { Breadcrumb, Divider, Radio } from "antd";
+import { App, Breadcrumb, Col, Divider, Flex, Form, Row } from "antd";
+import dayjs from "dayjs";
+import fileDownload from "js-file-download";
+import { useRouter } from "next/navigation";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
-import Table from "@/components/Table";
-import Select from "@/components/Select";
-import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
-import Tabs from "@/components/Tabs";
+import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
+import Select from "@/components/Select";
+import Table from "@/components/Table";
+
+import api from "@/api";
+import { useBoundStore } from "@/store";
+import updateQuery from "@/utils/updateQuery";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
-
   .ant-checkbox-group {
     gap: 20px 18px;
     padding: 0 16px;
@@ -49,336 +51,561 @@ const Container = styled.div`
   }
 `;
 
-const Card = styled.div`
+const Card = styled(Flex)`
   background-color: #f1f3f6;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
 `;
 
-const Row = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
+const VendorCard = styled(Card)`
+  .vendor-card-item {
+    display: flex;
 
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0 16px;
-`;
-
-const ItemLabel = styled.div`
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(89, 89, 89, 1);
-  width: 64px;
-  flex-shrink: 0;
-`;
-
-const BtnGroup = styled.div`
-  display: flex;
-  gap: 0 16px;
-`;
-
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px 0;
+    > div:nth-child(1) {
+      flex-basis: 300px;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(89, 89, 89, 1);
+    }
+  }
 `;
 
 export default function Page() {
+  const { message } = App.useApp();
+  const [form] = Form.useForm();
+  const router = useRouter();
+
+  const options = useBoundStore((state) => state.options);
+  const disputeOptions = options?.SCM_dispute_flag ?? [];
+  const reconciliationOptions = options?.SCM_reconciliation_status ?? [];
+
+  const [query, setQuery] = useQueryStates({
+    page: parseAsInteger,
+    pageSize: parseAsInteger,
+    period: parseAsString,
+    disputeStatus: parseAsString,
+    reconciliationStatus: parseAsString,
+    accountNo: parseAsString,
+    orderNo: parseAsString,
+  });
+
+  const [loading, setLoading] = useState({
+    table: false,
+    export: false,
+    dispute: false,
+    disputeCancel: false,
+    disputeClose: false,
+  });
+
+  const [tableInfo, setTableInfo] = useState({
+    rows: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    tableQuery: {},
+  });
+
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const columns = [
     {
       title: "申訴狀態",
-      dataIndex: "a",
+      dataIndex: "disputeStatus",
       align: "center",
-      width: 100,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "帳務訂單號碼",
-      dataIndex: "b",
+      dataIndex: "accountNo",
       align: "center",
-      width: 160,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "帳務訂單發票",
-      dataIndex: "c",
+      dataIndex: "invoiceNo",
       align: "center",
-      width: 120,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "訂單編號",
-      dataIndex: "d",
+      dataIndex: "orderNumber",
       align: "center",
-      width: 160,
     },
     {
       title: "供應商名稱",
-      dataIndex: "e",
+      dataIndex: "vendorName",
       align: "center",
-      width: 100,
     },
     {
       title: "商品品名",
-      dataIndex: "f",
+      dataIndex: "itemName",
       align: "center",
-      width: 160,
-    },
-    {
-      title: "溫層",
-      dataIndex: "g",
-      align: "center",
-      width: 100,
-    },
-    {
-      title: "佣金比例(%)",
-      dataIndex: "h",
-      align: "center",
-      width: 100,
     },
     {
       title: "訂單付款完成日期",
-      dataIndex: "i",
+      dataIndex: "authDate",
       align: "center",
-      width: 120,
     },
     {
-      title: "商品金額 (A)",
-      dataIndex: "j",
+      title: "商品金額(A)",
+      dataIndex: "itemAmount",
       align: "center",
-      width: 100,
     },
     {
-      title: "服務手續費 (B)",
-      dataIndex: "k",
+      title: "服務手續費(B)",
+      dataIndex: "serviceFee",
       align: "center",
-      width: 100,
     },
     {
-      title: "成交手續費 (C)",
-      dataIndex: "l",
+      title: "成交手續費(C)",
+      dataIndex: "commissionFee",
       align: "center",
-      width: 100,
     },
     {
-      title: "第三方支付手續費 (D)",
-      dataIndex: "m",
+      title: "付款方式",
+      dataIndex: "paymentTypeName",
       align: "center",
-      width: 120,
+    },
+    {
+      title: "Tappay手續費%數",
+      dataIndex: "tappayFeeRate",
+      align: "center",
     },
     {
       title: "家福收款金額(B+C)",
-      dataIndex: "n",
+      dataIndex: "c4Amount",
       align: "center",
-      width: 120,
     },
     {
-      title: "供應商收款金額 (A-B-C-D)",
-      dataIndex: "o",
+      title: "供應商收款金額(A-B-C)(未扣除TapPay手續費)",
+      dataIndex: "vendorAmount",
       align: "center",
-      width: 160,
     },
     {
-      title: "銀行入帳日期",
-      dataIndex: "p",
+      title: "銀行入帳日期(未扣除TapPay手續費)",
+      dataIndex: "debitDate",
       align: "center",
-      width: 120,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "銀行入帳金額",
-      dataIndex: "q",
+      dataIndex: "debitAmount",
       align: "center",
-      width: 100,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "申訴申請時間",
-      dataIndex: "r",
+      dataIndex: "applyDate",
       align: "center",
-      width: 120,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
     {
       title: "申訴結案時間",
-      dataIndex: "s",
+      dataIndex: "closeDate",
       align: "center",
-      width: 120,
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      a: "無",
-      b: "2024052800000001",
-      c: "ZZ987654321",
-      d: "2024051009001101",
-      e: "費列羅",
-      f: "費列羅臻品甜點24粒盒裝259.2g",
-      g: "溫層",
-      h: "5",
-      i: "2024/5/17",
-      j: "309",
-      k: "12",
-      l: "15",
-      m: "6",
-      n: "27",
-      o: "276",
-      p: "2024/6/1",
-      q: "27",
-      r: "申訴申請時間",
-      s: "申訴結案時間",
-    },
-    {
-      key: "2",
-      a: "已申請",
-      b: "2024052800000001",
-      c: "ZZ987654321",
-      d: "2024051009001101",
-      e: "費列羅",
-      f: "費列羅臻品甜點24粒盒裝259.2g",
-      g: "溫層",
-      h: "5",
-      i: "2024/5/17",
-      j: "309",
-      k: "12",
-      l: "15",
-      m: "6",
-      n: "27",
-      o: "276",
-      p: "2024/6/1",
-      q: "27",
-      r: "申訴申請時間",
-      s: "申訴結案時間",
-    },
-  ];
+  const generatePeriodOptions = () => {
+    const dateArray = [];
+    const currentDate = dayjs(); // 當前日期
+    let tempDate = dayjs("2024-08"); // 從 2024 年 8 月開始
+
+    // 循環生成 yyyyMM 格式的日期陣列
+    while (tempDate.isBefore(currentDate) || tempDate.isSame(currentDate)) {
+      const formattedDate = tempDate.format("YYYYMM");
+      dateArray.unshift({
+        label: formattedDate,
+        value: formattedDate,
+      });
+      tempDate = tempDate.add(1, "month"); // 增加一個月
+    }
+
+    // 確保陣列不超過 12 個
+    if (dateArray.length > 12) {
+      dateArray.splice(12); // 移除超過的部分
+    }
+
+    return dateArray;
+  };
+  const periodOptions = generatePeriodOptions();
+
+  const getPeriodRange = (value) => {
+    if (!value) return;
+    const year = value.slice(0, 4); // 'YYYY'
+    const month = value.slice(4, 6); // 'MM'
+
+    const startDate = dayjs(`${year}-${month}-26`).subtract(1, "month"); // 前一個月的 26 日
+    const endDate = dayjs(`${year}-${month}-25`); // 當前月份的 25 號
+
+    return `${startDate.format("YYYY-MM-DD")} ~ ${endDate.format("YYYY-MM-DD")}`;
+  };
+
+  const transformParams = (values) => {
+    const params = {
+      offset: (values.page - 1) * values.pageSize,
+      max: values.pageSize,
+      period: values.period,
+      disputeStatus: values.disputeStatus,
+      reconciliationStatus: values.reconciliationStatus,
+      accountNo: values.accountNo,
+      orderNo: values.orderNo,
+    };
+    return params;
+  };
+
+  const fetchTableInfo = (values) => {
+    updateQuery(values, setQuery);
+    const newParams = transformParams(values);
+    setSelectedRows([]);
+    setLoading((state) => ({ ...state, table: true }));
+    api
+      .get(`v1/scm/report/reconciliation`, { params: newParams })
+      .then((res) => {
+        setTableInfo((state) => ({
+          ...state,
+          ...res.data,
+          page: values.page,
+          pageSize: values.pageSize,
+          tableQuery: { ...values },
+        }));
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, table: false })));
+  };
+
+  const handleFinish = (values) => {
+    fetchTableInfo({ ...values, page: 1, pageSize: 10 });
+  };
+
+  const handleChangeTable = (page, pageSize) => {
+    fetchTableInfo({ ...tableInfo.tableQuery, page, pageSize });
+  };
+
+  // 下載查詢結果
+  const handleExport = () => {
+    const newParams = transformParams(form.getFieldsValue());
+    delete newParams.max;
+    delete newParams.offset;
+    setLoading((state) => ({ ...state, export: true }));
+    api
+      .get(`v1/scm/report/reconciliation/export`, {
+        params: newParams,
+        responseType: "arraybuffer",
+      })
+      .then((res) => fileDownload(res, "帳務清單.xlsx"))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, export: false })));
+  };
+
+  // 爭議申請
+  const handleDispute = () => {
+    const ids = selectedRows
+      .filter((row) => row.disputeFlag === 0)
+      .map((row) => row.indexId);
+
+    setLoading((state) => ({ ...state, dispute: true }));
+    api
+      .post(`v1/scm/report/dispute`, ids)
+      .then((res) => {
+        message.success(res.message);
+        form.submit();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, dispute: false })));
+  };
+
+  // 爭議取消
+  const handleDisputeCancel = () => {
+    const ids = selectedRows
+      .filter((row) => row.disputeFlag === 1)
+      .map((row) => row.indexId);
+
+    setLoading((state) => ({ ...state, disputeCancel: true }));
+    api
+      .post(`v1/scm/report/dispute/cancel`, ids)
+      .then((res) => {
+        message.success(res.message);
+        form.submit();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() =>
+        setLoading((state) => ({ ...state, disputeCancel: false }))
+      );
+  };
+
+  // 爭議結案
+  const handleDisputeClose = () => {
+    const ids = selectedRows
+      .filter((row) => row.disputeFlag === 1)
+      .map((row) => row.indexId);
+
+    setLoading((state) => ({ ...state, disputeClose: true }));
+    api
+      .post(`v1/scm/report/dispute/close`, ids)
+      .then((res) => {
+        message.success(res.message);
+        form.submit();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() =>
+        setLoading((state) => ({ ...state, disputeClose: false }))
+      );
+  };
+
+  // 發票下載
+  const handleDownloadInvoice = () => {
+    const period = form.getFieldValue("period");
+    const accountNo = tableInfo.rows[0]?.accountNo;
+    router.push(`/pdf/invoice?period=${period}&accountNo=${accountNo}`);
+  };
+
+  useEffect(() => {
+    if (Object.values(query).every((q) => q === null)) return;
+    fetchTableInfo(query);
+    form.setFieldsValue({
+      period: query.period,
+      disputeStatus: query.disputeStatus,
+      reconciliationStatus: query.reconciliationStatus,
+      accountNo: query.accountNo,
+      orderNo: query.orderNo,
+    });
+  }, []);
 
   return (
-    <>
+    <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>帳務</LayoutHeaderTitle>
-
         <Breadcrumb
           separator=">"
-          items={[
-            {
-              title: "帳務",
-            },
-            {
-              title: "對帳報表",
-            },
-          ]}
+          items={[{ title: "帳務" }, { title: "對帳報表" }]}
         />
       </LayoutHeader>
 
-      <Container>
-        <Card>
-          <Row>
-            <Item>
-              <ItemLabel>帳期</ItemLabel>
-              <Select
-                style={{ width: 250 }}
-                placeholder="請選擇狀態"
-                options={[
-                  {
-                    value: "lucy",
-                    label: "Lucy",
-                  },
-                ]}
-              />
-            </Item>
+      <Form
+        form={form}
+        autoComplete="off"
+        colon={false}
+        labelCol={{ flex: "110px" }}
+        labelWrap
+        requiredMark={false}
+        disabled={loading.table}
+        initialValues={{
+          period: periodOptions[periodOptions.length - 1].value, // 預設選取最後一個
+        }}
+        onFinish={handleFinish}
+      >
+        <Flex vertical gap={16}>
+          <Card vertical>
+            <Row gutter={32}>
+              <Col span={8}>
+                <Form.Item name="period" label="帳款年月">
+                  <Select
+                    placeholder="請選擇帳款年月"
+                    options={periodOptions}
+                    allowClear={false}
+                  />
+                </Form.Item>
+              </Col>
 
-            <Item>
-              <ItemLabel>配達期間</ItemLabel>
-              <DatePicker style={{ width: 250 }} onChange={() => {}} />
-            </Item>
-          </Row>
+              <Col span={8}>
+                <Form.Item
+                  label="配達期間"
+                  shouldUpdate={(prev, current) =>
+                    prev.period !== current.period
+                  }
+                >
+                  {({ getFieldValue }) => {
+                    const period = getFieldValue("period");
+                    return (
+                      <Input
+                        placeholder="請輸入配達期間"
+                        disabled
+                        value={getPeriodRange(period)}
+                      />
+                    );
+                  }}
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Row>
-            <Item>
-              <ItemLabel>供應商</ItemLabel>
-              <Input style={{ width: 250 }} />
-            </Item>
-          </Row>
+            <Row gutter={32}>
+              <Col span={8}>
+                <Form.Item name="disputeStatus" label="爭議狀態">
+                  <Select
+                    placeholder="請選擇爭議狀態"
+                    options={disputeOptions.map((opt) => {
+                      return {
+                        label: opt.name,
+                        value: opt.value,
+                      };
+                    })}
+                  />
+                </Form.Item>
+              </Col>
 
-          <Row>
-            <Item>
-              <ItemLabel>對帳報表狀態</ItemLabel>
-              <Radio.Group
-                style={{ display: "flex", flex: 1, alignItems: "center" }}
+              <Col span={8}>
+                <Form.Item name="reconciliationStatus" label="對帳表狀態">
+                  <Select
+                    placeholder="請選擇對帳表狀態"
+                    options={reconciliationOptions.map((opt) => {
+                      return {
+                        label: opt.name,
+                        value: opt.value,
+                      };
+                    })}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={32}>
+              <Col span={8}>
+                <Form.Item name="accountNo" label="帳務訂單號碼">
+                  <Input placeholder="請輸入帳務訂單號碼" />
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item name="orderNo" label="訂單編號">
+                  <Input placeholder="請輸入訂單編號" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Divider style={{ margin: 0 }} />
+
+            <Flex style={{ marginTop: 16 }} gap={16} justify="flex-end">
+              <Button
+                type="secondary"
+                htmlType="submit"
+                disabled={false}
+                loading={loading.table}
               >
-                <Radio value={1}>全部</Radio>
-                <Radio value={2}>待確認</Radio>
-                <Radio value={3}>已確認</Radio>
-                <Radio value={4}>已開立發票</Radio>
-                <Radio value={5}>已撥款</Radio>
-              </Radio.Group>
-            </Item>
-          </Row>
+                查詢
+              </Button>
 
-          <Divider style={{ margin: 0 }} />
+              <Button type="link" htmlType="reset">
+                清除查詢條件
+              </Button>
+            </Flex>
+          </Card>
 
-          <BtnGroup style={{ marginLeft: "auto" }} justifyContent="flex-end">
-            <Button type="secondary">查詢</Button>
+          {tableInfo.rows.length > 0 && (
+            <VendorCard vertical gap={16}>
+              <div className="vendor-card-item">
+                <div>供應商名稱</div>
+                <div>{tableInfo.rows[0]?.vendorName}</div>
+              </div>
 
-            <Button type="link">清除查詢條件</Button>
-          </BtnGroup>
-        </Card>
+              <div className="vendor-card-item">
+                <div>供應商訂單收款金額 (未扣除TapPay手續費)</div>
+                <div>{tableInfo.rows[0]?.monthlyAmount}</div>
+              </div>
 
-        <TableWrapper>
-          <BtnGroup>
-            <Button type="secondary">下載查詢結果</Button>
-            <Button type="secondary">發票下載</Button>
-            <Button>爭議申請</Button>
-            <Button>取消爭議</Button>
-            <Button>爭議結案</Button>
-          </BtnGroup>
+              <div className="vendor-card-item">
+                <div>供應商訂單實際收款金額</div>
+                <div>{tableInfo.rows[0]?.withdrawAmount}</div>
+              </div>
 
-          <Tabs
-            defaultActiveKey="1"
-            items={[
-              {
-                label: "全部",
-                key: "1",
-                children: (
-                  <>
-                    <Table
-                      rowSelection={{
-                        onChange: (selectedRowKeys, selectedRows) => {},
-                        getCheckboxProps: (record) => ({
-                          name: record.key,
-                        }),
-                      }}
-                      scroll={{ x: "100vw" }}
-                      columns={columns}
-                      dataSource={data}
-                    />
-                  </>
-                ),
-              },
-              {
-                label: "待確認",
-                key: "2",
-                children: "Tab 2",
-              },
-              {
-                label: "已確認",
-                key: "3",
-                children: "Tab 3",
-              },
-              {
-                label: "已開立發票",
-                key: "4",
-                children: "Tab 4",
-              },
-              {
-                label: "已撥款",
-                key: "5",
-                children: "Tab 5",
-              },
-            ]}
-          />
-        </TableWrapper>
-      </Container>
-    </>
+              <div className="vendor-card-item">
+                <div>供應商訂單Tappay手續費</div>
+                <div>{tableInfo.rows[0]?.tappayFee}</div>
+              </div>
+            </VendorCard>
+          )}
+
+          <Flex vertical gap={16}>
+            <Flex gap={16}>
+              <Button
+                type="secondary"
+                loading={loading.export}
+                onClick={handleExport}
+              >
+                下載查詢結果
+              </Button>
+
+              <Button
+                loading={loading.dispute}
+                disabled={!selectedRows.some((row) => row.disputeFlag === 0)}
+                onClick={handleDispute}
+              >
+                爭議申請
+              </Button>
+
+              <Button
+                loading={loading.disputeCancel}
+                disabled={!selectedRows.some((row) => row.disputeFlag === 1)}
+                onClick={handleDisputeCancel}
+              >
+                爭議取消
+              </Button>
+
+              <Button
+                loading={loading.disputeClose}
+                disabled={!selectedRows.some((row) => row.disputeFlag === 1)}
+                onClick={handleDisputeClose}
+              >
+                爭議結案
+              </Button>
+
+              <Button
+                type="secondary"
+                disabled={!tableInfo.rows[0]?.accountNo}
+                onClick={handleDownloadInvoice}
+              >
+                發票下載
+              </Button>
+            </Flex>
+
+            <Table
+              rowKey="indexId"
+              rowSelection={{
+                selectedRowKeys: selectedRows.map((row) => row.indexId),
+                onChange: (selectedRowKeys, selectedRows) => {
+                  setSelectedRows(selectedRows);
+                },
+              }}
+              scroll={{ x: 3000 }}
+              loading={
+                loading.table ||
+                loading.dispute ||
+                loading.disputeCancel ||
+                loading.disputeClose
+              }
+              columns={columns}
+              dataSource={tableInfo.rows}
+              pageInfo={{
+                total: tableInfo.total,
+                page: tableInfo.page,
+                pageSize: tableInfo.pageSize,
+              }}
+              onChange={handleChangeTable}
+            />
+          </Flex>
+        </Flex>
+      </Form>
+    </Container>
   );
 }

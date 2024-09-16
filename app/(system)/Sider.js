@@ -220,20 +220,20 @@ export default function Sider() {
       label: <Link href={routes.vendor}>供應商</Link>,
       icon: getMenuIcon(VENDOR),
     },
-    // {
-    //   key: ACCOUNTING,
-    //   label: "帳務",
-    //   icon: getMenuIcon(ACCOUNTING),
-    //   children: [
-    //     {
-    //       key: PATH_BILLING_RECONCILIATION_REPORT,
-    //       label: (
-    //         <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
-    //       ),
-    //       icon: getOptionIcon(PATH_BILLING_RECONCILIATION_REPORT),
-    //     },
-    //   ],
-    // },
+    {
+      key: ACCOUNTING,
+      label: "帳務",
+      icon: getMenuIcon(ACCOUNTING),
+      children: [
+        {
+          key: PATH_BILLING_RECONCILIATION_REPORT,
+          label: (
+            <Link href={PATH_BILLING_RECONCILIATION_REPORT}>對帳報表</Link>
+          ),
+          icon: getOptionIcon(PATH_BILLING_RECONCILIATION_REPORT),
+        },
+      ],
+    },
     {
       key: ACCOUNT,
       label: "帳戶",
