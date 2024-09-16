@@ -1,5 +1,5 @@
 "use client";
-import { App, Breadcrumb, Col, Form, Radio, Row, Spin } from "antd";
+import { App, Breadcrumb, Col, Flex, Form, Radio, Row, Spin } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import ModalDelete from "@/components/Modal/ModalDelete";
 import TextArea from "@/components/TextArea";
 
 import api from "@/api";
-import { PATH_LOGISTICS } from "@/constants/paths";
+import { routes } from "@/routes";
 
 const Title = styled.div`
   font-size: 16px;
@@ -62,15 +62,9 @@ export default function Page(props) {
     setLoading((state) => ({ ...state, page: true }));
     api
       .get(`v1/scm/logistics/${logisticsId}`)
-      .then((res) => {
-        form.setFieldsValue({ ...res.data });
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .then((res) => form.setFieldsValue({ ...res.data }))
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleFinish = (values) => {
@@ -89,14 +83,10 @@ export default function Page(props) {
       .post(`v1/scm/logistics/${isEdit ? logisticsId : ""}`, data)
       .then((res) => {
         message.success(res.message);
-        router.push(PATH_LOGISTICS);
+        router.push(routes.logistics.list);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleDelete = () => {
@@ -105,14 +95,10 @@ export default function Page(props) {
       .delete(`v1/scm/logistics/${logisticsId}`)
       .then((res) => {
         message.success(res.message);
-        router.push(PATH_LOGISTICS);
+        router.push(routes.logistics.list);
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, delete: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, delete: false })));
   };
 
   useEffect(() => {
@@ -139,35 +125,27 @@ export default function Page(props) {
           ]}
         />
 
-        <Row style={{ marginLeft: "auto" }} gutter={16}>
-          <Col>
-            <Button onClick={() => router.push(PATH_LOGISTICS)}>取消</Button>
-          </Col>
+        <Flex style={{ marginLeft: "auto" }} gap={16}>
+          <Button onClick={() => router.back()}>取消</Button>
 
           {isAdd && (
-            <Col>
-              <Button type="primary" onClick={() => form.submit()}>
-                確定新增
-              </Button>
-            </Col>
+            <Button type="primary" onClick={() => form.submit()}>
+              確定新增
+            </Button>
           )}
 
           {isEdit && (
             <>
-              <Col>
-                <Button onClick={() => setOpenModalDelete(true)}>
-                  刪除貨運公司
-                </Button>
-              </Col>
+              <Button onClick={() => setOpenModalDelete(true)}>
+                刪除貨運公司
+              </Button>
 
-              <Col>
-                <Button type="primary" onClick={() => form.submit()}>
-                  保存
-                </Button>
-              </Col>
+              <Button type="primary" onClick={() => form.submit()}>
+                保存
+              </Button>
             </>
           )}
-        </Row>
+        </Flex>
       </LayoutHeader>
 
       <Form

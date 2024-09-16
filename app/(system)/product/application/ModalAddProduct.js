@@ -1,9 +1,9 @@
-import { Modal as AntdModal, Col, Row } from "antd";
+import { Modal as AntdModal, Flex } from "antd";
 import Link from "next/link";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
-import { PATH_PRODUCT_APPLICATION } from "@/constants/paths";
+import { routes } from "@/routes";
 
 const StyledModal = styled(AntdModal)`
   &.ant-modal .ant-modal-content {
@@ -30,33 +30,25 @@ export default function ModalAddProduct(props) {
       open={open}
       onCancel={onCancel}
     >
-      <Row gutter={[0, 16]}>
-        <Col span={24}>
-          <Title>請選擇新增類別</Title>
-        </Col>
+      <Flex vertical gap={16}>
+        <Title>請選擇新增類別</Title>
 
-        <Col span={24}>
-          <Link href={`${PATH_PRODUCT_APPLICATION}/add/food`}>
-            <Button style={{ width: "100%" }} type="secondary">
-              食品
-            </Button>
-          </Link>
-        </Col>
-
-        <Col span={24}>
-          <Link href={`${PATH_PRODUCT_APPLICATION}/add/non-food`}>
-            <Button style={{ width: "100%" }} type="secondary">
-              非食品
-            </Button>
-          </Link>
-        </Col>
-
-        <Col span={24}>
-          <Button style={{ width: "100%" }} onClick={() => onCancel()}>
-            取消
+        <Link href={routes.product.applicationAdd("food")}>
+          <Button style={{ width: "100%" }} type="secondary">
+            食品
           </Button>
-        </Col>
-      </Row>
+        </Link>
+
+        <Link href={routes.product.applicationAdd("non-food")}>
+          <Button style={{ width: "100%" }} type="secondary">
+            非食品
+          </Button>
+        </Link>
+
+        <Button style={{ width: "100%" }} onClick={() => onCancel()}>
+          取消
+        </Button>
+      </Flex>
     </StyledModal>
   );
 }

@@ -37,15 +37,9 @@ export default function Page() {
         oldPassword: values.oldPassword,
         newPassword: values.newPassword,
       })
-      .then((res) => {
-        message.success("修改成功");
-      })
-      .catch((err) => {
-        setErrorMsg(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .then((res) => message.success("修改成功"))
+      .catch((err) => setErrorMsg(err.message))
+      .finally(() => setLoading(false));
   };
 
   const handleFieldsChange = (changedFields, allFields) => {

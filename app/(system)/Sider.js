@@ -6,23 +6,9 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import api from "@/api";
-import {
-  PATH_ACCOUNT_CHANGE_PASSWORD,
-  PATH_ANNOUNCEMENT_MESSAGE,
-  PATH_ANNOUNCEMENT_SETTINGS,
-  PATH_BILLING_RECONCILIATION_REPORT,
-  PATH_HOME,
-  PATH_LOGIN,
-  PATH_LOGISTICS,
-  PATH_ORDER_LIST,
-  PATH_PRODUCT_APPLICATION,
-  PATH_PRODUCT_BATCH_IMG_UPLOAD,
-  PATH_PRODUCT_PRODUCT_LIST,
-  PATH_PRODUCT_PROMOTION,
-  PATH_SUPPLIER,
-} from "@/constants/paths";
-import { useBoundStore } from "@/store";
 import { isUAT } from "@/constants";
+import { routes } from "@/routes";
+import { useBoundStore } from "@/store";
 
 const StyledSider = styled(Layout.Sider)`
   position: relative;
@@ -167,14 +153,14 @@ export default function Sider() {
       icon: getMenuIcon(ANNOUNCEMENT),
       children: [
         {
-          key: PATH_ANNOUNCEMENT_SETTINGS,
-          label: <Link href={PATH_ANNOUNCEMENT_SETTINGS}>公告訊息</Link>,
-          icon: getOptionIcon(PATH_ANNOUNCEMENT_SETTINGS),
+          key: routes.announcement.message,
+          label: <Link href={routes.announcement.message}>公告訊息</Link>,
+          icon: getOptionIcon(routes.announcement.message),
         },
         {
-          key: PATH_ANNOUNCEMENT_MESSAGE,
-          label: <Link href={PATH_ANNOUNCEMENT_MESSAGE}>顧客訂單諮詢</Link>,
-          icon: getOptionIcon(PATH_ANNOUNCEMENT_MESSAGE),
+          key: routes.announcement.inquiry,
+          label: <Link href={routes.announcement.inquiry}>顧客訂單諮詢</Link>,
+          icon: getOptionIcon(routes.announcement.inquiry),
         },
       ],
     },
@@ -184,26 +170,26 @@ export default function Sider() {
       icon: getMenuIcon(PRODUCT),
       children: [
         {
-          key: PATH_PRODUCT_PRODUCT_LIST,
-          label: <Link href={PATH_PRODUCT_PRODUCT_LIST}>商品列表</Link>,
-          icon: getOptionIcon(PATH_PRODUCT_PRODUCT_LIST),
+          key: routes.product.list,
+          label: <Link href={routes.product.list}>商品列表</Link>,
+          icon: getOptionIcon(routes.product.list),
         },
         {
-          key: PATH_PRODUCT_APPLICATION,
-          label: <Link href={PATH_PRODUCT_APPLICATION}>提品申請</Link>,
-          icon: getOptionIcon(PATH_PRODUCT_APPLICATION),
+          key: routes.product.application,
+          label: <Link href={routes.product.application}>提品申請</Link>,
+          icon: getOptionIcon(routes.product.application),
         },
         {
-          key: PATH_PRODUCT_BATCH_IMG_UPLOAD,
+          key: routes.product.batchImgUpload,
           label: (
-            <Link href={PATH_PRODUCT_BATCH_IMG_UPLOAD}>批次提品圖片上傳</Link>
+            <Link href={routes.product.batchImgUpload}>批次提品圖片上傳</Link>
           ),
-          icon: getOptionIcon(PATH_PRODUCT_BATCH_IMG_UPLOAD),
+          icon: getOptionIcon(routes.product.batchImgUpload),
         },
         {
-          key: PATH_PRODUCT_PROMOTION,
-          label: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link>,
-          icon: getOptionIcon(PATH_PRODUCT_PROMOTION),
+          key: routes.product.promotion,
+          label: <Link href={routes.product.promotion}>商品促銷</Link>,
+          icon: getOptionIcon(routes.product.promotion),
         },
         // {
         //   key: "",
@@ -218,20 +204,20 @@ export default function Sider() {
       icon: getMenuIcon(ORDER),
       children: [
         {
-          key: PATH_ORDER_LIST,
-          label: <Link href={PATH_ORDER_LIST}>訂單管理</Link>,
-          icon: getOptionIcon(PATH_ORDER_LIST),
+          key: routes.order.list,
+          label: <Link href={routes.order.list}>訂單管理</Link>,
+          icon: getOptionIcon(routes.order.list),
         },
       ],
     },
     {
-      key: PATH_LOGISTICS,
-      label: <Link href={PATH_LOGISTICS}>貨運公司維護</Link>,
+      key: routes.logistics.list,
+      label: <Link href={routes.logistics.list}>貨運公司維護</Link>,
       icon: getMenuIcon(LOGISTICS),
     },
     {
-      key: PATH_SUPPLIER,
-      label: <Link href={PATH_SUPPLIER}>供應商</Link>,
+      key: routes.vendor,
+      label: <Link href={routes.vendor}>供應商</Link>,
       icon: getMenuIcon(VENDOR),
     },
     {
@@ -254,9 +240,9 @@ export default function Sider() {
       icon: getMenuIcon(ACCOUNT),
       children: [
         {
-          key: PATH_ACCOUNT_CHANGE_PASSWORD,
-          label: <Link href={PATH_ACCOUNT_CHANGE_PASSWORD}>修改密碼</Link>,
-          icon: getOptionIcon(PATH_ACCOUNT_CHANGE_PASSWORD),
+          key: routes.account.passwordChange,
+          label: <Link href={routes.account.passwordChange}>修改密碼</Link>,
+          icon: getOptionIcon(routes.account.passwordChange),
         },
       ],
     },
@@ -287,7 +273,7 @@ export default function Sider() {
       .then((res) => {
         clearUser();
         message.success("登出成功");
-        router.push(PATH_LOGIN);
+        router.push(routes.login);
       })
       .catch((err) => {})
       .finally(() => {});
@@ -325,7 +311,7 @@ export default function Sider() {
         <Space size={20} align="center">
           <Link
             style={{ display: "flex" }}
-            href={PATH_HOME}
+            href={routes.index}
             onClick={handleClickLogo}
           >
             <Image src="/sider/logo.svg" width={40} height={27} alt="" />

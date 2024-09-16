@@ -29,7 +29,7 @@ import Select from "@/components/Select";
 import Transfer from "./Transfer";
 
 import api from "@/api";
-import { PATH_PRODUCT_PROMOTION } from "@/constants/paths";
+import { routes } from "@/routes";
 import { useBoundStore } from "@/store";
 
 const Container = styled.div`
@@ -206,7 +206,7 @@ export default function Page() {
       .post(`v1/scm/vendor_promotion/new`, data)
       .then((res) => {
         message.success(res.message);
-        router.push(PATH_PRODUCT_PROMOTION);
+        router.push(routes.product.promotion);
       })
       .catch((err) => {
         if (err.code === "409") {
@@ -332,7 +332,7 @@ export default function Page() {
           <Breadcrumb
             separator=">"
             items={[
-              { title: <Link href={PATH_PRODUCT_PROMOTION}>商品促銷</Link> },
+              { title: <Link href={routes.product.promotion}>商品促銷</Link> },
               { title: getPageTitle() },
             ]}
           />

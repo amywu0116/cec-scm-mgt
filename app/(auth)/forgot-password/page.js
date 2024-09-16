@@ -1,17 +1,17 @@
 "use client";
-import { useState, useRef } from "react";
 import { App, Flex, Form, Input, Typography } from "antd";
 import { useRouter } from "next/navigation";
-import styled from "styled-components";
+import { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import styled from "styled-components";
 
 import Button from "@/components/Button";
 
-import Title from "../Title";
 import Subtitle from "../Subtitle";
+import Title from "../Title";
 
-import { PATH_LOGIN } from "@/constants/paths";
 import api from "@/api";
+import { routes } from "@/routes";
 
 const Container = styled.div`
   width: 350px;
@@ -52,7 +52,7 @@ export default function Page() {
       })
       .then(() => {
         message.success("已發送密碼重設信件，請檢查信箱");
-        router.push(PATH_LOGIN);
+        router.push(routes.login);
       })
       .catch((err) => {
         setErrorMsg(err.message);
@@ -130,7 +130,7 @@ export default function Page() {
             <Button
               style={{ width: "100%" }}
               type="secondary"
-              onClick={() => router.push(PATH_LOGIN)}
+              onClick={() => router.push(routes.login)}
             >
               取消
             </Button>
