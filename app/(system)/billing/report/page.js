@@ -104,7 +104,10 @@ export default function Page() {
     tableQuery: {},
   });
 
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const selectedRows = selectedRowKeys.map((key) => {
+    return tableInfo.rows?.find((row) => row.id === key);
+  });
 
   const columns = [
     {
@@ -190,7 +193,7 @@ export default function Page() {
       align: "center",
     },
     {
-      title: "銀行入帳日期(未扣除TapPay手續費)",
+      title: "銀行入帳日期",
       dataIndex: "debitDate",
       align: "center",
       render: (text) => {
@@ -199,7 +202,7 @@ export default function Page() {
       },
     },
     {
-      title: "銀行入帳金額",
+      title: "銀行入帳金額(未扣除TapPay手續費)",
       dataIndex: "debitAmount",
       align: "center",
       render: (text) => {
@@ -278,7 +281,7 @@ export default function Page() {
   const fetchTableInfo = (values) => {
     updateQuery(values, setQuery);
     const newParams = transformParams(values);
-    setSelectedRows([]);
+    setSelectedRowKeys([]);
     setLoading((state) => ({ ...state, table: true }));
     api
       .get(`v1/scm/report/reconciliation`, { params: newParams })
@@ -324,10 +327,11 @@ export default function Page() {
     const ids = selectedRows
       .filter((row) => row.disputeFlag === 0)
       .map((row) => row.indexId);
+    const uniqueIds = [...new Set(ids)];
 
     setLoading((state) => ({ ...state, dispute: true }));
     api
-      .post(`v1/scm/report/dispute`, ids)
+      .post(`v1/scm/report/dispute`, uniqueIds)
       .then((res) => {
         message.success(res.message);
         form.submit();
@@ -341,10 +345,11 @@ export default function Page() {
     const ids = selectedRows
       .filter((row) => row.disputeFlag === 1)
       .map((row) => row.indexId);
+    const uniqueIds = [...new Set(ids)];
 
     setLoading((state) => ({ ...state, disputeCancel: true }));
     api
-      .post(`v1/scm/report/dispute/cancel`, ids)
+      .post(`v1/scm/report/dispute/cancel`, uniqueIds)
       .then((res) => {
         message.success(res.message);
         form.submit();
@@ -360,10 +365,11 @@ export default function Page() {
     const ids = selectedRows
       .filter((row) => row.disputeFlag === 1)
       .map((row) => row.indexId);
+    const uniqueIds = [...new Set(ids)];
 
     setLoading((state) => ({ ...state, disputeClose: true }));
     api
-      .post(`v1/scm/report/dispute/close`, ids)
+      .post(`v1/scm/report/dispute/close`, uniqueIds)
       .then((res) => {
         message.success(res.message);
         form.submit();
@@ -379,6 +385,17 @@ export default function Page() {
     const period = form.getFieldValue("period");
     const accountNo = tableInfo.rows[0]?.accountNo;
     router.push(`/pdf/invoice?period=${period}&accountNo=${accountNo}`);
+  };
+
+  const handleSelectRow = (record, selected) => {
+    const sameIndexRows = tableInfo.rows.filter(
+      (row) => row.indexId === record.indexId
+    );
+    const sameIndexKeys = sameIndexRows.map((row) => row.id);
+    const newSelectedKeys = selected
+      ? [...new Set([...selectedRowKeys, ...sameIndexKeys])]
+      : selectedRowKeys.filter((key) => !sameIndexKeys.includes(key));
+    setSelectedRowKeys(newSelectedKeys);
   };
 
   useEffect(() => {
@@ -580,12 +597,10 @@ export default function Page() {
             </Flex>
 
             <Table
-              rowKey="indexId"
+              rowKey="id"
               rowSelection={{
-                selectedRowKeys: selectedRows.map((row) => row.indexId),
-                onChange: (selectedRowKeys, selectedRows) => {
-                  setSelectedRows(selectedRows);
-                },
+                selectedRowKeys: selectedRowKeys,
+                onSelect: handleSelectRow,
               }}
               scroll={{ x: 3000 }}
               loading={
