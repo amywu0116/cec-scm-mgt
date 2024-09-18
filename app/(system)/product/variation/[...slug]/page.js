@@ -173,7 +173,7 @@ export default function Page() {
     const variationAttributeId1 = form.getFieldValue("variationAttributeId1");
     const variationAttributeId2 = form.getFieldValue("variationAttributeId2");
     const productnumber = form.getFieldValue("productnumber");
-    const itemName = form.getFieldValue("");
+    const itemName = form.getFieldValue("itemName");
 
     if (!variationAttributeId1 && !variationAttributeId2) {
       message.error("必須至少填寫一個樣式種類");
