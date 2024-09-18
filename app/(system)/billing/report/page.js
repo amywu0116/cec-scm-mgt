@@ -2,6 +2,7 @@
 import { App, Breadcrumb, Col, Divider, Flex, Form, Row } from "antd";
 import dayjs from "dayjs";
 import fileDownload from "js-file-download";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useEffect, useState } from "react";
@@ -381,10 +382,10 @@ export default function Page() {
   };
 
   // 發票下載
-  const handleDownloadInvoice = () => {
+  const getInvoiceUrl = () => {
     const period = form.getFieldValue("period");
     const accountNo = tableInfo.rows[0]?.accountNo;
-    router.push(`/pdf/invoice?period=${period}&accountNo=${accountNo}`);
+    return `/pdf/invoice?period=${period}&accountNo=${accountNo}`;
   };
 
   const handleSelectRow = (record, selected) => {
@@ -587,13 +588,14 @@ export default function Page() {
                 爭議結案
               </Button>
 
-              <Button
-                type="secondary"
-                disabled={!tableInfo.rows[0]?.accountNo}
-                onClick={handleDownloadInvoice}
-              >
-                發票下載
-              </Button>
+              <Link href={getInvoiceUrl()} target="_blank">
+                <Button
+                  type="secondary"
+                  disabled={!tableInfo.rows[0]?.accountNo}
+                >
+                  發票下載
+                </Button>
+              </Link>
             </Flex>
 
             <Table
