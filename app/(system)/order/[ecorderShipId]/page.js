@@ -36,6 +36,7 @@ import ModalTax from "./ModalTax";
 import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
+import { ORDER_STATUS } from "@/constants";
 
 const Container = styled.div`
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
@@ -110,6 +111,8 @@ const OrderStatusTag = styled.div`
   display: flex;
   align-items: center;
 `;
+
+const { RETURN_AND_REFUND, REFUND_COMPLETED } = ORDER_STATUS;
 
 export default function Page(props) {
   const { params } = props;
@@ -929,7 +932,9 @@ export default function Page(props) {
                   </Row>
                 )}
 
-                {["退貨退款中", "退款完成"].includes(info.backStatusName) && (
+                {[RETURN_AND_REFUND, REFUND_COMPLETED].includes(
+                  info.backStatus
+                ) && (
                   <>
                     <Row gutter={32}>
                       <Col span={12}>
@@ -989,6 +994,16 @@ export default function Page(props) {
                                 ),
                               }}
                             />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
+
+                    {info.examPrice && (
+                      <Row gutter={32}>
+                        <Col span={12}>
+                          <Form.Item name="examPrice" label="整新費">
+                            <Input disabled />
                           </Form.Item>
                         </Col>
                       </Row>
