@@ -157,6 +157,8 @@ export default function FormProduct(props) {
     );
   };
 
+  console.log("info", info);
+
   return (
     <Form
       form={form}
@@ -171,6 +173,16 @@ export default function FormProduct(props) {
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <Title>分類設定</Title>
+
+          {info.mainProductId && (
+            <Row gutter={32}>
+              <Col span={12}>
+                <Form.Item name="mainProductId" label="樣式商品主商品編號">
+                  <div style={{ lineHeight: "42px" }}>{info.mainProductId}</div>
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
 
           <Row gutter={32}>
             <Col span={12}>
