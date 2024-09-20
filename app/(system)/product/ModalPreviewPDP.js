@@ -1,5 +1,5 @@
 "use client";
-import { App, Col, Row, Spin } from "antd";
+import { App, Col, Flex, Row, Spin } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
@@ -94,6 +94,7 @@ const ItemLabel = styled.div`
   font-weight: 400;
   color: #333;
   margin-right: 20px;
+  flex-shrink: 0;
 `;
 
 const Price = styled.div`
@@ -293,6 +294,25 @@ const Popular = styled.div`
   position: relative;
   width: 100%;
   height: 370px;
+`;
+
+const VariationBtn = styled.div`
+  border-radius: 4px;
+  border: 1px solid #ececec;
+  background-color: #fff;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #3b3516;
+  width: fit-content;
+
+  ${(props) =>
+    props.$active &&
+    css`
+      border: 1px solid #1877f2;
+      background-color: #e9eff9;
+      color: #5877e1;
+    `}
 `;
 
 const TAB = {
@@ -541,6 +561,36 @@ export default function ModalPreviewPDP(props) {
                     </ItemPriceWrapper>
 
                     <ItemOthers>
+                      {info.variationType1ValueList?.length > 0 && (
+                        <ItemOthersRow>
+                          <ItemLabel>{info.variationType1Name}</ItemLabel>
+                          <Flex gap={8} wrap>
+                            {info.variationType1ValueList.map((item, idx) => {
+                              return (
+                                <VariationBtn key={idx} $active={idx === 0}>
+                                  {item}
+                                </VariationBtn>
+                              );
+                            })}
+                          </Flex>
+                        </ItemOthersRow>
+                      )}
+
+                      {info.variationType2ValueList?.length > 0 && (
+                        <ItemOthersRow>
+                          <ItemLabel>{info.variationType2Name}</ItemLabel>
+                          <Flex gap={8} wrap>
+                            {info.variationType2ValueList.map((item, idx) => {
+                              return (
+                                <VariationBtn key={idx} $active={idx === 0}>
+                                  {item}
+                                </VariationBtn>
+                              );
+                            })}
+                          </Flex>
+                        </ItemOthersRow>
+                      )}
+
                       <ItemOthersRow>
                         <ItemLabel>數量</ItemLabel>
 
