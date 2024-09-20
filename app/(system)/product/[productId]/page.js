@@ -166,7 +166,11 @@ export default function Page() {
               </>
             ) : (
               <>
-                <Button type="primary" onClick={() => setIsEditing(true)}>
+                <Button
+                  type="primary"
+                  disabled={info.isMainVariation}
+                  onClick={() => setIsEditing(true)}
+                >
                   編輯修改
                 </Button>
 
@@ -176,7 +180,9 @@ export default function Page() {
                     query: { itemName, itemEan },
                   }}
                 >
-                  <Button type="secondary">圖片維護</Button>
+                  <Button type="secondary" disabled={info.isMainVariation}>
+                    圖片維護
+                  </Button>
                 </Link>
               </>
             )}
@@ -198,7 +204,9 @@ export default function Page() {
                 },
               }}
             >
-              <Button type="secondary">庫存設定</Button>
+              <Button type="secondary" disabled={info.isMainVariation}>
+                庫存設定
+              </Button>
             </Link>
           </Space>
         </LayoutHeader>

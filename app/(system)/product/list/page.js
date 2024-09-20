@@ -127,7 +127,6 @@ export default function Page() {
     },
     {
       title: "商品編號/條碼",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         return (
@@ -140,7 +139,6 @@ export default function Page() {
     },
     {
       title: "價格",
-      dataIndex: "",
       align: "center",
       render: (text, record) => {
         if (record.price === null && record.specialPrice === null) {
@@ -179,7 +177,9 @@ export default function Page() {
                 },
               }}
             >
-              <FunctionBtn color="green">庫存設定</FunctionBtn>
+              <FunctionBtn color="green" disabled={record.isMainVariation}>
+                庫存設定
+              </FunctionBtn>
             </Link>
           </>
         );
