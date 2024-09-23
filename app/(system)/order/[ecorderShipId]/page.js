@@ -180,7 +180,7 @@ export default function Page(props) {
     },
     {
       title: "單價",
-      dataIndex: "salesPrice",
+      dataIndex: "price",
       align: "center",
     },
     {
