@@ -60,11 +60,11 @@ const Card = styled(Flex)`
 const VendorCard = styled(Card)`
   .vendor-card-item {
     display: flex;
+    font-weight: normal;
 
     > div:nth-child(1) {
-      flex-basis: 300px;
+      flex-basis: 250px;
       font-size: 14px;
-      font-weight: 700;
       color: rgba(89, 89, 89, 1);
     }
   }
@@ -449,7 +449,7 @@ export default function Page() {
 
               <Col span={8}>
                 <Form.Item
-                  label="配達期間"
+                  label="帳務期間"
                   shouldUpdate={(prev, current) =>
                     prev.period !== current.period
                   }
@@ -458,7 +458,7 @@ export default function Page() {
                     const period = getFieldValue("period");
                     return (
                       <Input
-                        placeholder="請輸入配達期間"
+                        placeholder="請輸入帳務期間"
                         disabled
                         value={getPeriodRange(period)}
                       />
@@ -551,7 +551,10 @@ export default function Page() {
               <Row>
                 <Col span={12}>
                   <div className="vendor-card-item">
-                    <div>供應商訂單收款金額 (未扣除TapPay手續費)</div>
+                    <div>
+                      <div>供應商訂單收款金額</div>
+                      <div>(未扣除TapPay手續費)</div>
+                    </div>
                     <div>{tableInfo.rows[0]?.monthlyAmount}</div>
                   </div>
                 </Col>
@@ -559,7 +562,7 @@ export default function Page() {
 
               <Row>
                 <Col span={12}>
-                  <div className="vendor-card-item">
+                  <div style={{ fontWeight: 700 }} className="vendor-card-item">
                     <div>供應商訂單實際收款金額</div>
                     <div>{tableInfo.rows[0]?.withdrawAmount}</div>
                   </div>
@@ -569,7 +572,10 @@ export default function Page() {
               <Row>
                 <Col span={12}>
                   <div className="vendor-card-item">
-                    <div>供應商訂單Tappay手續費</div>
+                    <div>
+                      <div>供應商訂單Tappay手續費</div>
+                      <div>(實際手續費用以TapPay提報為準)</div>
+                    </div>
                     <div>{tableInfo.rows[0]?.tappayFee}</div>
                   </div>
                 </Col>
