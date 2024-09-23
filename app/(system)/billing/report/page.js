@@ -532,25 +532,48 @@ export default function Page() {
 
           {tableInfo.rows.length > 0 && (
             <VendorCard vertical gap={16}>
-              <div className="vendor-card-item">
-                <div>供應商名稱</div>
-                <div>{tableInfo.rows[0]?.vendorName}</div>
-              </div>
+              <Row gutter={32}>
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>供應商名稱</div>
+                    <div>{tableInfo.rows[0]?.vendorName}</div>
+                  </div>
+                </Col>
 
-              <div className="vendor-card-item">
-                <div>供應商訂單收款金額 (未扣除TapPay手續費)</div>
-                <div>{tableInfo.rows[0]?.monthlyAmount}</div>
-              </div>
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>當前帳期提出爭議截止日期</div>
+                    <div>{tableInfo.rows[0]?.disputeDeadline}</div>
+                  </div>
+                </Col>
+              </Row>
 
-              <div className="vendor-card-item">
-                <div>供應商訂單實際收款金額</div>
-                <div>{tableInfo.rows[0]?.withdrawAmount}</div>
-              </div>
+              <Row>
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>供應商訂單收款金額 (未扣除TapPay手續費)</div>
+                    <div>{tableInfo.rows[0]?.monthlyAmount}</div>
+                  </div>
+                </Col>
+              </Row>
 
-              <div className="vendor-card-item">
-                <div>供應商訂單Tappay手續費</div>
-                <div>{tableInfo.rows[0]?.tappayFee}</div>
-              </div>
+              <Row>
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>供應商訂單實際收款金額</div>
+                    <div>{tableInfo.rows[0]?.withdrawAmount}</div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>供應商訂單Tappay手續費</div>
+                    <div>{tableInfo.rows[0]?.tappayFee}</div>
+                  </div>
+                </Col>
+              </Row>
             </VendorCard>
           )}
 
