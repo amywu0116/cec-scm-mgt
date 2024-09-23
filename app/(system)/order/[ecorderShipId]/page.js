@@ -189,6 +189,34 @@ export default function Page(props) {
       align: "center",
     },
     {
+      title: "商品層級活動代碼&名稱",
+      dataIndex: "itemPromotion",
+      align: "center",
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
+    },
+    {
+      title: "商品折扣",
+      dataIndex: "discountAmount",
+      align: "center",
+    },
+    {
+      title: "訂單層級活動代碼&名稱",
+      dataIndex: "orderPromotion",
+      align: "center",
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
+    },
+    {
+      title: "訂單折扣",
+      dataIndex: "orderDiscountAmount",
+      align: "center",
+    },
+    {
       title: "小計",
       dataIndex: "finalTotalAmt",
       align: "center",
