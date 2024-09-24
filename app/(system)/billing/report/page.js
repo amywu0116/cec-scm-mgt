@@ -237,7 +237,10 @@ export default function Page() {
     let tempDate = dayjs("2024-08"); // 從 2024 年 8 月開始
 
     // 循環生成 yyyyMM 格式的日期陣列
-    while (tempDate.isBefore(currentDate) || tempDate.isSame(currentDate)) {
+    while (
+      tempDate.isBefore(currentDate.add(1, "month")) ||
+      tempDate.isSame(currentDate.add(1, "month"))
+    ) {
       const formattedDate = tempDate.format("YYYYMM");
       dateArray.unshift({
         label: formattedDate,
@@ -264,6 +267,21 @@ export default function Page() {
     const endDate = dayjs(`${year}-${month}-25`); // 當前月份的 25 號
 
     return `${startDate.format("YYYY-MM-DD")} ~ ${endDate.format("YYYY-MM-DD")}`;
+  };
+
+  // 預設值：如果是當月 26 日前，則顯示當月；如果是當月 26 日戓當月 26 日後，則顯示下一個月
+  const getDefaultPeriod = () => {
+    const today = dayjs(); // 當前日期
+    const compareDate = dayjs().set("date", 26);
+
+    let formattedDate = null;
+    if (today.isBefore(compareDate)) {
+      formattedDate = today.format("YYYYMM");
+    } else {
+      formattedDate = today.add(1, "month").format("YYYYMM");
+    }
+    return periodOptions.find((option) => option.value === formattedDate)
+      ?.value;
   };
 
   const transformParams = (values) => {
@@ -430,7 +448,7 @@ export default function Page() {
         requiredMark={false}
         disabled={loading.table}
         initialValues={{
-          period: periodOptions[periodOptions.length - 1].value, // 預設選取最後一個
+          period: getDefaultPeriod(),
         }}
         onFinish={handleFinish}
       >
@@ -543,7 +561,7 @@ export default function Page() {
                 <Col span={12}>
                   <div className="vendor-card-item">
                     <div>當前帳期提出爭議截止日期</div>
-                    <div>{tableInfo.rows[0]?.disputeDeadline}</div>
+                    <div>{tableInfo.rows[0]?.disputeDeadline ?? "-"}</div>
                   </div>
                 </Col>
               </Row>
