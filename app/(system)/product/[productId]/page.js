@@ -12,10 +12,7 @@ import FormProduct from "../FormProduct";
 import ModalPreviewPDP from "../ModalPreviewPDP";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_IMAGE_MAINTENANCE,
-  PATH_PRODUCT_STOCK_SETTINGS,
-} from "@/constants/paths";
+import { routes } from "@/routes";
 
 export default function Page() {
   const { message } = App.useApp();
@@ -172,7 +169,9 @@ export default function Page() {
 
                 <Link
                   href={{
-                    pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/product/${params.productId}`,
+                    pathname: routes.product.imageMaintenanceProduct(
+                      params.productId
+                    ),
                     query: { itemName, itemEan },
                   }}
                 >
@@ -190,7 +189,7 @@ export default function Page() {
 
             <Link
               href={{
-                pathname: `${PATH_PRODUCT_STOCK_SETTINGS}`,
+                pathname: routes.product.stock,
                 query: {
                   productId: params.productId,
                   itemName,

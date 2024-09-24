@@ -36,6 +36,7 @@ import ModalTax from "./ModalTax";
 import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
+import { ORDER_STATUS } from "@/constants";
 
 const Container = styled.div`
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
@@ -111,6 +112,8 @@ const OrderStatusTag = styled.div`
   align-items: center;
 `;
 
+const { RETURN_AND_REFUND, REFUND_COMPLETED } = ORDER_STATUS;
+
 export default function Page(props) {
   const { params } = props;
   const { message } = App.useApp();
@@ -177,12 +180,40 @@ export default function Page(props) {
     },
     {
       title: "單價",
-      dataIndex: "salesPrice",
+      dataIndex: "price",
       align: "center",
     },
     {
       title: "訂購量",
       dataIndex: "qty",
+      align: "center",
+    },
+    {
+      title: "商品層級活動代碼&名稱",
+      dataIndex: "itemPromotion",
+      align: "center",
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
+    },
+    {
+      title: "商品折扣",
+      dataIndex: "discountAmount",
+      align: "center",
+    },
+    {
+      title: "訂單層級活動代碼&名稱",
+      dataIndex: "orderPromotion",
+      align: "center",
+      render: (text) => {
+        if ([null, undefined].includes(text)) return "-";
+        return text;
+      },
+    },
+    {
+      title: "訂單折扣",
+      dataIndex: "orderDiscountAmount",
       align: "center",
     },
     {
@@ -929,7 +960,9 @@ export default function Page(props) {
                   </Row>
                 )}
 
-                {["退貨退款中", "退款完成"].includes(info.backStatusName) && (
+                {[RETURN_AND_REFUND, REFUND_COMPLETED].includes(
+                  info.backStatus
+                ) && (
                   <>
                     <Row gutter={32}>
                       <Col span={12}>
@@ -989,6 +1022,16 @@ export default function Page(props) {
                                 ),
                               }}
                             />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
+
+                    {info.examPrice && (
+                      <Row gutter={32}>
+                        <Col span={12}>
+                          <Form.Item name="examPrice" label="整新費">
+                            <Input disabled />
                           </Form.Item>
                         </Col>
                       </Row>
