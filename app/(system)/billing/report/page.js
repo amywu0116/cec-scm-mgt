@@ -269,16 +269,16 @@ export default function Page() {
     return `${startDate.format("YYYY-MM-DD")} ~ ${endDate.format("YYYY-MM-DD")}`;
   };
 
-  // 預設值：如果是當月 26 日前，則顯示當月；如果是當月 26 日戓當月 26 日後，則顯示下一個月
+  // 預設值：如果是當月 26 日前，則顯示當月的上一個月；如果是當月 26 日戓當月 26 日後，則顯示當月
   const getDefaultPeriod = () => {
     const today = dayjs(); // 當前日期
-    const compareDate = dayjs().set("date", 26);
+    const compareDate = dayjs().set("date", 26); // 當月 26 日
 
     let formattedDate = null;
     if (today.isBefore(compareDate)) {
-      formattedDate = today.format("YYYYMM");
+      formattedDate = today.subtract(1, "month").format("YYYYMM");
     } else {
-      formattedDate = today.add(1, "month").format("YYYYMM");
+      formattedDate = today.format("YYYYMM");
     }
     return periodOptions.find((option) => option.value === formattedDate)
       ?.value;
