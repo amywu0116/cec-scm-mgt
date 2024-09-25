@@ -1,6 +1,6 @@
 "use client";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { App, Col, Flex, Form, Image, Row, Space } from "antd";
+import { App, Col, Flex, Form, Image, Row, Space, Upload } from "antd";
 import fileDownload from "js-file-download";
 import Link from "next/link";
 import {
@@ -20,6 +20,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Select from "@/components/Select";
 import Table from "@/components/Table";
 import ModalPreviewPDP from "../ModalPreviewPDP";
+import ModalInstalmentError from "../ModalInstalmentError";
 
 import api from "@/api";
 import { PATH_PRODUCT, PATH_PRODUCT_STOCK_SETTINGS } from "@/constants/paths";
@@ -43,10 +44,12 @@ export default function Page() {
   const [loading, setLoading] = useState({
     table: false,
     export: false,
+    import: false,
   });
 
   const [openModal, setOpenModal] = useState({
     pdpPreview: false,
+    import: false,
   });
 
   const [tableInfo, setTableInfo] = useState({
@@ -58,6 +61,7 @@ export default function Page() {
   });
 
   const [currentProductId, setCurrentProductId] = useState();
+  const [importErrorInfo, setImportErrorInfo] = useState();
 
   const columns = [
     {
@@ -283,10 +287,69 @@ export default function Page() {
     });
   }, []);
 
+  // 分期匯入範例下載
+  const handleDownloadFile = () => {
+    const link = document.createElement("a");
+    link.href = "/files/分期匯入範例.xlsx";
+    link.download = "分期匯入範例.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // 分期匯入
+  const handleClickUpload = (file) => {
+    setOpenModal((state) => ({ ...state, loading: true }));
+
+    if (file.file.status === "done") {
+      const formData = new FormData();
+      formData.append("file", file.file.originFileObj);
+
+      setLoading((state) => ({ ...state, import: true }));
+      api
+        .post(`v1/scm/product/instalments/upload`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          message.success("分期匯入成功");
+        })
+        .catch((err) => {
+          message.error(err.message);
+          if (err.data !== null) {
+            setImportErrorInfo(err.data);
+            setOpenModal((state) => ({ ...state, import: true }));
+          }
+        })
+        .finally(() => {
+          setLoading((state) => ({ ...state, import: false }));
+          setOpenModal((state) => ({ ...state, loading: false }));
+        });
+    }
+  };
+
   return (
     <Container>
       <LayoutHeader>
         <LayoutHeaderTitle>商品列表</LayoutHeaderTitle>
+        <Space style={{ marginLeft: "auto" }} size={16}>
+          <Button onClick={handleDownloadFile}>分期匯入範例下載</Button>
+
+          <Upload
+            disabled={loading.import}
+            showUploadList={false}
+            onChange={handleClickUpload}
+          >
+            <Button
+              type="secondary"
+              loading={loading.import}
+            >
+              分期匯入
+            </Button>
+          </Upload>
+        </Space>
+
       </LayoutHeader>
 
       <Row gutter={[0, 16]}>
@@ -390,6 +453,12 @@ export default function Page() {
         onCancel={() => {
           setOpenModal((state) => ({ ...state, pdpPreview: false }));
         }}
+      />
+
+      <ModalInstalmentError
+        info={importErrorInfo}
+        open={openModal.import}
+        onCancel={() => setOpenModal((state) => ({ ...state, import: false }))}
       />
     </Container>
   );

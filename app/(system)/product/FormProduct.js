@@ -202,6 +202,26 @@ export default function FormProduct(props) {
                 />
               </Form.Item>
             </Col>
+
+            <Col span={12}>
+              <Form.Item
+                name="numberofinstalments"
+                label="信用卡分期"
+                rules={[{ required: true, message: "必填" }]}
+              >
+                <Select
+                  placeholder="請依據下拉選單選擇信用卡分期"
+                  showSearch
+                  allowClear
+                  options={[
+                    { label: "不提供分期", value: 0 },
+                    { label: "3期", value: 3 },
+                    { label: "6期", value: 6 },
+                    { label: "12期", value: 12 },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
           </Row>
 
           <Row gutter={32}>
