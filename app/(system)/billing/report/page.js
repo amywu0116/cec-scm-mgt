@@ -234,7 +234,7 @@ export default function Page() {
   const generatePeriodOptions = () => {
     const dateArray = [];
     const currentDate = dayjs(); // 當前日期
-    let tempDate = dayjs("2024-08"); // 從 2024 年 8 月開始
+    let tempDate = dayjs("2024-09"); // 從 2024 年 9 月開始
 
     // 循環生成 yyyyMM 格式的日期陣列
     while (
@@ -448,7 +448,8 @@ export default function Page() {
         requiredMark={false}
         disabled={loading.table}
         initialValues={{
-          period: getDefaultPeriod(),
+          period:
+            getDefaultPeriod() ?? periodOptions[periodOptions.length - 1].value,
         }}
         onFinish={handleFinish}
       >
