@@ -170,14 +170,16 @@ export default function Page() {
       render: (text, record, index) => {
         return (
           <Space>
-            <FunctionBtn
-              onClick={() => {
-                setRowInfo(record);
-                setOpenModal((state) => ({ ...state, orderList: true }));
-              }}
-            >
-              編輯圖片順序
-            </FunctionBtn>
+            {isProduct && (
+              <FunctionBtn
+                onClick={() => {
+                  setRowInfo(record);
+                  setOpenModal((state) => ({ ...state, orderList: true }));
+                }}
+              >
+                編輯圖片順序
+              </FunctionBtn>
+            )}
 
             <FunctionBtn
               onClick={() => {
