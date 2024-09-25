@@ -42,7 +42,6 @@ export default function FormProduct(props) {
     onFinish,
   } = props;
   const params = useParams();
-  console.log("params", params);
 
   const isApply = type === "apply";
   const isProduct = type === "product";
@@ -489,6 +488,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
+                      disabled={info.isVariation}
                       onChange={() => {
                         form.setFieldValue("variationType1Value", undefined);
                       }}
@@ -502,7 +502,7 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType1Code}
+                      disabled={!variationType1Code || info.isVariation}
                     />
                   </Form.Item>
                 </Flex>
@@ -525,6 +525,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
+                      disabled={info.isVariation}
                       onChange={() => {
                         form.setFieldValue("variationType2Value", undefined);
                       }}
@@ -538,7 +539,7 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType2Code}
+                      disabled={!variationType2Code || info.isVariation}
                     />
                   </Form.Item>
                 </Flex>
