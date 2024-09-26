@@ -203,7 +203,7 @@ export default function MyDocument(props) {
           const canvas = document.createElement("canvas");
           JsBarcode(canvas, text, { format: "EAN13" });
           const barcode = canvas.toDataURL();
-          return <Image src={barcode} />;
+          return <Image src={barcode} alt="" />;
         } else {
           return <Text>{text}</Text>;
         }

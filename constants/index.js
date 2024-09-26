@@ -8,3 +8,8 @@ export const APPLY_STATUS = {
   REJECTED: 15, // 審核退件
   CANCELED: 20, // 申請取消
 };
+
+export const ORDER_STATUS = {
+  RETURN_AND_REFUND: "405", // 退貨退款中
+  REFUND_COMPLETED: "406", // 退款完成
+};

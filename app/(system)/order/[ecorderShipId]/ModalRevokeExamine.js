@@ -1,14 +1,14 @@
 "use client";
 import { App, Col, Form, Radio, Row, Upload } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import Button from "@/components/Button";
+import DatePicker from "@/components/DatePicker";
 import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 import TextArea from "@/components/TextArea";
-import OrderDatePicker from "./OrderDatePicker";
 
 import api from "@/api";
 
@@ -58,7 +58,6 @@ export default function ModalRevokeExamine(props) {
   };
 
   const handleFinish = (values) => {
-    console.log("values", values);
     const formData = new FormData();
     formData.append("approval", values.approval);
     formData.append("examDate", dayjs(values.examDate).format("YYYY-MM-DD"));
@@ -81,13 +80,16 @@ export default function ModalRevokeExamine(props) {
         message.success(res.message);
         onOk();
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, modal: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, modal: false })));
   };
+
+  useEffect(() => {
+    if (open) {
+      const today = dayjs();
+      form.setFieldValue("examDate", today);
+    }
+  }, [open]);
 
   return (
     <Modal
@@ -149,10 +151,10 @@ export default function ModalRevokeExamine(props) {
                 label={approval ? "退貨核可日期" : "退貨不核可日期"}
                 rules={[{ required: true, message: "必填" }]}
               >
-                <OrderDatePicker
+                <DatePicker
                   style={{ width: "100%" }}
                   placeholder="選擇日期"
-                  ecorderDate={info.ecorderDate}
+                  disabled
                 />
               </Form.Item>
             </Col>

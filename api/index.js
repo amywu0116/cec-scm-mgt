@@ -1,7 +1,6 @@
 import axios from "axios";
-import { message } from "antd";
 
-import { PATH_LOGIN } from "@/constants/paths";
+import { routes } from "@/routes";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_DOMAIN,
@@ -34,7 +33,7 @@ api.interceptors.response.use(
       ["Unauthorized", "JWT Expired"].includes(errRes.data.message)
     ) {
       localStorage.removeItem("cec-scm-mgt");
-      window.location.href = PATH_LOGIN;
+      window.location.href = routes.login;
     }
     return Promise.reject(error.response.data);
   }

@@ -12,10 +12,7 @@ import FormProduct from "../../FormProduct";
 import ModalPreviewPDP from "../../ModalPreviewPDP";
 
 import api from "@/api";
-import {
-  PATH_PRODUCT_APPLICATION,
-  PATH_PRODUCT_IMAGE_MAINTENANCE,
-} from "@/constants/paths";
+import { routes } from "@/routes";
 
 export default function Page() {
   const router = useRouter();
@@ -153,7 +150,7 @@ export default function Page() {
       .post(`v1/scm/product/apply/new`, data)
       .then((res) => {
         message.success(res.message);
-        router.push(`${PATH_PRODUCT_APPLICATION}/edit/${res.data.applyId}`);
+        router.push(routes.product.applicationEdit(res.data.applyId));
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading((state) => ({ ...state, page: false })));
@@ -168,7 +165,7 @@ export default function Page() {
       })
       .then(() => {
         message.success("送審成功");
-        router.push(PATH_PRODUCT_APPLICATION);
+        router.push(routes.product.application);
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading((state) => ({ ...state, page: false })));
@@ -244,7 +241,7 @@ export default function Page() {
 
             <Link
               href={{
-                pathname: `${PATH_PRODUCT_IMAGE_MAINTENANCE}/apply/${applyId}`,
+                pathname: routes.product.imageMaintenanceApply(applyId),
                 query: {
                   itemName: form.getFieldValue("itemName"),
                   itemEan: form.getFieldValue("itemEan"),

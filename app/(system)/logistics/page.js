@@ -9,7 +9,7 @@ import { LayoutHeader, LayoutHeaderTitle } from "@/components/Layout";
 import Table from "@/components/Table";
 
 import api from "@/api";
-import { PATH_LOGISTICS, PATH_PATH_LOGISTICS_ADD } from "@/constants/paths";
+import { routes } from "@/routes";
 
 const Container = styled.div``;
 
@@ -32,7 +32,7 @@ export default function Page() {
       dataIndex: "code",
       align: "center",
       render: (text, record, index) => {
-        return <Link href={`${PATH_LOGISTICS}/edit/${record.id}`}>{text}</Link>;
+        return <Link href={routes.logistics.edit(record.id)}>{text}</Link>;
       },
     },
     {
@@ -91,12 +91,8 @@ export default function Page() {
           pageSize: pagination.pageSize,
         }));
       })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {
-        setLoading((state) => ({ ...state, page: false }));
-      });
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, page: false })));
   };
 
   const handleChangeTable = (page, pageSize) => {
@@ -118,7 +114,7 @@ export default function Page() {
         <Row gutter={[0, 16]}>
           <Col span={24}>
             <Row justify="end">
-              <Link href={PATH_PATH_LOGISTICS_ADD}>
+              <Link href={routes.logistics.add}>
                 <Button type="primary">新增</Button>
               </Link>
             </Row>

@@ -236,7 +236,7 @@ export default function Page() {
         return (
           <Link
             href={{
-              pathname: routes.product.imageMaintenance(record.applyId),
+              pathname: routes.product.imageMaintenanceApply(record.applyId),
               query: {
                 itemName: record.itemName,
                 itemEan: record.itemEan,
