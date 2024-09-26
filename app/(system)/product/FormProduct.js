@@ -157,8 +157,6 @@ export default function FormProduct(props) {
     );
   };
 
-  console.log("info", info);
-
   return (
     <Form
       form={form}
