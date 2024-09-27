@@ -10,6 +10,9 @@ export const APPLY_STATUS = {
 };
 
 export const ORDER_STATUS = {
+  RETURN_RECEIVED: "403", // 退貨收貨完成
+  RETURN_FAILED: "404", // 退貨收貨失敗
   RETURN_AND_REFUND: "405", // 退貨退款中
   REFUND_COMPLETED: "406", // 退款完成
+  RENOVATION: "407", // 整新費付款中
 };

@@ -10,6 +10,7 @@ import {
   Breadcrumb,
   Col,
   Collapse,
+  Flex,
   Form,
   Image,
   Row,
@@ -112,8 +113,6 @@ const OrderStatusTag = styled.div`
   align-items: center;
 `;
 
-const { RETURN_AND_REFUND, REFUND_COMPLETED } = ORDER_STATUS;
-
 export default function Page(props) {
   const { params } = props;
   const { message } = App.useApp();
@@ -129,6 +128,7 @@ export default function Page(props) {
     reject: false,
     cancel: false,
     revoke: false,
+    reGen: false,
   });
 
   const [showModal, setShowModal] = useState({
@@ -161,95 +161,6 @@ export default function Page(props) {
   const packaging = Form.useWatch("packaging", form);
   const backLogisticsName = Form.useWatch("backLogisticsName", form);
   const backShippingCode = Form.useWatch("backShippingCode", form);
-
-  const columns = [
-    {
-      title: "商品編號",
-      dataIndex: "productnumber",
-      align: "center",
-    },
-    {
-      title: "商品名稱",
-      dataIndex: "itemName",
-      align: "center",
-    },
-    {
-      title: "規格",
-      dataIndex: "itemSpec",
-      align: "center",
-    },
-    {
-      title: "單價",
-      dataIndex: "price",
-      align: "center",
-    },
-    {
-      title: "訂購量",
-      dataIndex: "qty",
-      align: "center",
-    },
-    {
-      title: "商品層級活動代碼&名稱",
-      dataIndex: "itemPromotion",
-      align: "center",
-      render: (text) => {
-        if ([null, undefined].includes(text)) return "-";
-        return text;
-      },
-    },
-    {
-      title: "商品折扣",
-      dataIndex: "discountAmount",
-      align: "center",
-    },
-    {
-      title: "訂單層級活動代碼&名稱",
-      dataIndex: "orderPromotion",
-      align: "center",
-      render: (text) => {
-        if ([null, undefined].includes(text)) return "-";
-        return text;
-      },
-    },
-    {
-      title: "訂單折扣",
-      dataIndex: "orderDiscountAmount",
-      align: "center",
-    },
-    {
-      title: "小計",
-      dataIndex: "finalTotalAmt",
-      align: "center",
-    },
-    {
-      title: "出貨量",
-      dataIndex: "pickupQty",
-      align: "center",
-      render: (text, record, index) => {
-        return (
-          <Input
-            style={{ width: 80, textAlign: "center" }}
-            disabled={product[index].pickupQty || !actionStatus.shipment}
-            status={text && text !== record.qty && "error"}
-            value={text}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^\d*$/.test(value) || value === "") {
-                const newList = productTableInfo.rows.map((r, idx) => {
-                  if (idx !== index) return r;
-                  return {
-                    ...r,
-                    pickupQty: value === "" ? "" : Number(e.target.value),
-                  };
-                });
-                setProductTableInfo((state) => ({ ...state, rows: newList }));
-              }
-            }}
-          />
-        );
-      },
-    },
-  ];
 
   // 貨運公司, 配送單號, 發票號碼, 發票開立日期, 包材重量, 出貨量 必須全部填完才能 enable
   const isShipDisabled = () => {
@@ -325,18 +236,12 @@ export default function Page(props) {
 
   const openModalTax = (e) => {
     e.stopPropagation();
-    setShowModal((state) => ({
-      ...state,
-      tax: true,
-    }));
+    setShowModal((state) => ({ ...state, tax: true }));
   };
 
   const openModalAddress = (e) => {
     e.stopPropagation();
-    setShowModal((state) => ({
-      ...state,
-      address: true,
-    }));
+    setShowModal((state) => ({ ...state, address: true }));
   };
 
   // 出貨
@@ -459,6 +364,19 @@ export default function Page(props) {
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading((state) => ({ ...state, revoke: false })));
+  };
+
+  // 重新發送付款連結
+  const handleReGen = () => {
+    setLoading((state) => ({ ...state, reGen: true }));
+    api
+      .post(`v1/scm/order/${info.refundId}/genPayLink`)
+      .then((res) => {
+        message.success(res.message);
+        fetchInfo();
+      })
+      .catch((err) => message.error(err.message))
+      .finally(() => setLoading((state) => ({ ...state, reGen: false })));
   };
 
   // 確保貨運公司下拉選單是最新狀態
@@ -633,7 +551,6 @@ export default function Page(props) {
                 activeKey={collapseActiveKey}
                 ghost
                 bordered={false}
-                // expandIconPosition="end"
                 items={[
                   {
                     key: "顧客配送信息",
@@ -924,17 +841,18 @@ export default function Page(props) {
             )}
 
             {[
-              "退貨收貨完成",
-              "退貨收貨失敗",
-              "退貨退款中",
-              "退款完成",
-            ].includes(info.backStatusName) && (
+              ORDER_STATUS.RETURN_RECEIVED,
+              ORDER_STATUS.RETURN_FAILED,
+              ORDER_STATUS.RETURN_AND_REFUND,
+              ORDER_STATUS.REFUND_COMPLETED,
+              ORDER_STATUS.RENOVATION,
+            ].includes(info.backStatus) && (
               <Col span={24}>
                 <TitleWrapper>
                   <Title>退貨資訊</Title>
                 </TitleWrapper>
 
-                {["退貨收貨完成"].includes(info.backStatusName) && (
+                {[ORDER_STATUS.RETURN_RECEIVED].includes(info.backStatus) && (
                   <Row gutter={32}>
                     <Col span={12}>
                       <Form.Item name="backDate" label="退貨收貨完成日期">
@@ -944,7 +862,7 @@ export default function Page(props) {
                   </Row>
                 )}
 
-                {["退貨收貨失敗"].includes(info.backStatusName) && (
+                {[ORDER_STATUS.RETURN_FAILED].includes(info.backStatus) && (
                   <Row gutter={32}>
                     <Col span={12}>
                       <Form.Item name="backDate" label="退貨收貨失敗日期">
@@ -960,9 +878,11 @@ export default function Page(props) {
                   </Row>
                 )}
 
-                {[RETURN_AND_REFUND, REFUND_COMPLETED].includes(
-                  info.backStatus
-                ) && (
+                {[
+                  ORDER_STATUS.RETURN_AND_REFUND,
+                  ORDER_STATUS.REFUND_COMPLETED,
+                  ORDER_STATUS.RENOVATION,
+                ].includes(info.backStatus) && (
                   <>
                     <Row gutter={32}>
                       <Col span={12}>
@@ -1034,6 +954,27 @@ export default function Page(props) {
                             <Input disabled />
                           </Form.Item>
                         </Col>
+
+                        {info.payLink?.paymentLink && (
+                          <Col span={12}>
+                            <Form.Item label="付款連結">
+                              <Flex gap={10} vertical align="start">
+                                <Input
+                                  disabled
+                                  value={info.payLink.paymentLink}
+                                />
+                                <Button
+                                  type="secondary"
+                                  disabled={!info.payLink.canReGen}
+                                  loading={loading.reGen}
+                                  onClick={handleReGen}
+                                >
+                                  重新發送付款連結
+                                </Button>
+                              </Flex>
+                            </Form.Item>
+                          </Col>
+                        )}
                       </Row>
                     )}
                   </>
@@ -1044,7 +985,104 @@ export default function Page(props) {
             <Col span={24}>
               <Table
                 dataSource={productTableInfo.rows}
-                columns={columns}
+                columns={[
+                  {
+                    title: "商品編號",
+                    dataIndex: "productnumber",
+                    align: "center",
+                  },
+                  {
+                    title: "商品名稱",
+                    dataIndex: "itemName",
+                    align: "center",
+                  },
+                  {
+                    title: "規格",
+                    dataIndex: "itemSpec",
+                    align: "center",
+                  },
+                  {
+                    title: "單價",
+                    dataIndex: "price",
+                    align: "center",
+                  },
+                  {
+                    title: "訂購量",
+                    dataIndex: "qty",
+                    align: "center",
+                  },
+                  {
+                    title: "商品層級活動代碼&名稱",
+                    dataIndex: "itemPromotion",
+                    align: "center",
+                    render: (text) => {
+                      if ([null, undefined].includes(text)) return "-";
+                      return text;
+                    },
+                  },
+                  {
+                    title: "商品折扣",
+                    dataIndex: "discountAmount",
+                    align: "center",
+                  },
+                  {
+                    title: "訂單層級活動代碼&名稱",
+                    dataIndex: "orderPromotion",
+                    align: "center",
+                    render: (text) => {
+                      if ([null, undefined].includes(text)) return "-";
+                      return text;
+                    },
+                  },
+                  {
+                    title: "訂單折扣",
+                    dataIndex: "orderDiscountAmount",
+                    align: "center",
+                  },
+                  {
+                    title: "小計",
+                    dataIndex: "finalTotalAmt",
+                    align: "center",
+                  },
+                  {
+                    title: "出貨量",
+                    dataIndex: "pickupQty",
+                    align: "center",
+                    render: (text, record, index) => {
+                      return (
+                        <Input
+                          style={{ width: 80, textAlign: "center" }}
+                          disabled={
+                            product[index].pickupQty || !actionStatus.shipment
+                          }
+                          status={text && text !== record.qty && "error"}
+                          value={text}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*$/.test(value) || value === "") {
+                              const newList = productTableInfo.rows.map(
+                                (r, idx) => {
+                                  if (idx !== index) return r;
+                                  return {
+                                    ...r,
+                                    pickupQty:
+                                      value === ""
+                                        ? ""
+                                        : Number(e.target.value),
+                                  };
+                                }
+                              );
+                              setProductTableInfo((state) => ({
+                                ...state,
+                                rows: newList,
+                              }));
+                            }
+                          }}
+                        />
+                      );
+                    },
+                  },
+                ]}
                 pagination={false}
               />
             </Col>
