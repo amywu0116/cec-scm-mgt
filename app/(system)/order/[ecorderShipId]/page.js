@@ -955,7 +955,7 @@ export default function Page(props) {
                           </Form.Item>
                         </Col>
 
-                        {info.payLink?.paymentLink && (
+                        {info.payLink && (
                           <Col span={12}>
                             <Form.Item label="付款連結">
                               <Flex gap={10} vertical align="start">
