@@ -144,6 +144,15 @@ export default function MyDocument(props) {
       },
     },
     {
+      title: "樣式",
+      width: "200px",
+      dataIndex: "variation",
+      align: "center",
+      render: (text, record, index) => {
+        return <Text>{text ?? "-"}</Text>;
+      },
+    },
+    {
       title: "活動",
       width: "200px",
       dataIndex: "promotion",
