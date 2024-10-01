@@ -216,9 +216,9 @@ export default function FormProduct(props) {
             </Col>
 
             {isProduct && (
-                <Col span={12}>
-                  <Form.Item
-                    name="numberofinstalments"
+              <Col span={12}>
+                <Form.Item
+                  name="numberofinstalments"
                   label="信用卡分期"
                   rules={[{ required: true, message: "必填" }]}
                 >
@@ -235,7 +235,7 @@ export default function FormProduct(props) {
                   />
                 </Form.Item>
               </Col>
-              )}
+            )}
           </Row>
 
           <Row gutter={32}>
@@ -733,7 +733,7 @@ export default function FormProduct(props) {
             <Col span={12}>
               <Form.Item
                 name="itemDetail"
-                label="商品完整說明"
+                label="商品完整說明（請使用HTML語法執行文字排版）"
                 rules={[
                   { required: true, message: "必填" },
                   { max: 4000, message: "最多只能輸入 4000 字" },
