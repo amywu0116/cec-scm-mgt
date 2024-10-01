@@ -202,8 +202,6 @@ export default function FormProduct(props) {
               >
                 <Select
                   placeholder="請依據下拉選單選擇分車類型"
-                  showSearch
-                  allowClear
                   options={shippingList?.map((opt) => ({
                     ...opt,
                     label: `${opt.cartTypeName}(出貨天數: ${opt.shippingDays})`,
@@ -222,8 +220,6 @@ export default function FormProduct(props) {
                 >
                   <Select
                     placeholder="請依據下拉選單選擇信用卡分期"
-                    showSearch
-                    allowClear
                     options={[
                       { label: "不提供分期", value: 0 },
                       { label: "3期", value: 3 },
@@ -253,8 +249,6 @@ export default function FormProduct(props) {
                 {isApply && (
                   <Select
                     placeholder="請依據下拉選單選擇商品分類"
-                    showSearch
-                    allowClear
                     options={categoryList.map((c) => {
                       return {
                         ...c,
@@ -331,8 +325,6 @@ export default function FormProduct(props) {
                 >
                   <Select
                     placeholder="請選擇上下架狀態"
-                    showSearch
-                    allowClear
                     options={[
                       { label: "上架", value: true },
                       { label: "下架", value: false },
@@ -377,8 +369,6 @@ export default function FormProduct(props) {
               >
                 <Select
                   placeholder="請依據下拉選單選擇稅別"
-                  showSearch
-                  allowClear
                   options={[
                     { label: "應稅", value: true },
                     { label: "免稅", value: false },
