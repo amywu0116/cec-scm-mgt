@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import RangePicker from "@/components/DatePicker/RangePicker";
 import Input from "@/components/Input";
+import InputNumber from "@/components/InputNumber";
 import Select from "@/components/Select";
 import TextArea from "@/components/TextArea";
 
@@ -267,7 +268,13 @@ export default function FormProduct(props) {
             </Col>
 
             <Col span={12}>
-              <Form.Item name="brand" label="品牌">
+              <Form.Item
+                name="brand"
+                label="品牌"
+                rules={[
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
+              >
                 <Input placeholder="請輸入品牌文字" />
               </Form.Item>
             </Col>
@@ -278,7 +285,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemName"
                 label="中文品名"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="請在品名開頭增加 [] 符號並填入公司名稱. 例如:[家樂福]" />
               </Form.Item>
@@ -288,7 +298,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemNameEn"
                 label="英文品名"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="請輸入英文品名" />
               </Form.Item>
@@ -300,7 +313,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemCountry"
                 label="生產國家"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="請輸入商品的生產國家" />
               </Form.Item>
@@ -329,7 +345,13 @@ export default function FormProduct(props) {
 
           <Row gutter={32}>
             <Col span={8}>
-              <Form.Item name="itemEan" label="條碼">
+              <Form.Item
+                name="itemEan"
+                label="條碼"
+                rules={[
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
+              >
                 <Input placeholder="請輸入商品條碼" />
               </Form.Item>
             </Col>
@@ -338,7 +360,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemSpec"
                 label="商品規格"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="例如：14片 x 3包 x 1件" />
               </Form.Item>
@@ -409,9 +434,15 @@ export default function FormProduct(props) {
               <Form.Item
                 name="productHeight"
                 label="商品高度"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "number", max: 999.99, message: "最大值為 999.99" },
+                ]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
+                <InputNumber
+                  placeholder="以cm為單位，請輸入數字"
+                  suffix="公分(cm)"
+                />
               </Form.Item>
             </Col>
 
@@ -419,9 +450,15 @@ export default function FormProduct(props) {
               <Form.Item
                 name="productWidth"
                 label="商品寬度"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "number", max: 999.99, message: "最大值為 999.99" },
+                ]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
+                <InputNumber
+                  placeholder="以cm為單位，請輸入數字"
+                  suffix="公分(cm)"
+                />
               </Form.Item>
             </Col>
 
@@ -429,9 +466,15 @@ export default function FormProduct(props) {
               <Form.Item
                 name="productLength"
                 label="商品長度"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "number", max: 999.99, message: "最大值為 999.99" },
+                ]}
               >
-                <Input placeholder="以cm為單位，請輸入數字" suffix="公分(cm)" />
+                <InputNumber
+                  placeholder="以cm為單位，請輸入數字"
+                  suffix="公分(cm)"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -441,9 +484,19 @@ export default function FormProduct(props) {
               <Form.Item
                 name="grossWeight"
                 label="重量-毛重"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  {
+                    type: "number",
+                    max: 99999.99,
+                    message: "最大值為 99999.99",
+                  },
+                ]}
               >
-                <Input placeholder="以克為單位，請輸入數字" suffix="克(g)" />
+                <InputNumber
+                  placeholder="以克為單位，請輸入數字"
+                  suffix="克(g)"
+                />
               </Form.Item>
             </Col>
 
@@ -451,9 +504,19 @@ export default function FormProduct(props) {
               <Form.Item
                 name="netWeight"
                 label="重量-淨重"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  {
+                    type: "number",
+                    max: 99999.99,
+                    message: "最大值為 99999.99",
+                  },
+                ]}
               >
-                <Input placeholder="以克為單位，請輸入數字" suffix="克(g)" />
+                <InputNumber
+                  placeholder="以克為單位，請輸入數字"
+                  suffix="克(g)"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -477,7 +540,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="expDateUnit"
                 label="保存日期單位"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="例如：小時 / 日 / 週 / 月 / 年" />
               </Form.Item>
@@ -487,7 +553,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemStoreway"
                 label="保存方式"
-                rules={[{ required: isFood, message: "必填" }]}
+                rules={[
+                  { required: isFood, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <Input placeholder="例如：常溫 / 冷凍 / 冷藏" />
               </Form.Item>
@@ -497,7 +566,17 @@ export default function FormProduct(props) {
           <Row gutter={32}>
             {isNonFood && (
               <Col span={12}>
-                <Form.Item name="powerSpec" label="電源規格">
+                <Form.Item
+                  name="powerSpec"
+                  label="電源規格"
+                  rules={[
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
+                >
                   <Input placeholder="請輸入電源規格，例如：110V, 220V" />
                 </Form.Item>
               </Col>
@@ -530,7 +609,14 @@ export default function FormProduct(props) {
                   <Form.Item
                     style={{ display: "inline-block", width: "48%" }}
                     name="variationType1Value"
-                    rules={[{ validator: validateVariationType1Value }]}
+                    rules={[
+                      { validator: validateVariationType1Value },
+                      {
+                        type: "string",
+                        max: 255,
+                        message: "最多只能輸入 255 字",
+                      },
+                    ]}
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
@@ -567,7 +653,14 @@ export default function FormProduct(props) {
                   <Form.Item
                     style={{ display: "inline-block", width: "48%" }}
                     name="variationType2Value"
-                    rules={[{ validator: validateVariationType2Value }]}
+                    rules={[
+                      { validator: validateVariationType2Value },
+                      {
+                        type: "string",
+                        max: 255,
+                        message: "最多只能輸入 255 字",
+                      },
+                    ]}
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
@@ -639,7 +732,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="itemDetail"
                 label="商品完整說明"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { max: 4000, message: "最多只能輸入 4000 字" },
+                ]}
               >
                 <TextArea
                   placeholder="請輸入商品完整說明文字"
@@ -655,7 +751,14 @@ export default function FormProduct(props) {
                 <Form.Item
                   name="manufacturer"
                   label="國內負責廠商名稱"
-                  rules={[{ required: true, message: "必填" }]}
+                  rules={[
+                    { required: true, message: "必填" },
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
                 >
                   <Input placeholder="請輸入國內負責廠商名稱" />
                 </Form.Item>
@@ -667,7 +770,14 @@ export default function FormProduct(props) {
                 <Form.Item
                   name="manufacturerPhone"
                   label="國內負責廠商電話"
-                  rules={[{ required: true, message: "必填" }]}
+                  rules={[
+                    { required: true, message: "必填" },
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
                 >
                   <Input placeholder="請輸入國內負責廠商電話" />
                 </Form.Item>
@@ -679,7 +789,14 @@ export default function FormProduct(props) {
                 <Form.Item
                   name="manufacturerAddress"
                   label="國內負責廠商地址"
-                  rules={[{ required: true, message: "必填" }]}
+                  rules={[
+                    { required: true, message: "必填" },
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
                 >
                   <Input placeholder="請輸入國內負責廠商地址" />
                 </Form.Item>
@@ -709,7 +826,10 @@ export default function FormProduct(props) {
                 <Form.Item
                   name="ingredients"
                   label="產品成份及食品添加物"
-                  rules={[{ required: true, message: "必填" }]}
+                  rules={[
+                    { required: true, message: "必填" },
+                    { max: 4000, message: "最多只能輸入 4000 字" },
+                  ]}
                 >
                   <TextArea
                     placeholder="請輸入產品成份及食品添加物文字"
@@ -726,7 +846,10 @@ export default function FormProduct(props) {
                 <Form.Item
                   name="nutrition"
                   label="營養標示(文字)"
-                  rules={[{ required: true, message: "必填" }]}
+                  rules={[
+                    { required: true, message: "必填" },
+                    { max: 4000, message: "最多只能輸入 4000 字" },
+                  ]}
                 >
                   <TextArea
                     placeholder="請輸入營養標示文字"
@@ -740,7 +863,10 @@ export default function FormProduct(props) {
               <Form.Item
                 name="dutyInsurance"
                 label="產品責任險"
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <TextArea
                   placeholder="請輸入產品責任險，例如 : OO產物保險股份有限公司 保單號碼OOOO 字第OOOOO"
@@ -757,7 +883,10 @@ export default function FormProduct(props) {
                 label={
                   isFood ? "食品業者登錄字號" : isNonFood ? "產品核准字號" : ""
                 }
-                rules={[{ required: true, message: "必填" }]}
+                rules={[
+                  { required: true, message: "必填" },
+                  { type: "string", max: 255, message: "最多只能輸入 255 字" },
+                ]}
               >
                 <TextArea
                   placeholder={
@@ -774,7 +903,11 @@ export default function FormProduct(props) {
 
             {isNonFood && (
               <Col span={12}>
-                <Form.Item name="warrantyScope" label="保固範圍">
+                <Form.Item
+                  name="warrantyScope"
+                  label="保固範圍"
+                  rules={[{ max: 4000, message: "最多只能輸入 4000 字" }]}
+                >
                   <TextArea
                     placeholder="請輸入保固範圍"
                     autoSize={{ minRows: 3, maxRows: 3 }}
@@ -787,7 +920,17 @@ export default function FormProduct(props) {
           <Row gutter={32}>
             {isNonFood && (
               <Col span={12}>
-                <Form.Item name="warrantyPeriod" label="保固期間">
+                <Form.Item
+                  name="warrantyPeriod"
+                  label="保固期間"
+                  rules={[
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
+                >
                   <TextArea
                     placeholder="請輸入保固期間"
                     autoSize={{ minRows: 3, maxRows: 3 }}
@@ -800,7 +943,17 @@ export default function FormProduct(props) {
           <Row gutter={32}>
             {isNonFood && (
               <Col span={12}>
-                <Form.Item name="certMark" label="標章">
+                <Form.Item
+                  name="certMark"
+                  label="標章"
+                  rules={[
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
+                >
                   <TextArea
                     placeholder="請輸入標章，例如：省水標章, 環保標章 ... 等等。"
                     autoSize={{ minRows: 3, maxRows: 3 }}
@@ -811,7 +964,17 @@ export default function FormProduct(props) {
 
             {isNonFood && (
               <Col span={12}>
-                <Form.Item name="energyEfficiency" label="能源效率">
+                <Form.Item
+                  name="energyEfficiency"
+                  label="能源效率"
+                  rules={[
+                    {
+                      type: "string",
+                      max: 255,
+                      message: "最多只能輸入 255 字",
+                    },
+                  ]}
+                >
                   <TextArea
                     placeholder="請輸入能源效率，例如：能源效率登錄編號"
                     autoSize={{ minRows: 3, maxRows: 3 }}
