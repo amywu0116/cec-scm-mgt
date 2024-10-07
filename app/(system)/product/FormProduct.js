@@ -698,7 +698,7 @@ export default function FormProduct(props) {
             <Col span={12}>
               <Form.Item
                 name="itemDetail"
-                label="商品完整說明"
+                label="商品完整說明（請使用HTML語法執行文字排版）"
                 rules={[
                   { required: true, message: "必填" },
                   { max: 4000, message: "最多只能輸入 4000 字" },
