@@ -555,7 +555,7 @@ export default function Page() {
                 <Col span={12}>
                   <div className="vendor-card-item">
                     <div>供應商名稱</div>
-                    <div>{tableInfo.rows[0]?.vendorName}</div>
+                    <div>{tableInfo.rows[0]?.vendorName ?? "-"}</div>
                   </div>
                 </Col>
 
@@ -567,35 +567,63 @@ export default function Page() {
                 </Col>
               </Row>
 
-              <Row>
+              <Row gutter={32}>
                 <Col span={12}>
                   <div className="vendor-card-item">
                     <div>
                       <div>供應商訂單收款金額</div>
                       <div>(未扣除TapPay手續費)</div>
                     </div>
-                    <div>{tableInfo.rows[0]?.monthlyAmount}</div>
+                    <div>{tableInfo.rows[0]?.monthlyAmount ?? "-"}</div>
+                  </div>
+                </Col>
+
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>
+                      <div>供應商整新費收款金額</div>
+                      <div>(未扣除TapPay手續費)</div>
+                    </div>
+                    <div>
+                      {tableInfo.rows[0]?.refurbishedMonthlyAmount ?? "-"}
+                    </div>
                   </div>
                 </Col>
               </Row>
 
-              <Row>
+              <Row gutter={32}>
                 <Col span={12}>
                   <div style={{ fontWeight: 700 }} className="vendor-card-item">
                     <div>供應商訂單實際收款金額</div>
-                    <div>{tableInfo.rows[0]?.withdrawAmount}</div>
+                    <div>{tableInfo.rows[0]?.withdrawAmount ?? "-"}</div>
+                  </div>
+                </Col>
+
+                <Col span={12}>
+                  <div style={{ fontWeight: 700 }} className="vendor-card-item">
+                    <div>供應商整新費實際收款金額</div>
+                    <div>
+                      {tableInfo.rows[0]?.refurbishedWithdrawAmount ?? "-"}
+                    </div>
                   </div>
                 </Col>
               </Row>
 
-              <Row>
+              <Row gutter={32}>
                 <Col span={12}>
                   <div className="vendor-card-item">
                     <div>
                       <div>供應商訂單Tappay手續費</div>
                       <div>(實際手續費用以TapPay提報為準)</div>
                     </div>
-                    <div>{tableInfo.rows[0]?.tappayFee}</div>
+                    <div>{tableInfo.rows[0]?.tappayFee ?? "-"}</div>
+                  </div>
+                </Col>
+
+                <Col span={12}>
+                  <div className="vendor-card-item">
+                    <div>供應商整新費Tappay手續費</div>
+                    <div>{tableInfo.rows[0]?.refurbishedTappayFee ?? "-"}</div>
                   </div>
                 </Col>
               </Row>
