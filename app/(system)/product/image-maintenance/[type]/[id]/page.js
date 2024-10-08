@@ -170,16 +170,14 @@ export default function Page() {
       render: (text, record, index) => {
         return (
           <Space>
-            {isProduct && (
-              <FunctionBtn
-                onClick={() => {
-                  setRowInfo(record);
-                  setOpenModal((state) => ({ ...state, orderList: true }));
-                }}
-              >
-                編輯圖片順序
-              </FunctionBtn>
-            )}
+            <FunctionBtn
+              onClick={() => {
+                setRowInfo(record);
+                setOpenModal((state) => ({ ...state, orderList: true }));
+              }}
+            >
+              編輯圖片順序
+            </FunctionBtn>
 
             <FunctionBtn
               onClick={() => {
@@ -307,6 +305,12 @@ export default function Page() {
       ["商品特色圖"]: "featureImg",
     };
 
+    const apiUrl = isProduct
+      ? `v1/scm/product/img/display-order?productId=${id}`
+      : isApply
+        ? `v1/scm/product/img/apply-display-order?applyId=${id}`
+        : "";
+
     const data = {};
     imageList.forEach((item) => {
       data[imgMapping[item.imgType]] = item.imgList.map((img) => img.imgUrl);
@@ -315,7 +319,7 @@ export default function Page() {
 
     setLoading((state) => ({ ...state, orderList: true }));
     api
-      .post(`v1/scm/product/img/display-order?productId=${id}`, data)
+      .post(apiUrl, data)
       .then((res) => {
         message.success(res.message);
         setOpenModal((state) => ({ ...state, orderList: false }));
