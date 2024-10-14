@@ -126,25 +126,23 @@ export default function ModalTextEditor(props) {
         ? node.children.map(deserializeNode)
         : [{ text: "" }];
 
+    const align = node.attribs?.style?.includes("text-align:center;")
+      ? "center"
+      : node.attribs?.style?.includes("text-align:left;")
+        ? "left"
+        : node.attribs?.style?.includes("text-align:right;")
+          ? "right"
+          : undefined;
+
+    // 使用正規表達式匹配 padding-left 的數值
+    const paddingLeftMatch = node.attribs?.style?.match(
+      /\bpadding-left:\s*(\d+)px\b/
+    );
+
+    const indent = paddingLeftMatch ? Number(paddingLeftMatch[1]) / 40 : null;
+
     switch (node.name) {
       case "p":
-        const align = node.attribs?.style?.includes("text-align:center;")
-          ? "center"
-          : node.attribs?.style?.includes("text-align:left;")
-            ? "left"
-            : node.attribs?.style?.includes("text-align:right;")
-              ? "right"
-              : undefined;
-
-        // 使用正規表達式匹配 padding-left 的數值
-        const paddingLeftMatch = node.attribs?.style?.match(
-          /\bpadding-left:\s*(\d+)px\b/
-        );
-
-        const indent = paddingLeftMatch
-          ? Number(paddingLeftMatch[1]) / 40
-          : null;
-
         return { type: "paragraph", align, indent, children };
       case "strong":
         return { ...children[0], bold: true };
@@ -155,11 +153,11 @@ export default function ModalTextEditor(props) {
       case "s":
         return { ...children[0], strikethrough: true };
       case "h1":
-        return { type: "heading-one", children };
+        return { type: "heading-one", children, align, indent };
       case "h2":
-        return { type: "heading-two", children };
+        return { type: "heading-two", children, align, indent };
       case "h3":
-        return { type: "heading-three", children };
+        return { type: "heading-three", children, align, indent };
       case "span":
         // 嚴格匹配屬性名稱
         const backgroundColorMatch = node.attribs?.style?.match(
