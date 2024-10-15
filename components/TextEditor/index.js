@@ -1,5 +1,4 @@
 "use client";
-import escapeHtml from "escape-html";
 import isHotkey from "is-hotkey";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SketchPicker } from "react-color";
@@ -7,7 +6,6 @@ import {
   createEditor,
   Editor,
   Element as SlateElement,
-  Text,
   Transforms,
 } from "slate";
 import { HistoryEditor, withHistory } from "slate-history";
@@ -20,6 +18,16 @@ import {
 } from "slate-react";
 
 import { Button, Icon, Toolbar } from "./components.js";
+import styled from "styled-components";
+
+const Container = styled.div`
+  width: 100%;
+  height: 500px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+`;
 
 const HOTKEYS = {
   "mod+b": "bold",
@@ -56,8 +64,6 @@ const Element = (props) => {
 
   const indentLevel = element.indent || 0;
   const paddingLeft = `${indentLevel * 40}px`;
-
-  console.log("element", element);
 
   switch (element.type) {
     case "heading-one":
@@ -365,7 +371,7 @@ export default function TextEditor(props) {
 
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState([{ text: "" }]);
 
   const [textColor, setTextColor] = useState("");
   const [textBgColor, setTextBgColor] = useState("");
@@ -405,33 +411,37 @@ export default function TextEditor(props) {
     setShowColorPicker((state) => ({ ...state, textBgColor: true }));
   };
 
-  useEffect(() => {
-    if (outerValue && outerValue.length === 0) {
-      setValue([{ type: "paragraph", children: [{ text: "" }] }]);
-    } else {
-      setValue(outerValue);
+  const handleKeyDown = (e) => {
+    for (const hotkey in HOTKEYS) {
+      if (isHotkey(hotkey, e)) {
+        e.preventDefault();
+
+        if (hotkey === "mod+z") {
+          undo(editor);
+        } else if (hotkey === "mod+y") {
+          redo(editor);
+        } else {
+          const mark = HOTKEYS[hotkey];
+          toggleMark(editor, mark);
+        }
+      }
     }
+  };
+
+  useEffect(() => {
+    setValue(outerValue);
   }, [outerValue]);
 
   console.log("value", value);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: 500,
-        backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: 8,
-        padding: 20,
-      }}
-    >
+    <Container>
       <Slate
         editor={editor}
-        // initialValue={[{ type: "paragraph", children: [{ text: "" }] }]}
         initialValue={outerValue}
         value={value}
         onChange={(newValue) => {
+          console.log("newValue", newValue);
           setValue(newValue);
           getValue(newValue);
         }}
@@ -497,24 +507,9 @@ export default function TextEditor(props) {
           renderLeaf={renderLeaf}
           spellCheck
           autoFocus
-          onKeyDown={(e) => {
-            for (const hotkey in HOTKEYS) {
-              if (isHotkey(hotkey, e)) {
-                e.preventDefault();
-
-                if (hotkey === "mod+z") {
-                  undo(editor);
-                } else if (hotkey === "mod+y") {
-                  redo(editor);
-                } else {
-                  const mark = HOTKEYS[hotkey];
-                  toggleMark(editor, mark);
-                }
-              }
-            }
-          }}
+          onKeyDown={handleKeyDown}
         />
       </Slate>
-    </div>
+    </Container>
   );
 }

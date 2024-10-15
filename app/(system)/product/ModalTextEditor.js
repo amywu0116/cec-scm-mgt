@@ -1,55 +1,23 @@
 import { Flex } from "antd";
-import parse from "html-react-parser";
-import { Text, Node } from "slate";
-import { parseDocument } from "htmlparser2";
 import escapeHtml from "escape-html";
-import { useState } from "react";
+import { parseDocument } from "htmlparser2";
+import { useEffect, useState } from "react";
+import { Text } from "slate";
 
 import Button from "@/components/Button";
 import Modal from "@/components/Modal";
+import TextArea from "@/components/TextArea";
 import TextEditor from "@/components/TextEditor";
 
 export default function ModalTextEditor(props) {
   const { form, open, onCancel } = props;
 
-  const [textEditorValue, setTextEditorValue] = useState();
-
-  const htmlString = form.getFieldValue("itemDetail") ?? "<p></p>";
-  // const htmlString =
-  //   '<p>This is editable <strong>rich</strong> text, <i>much</i> better than a !</p><p>Since it&#39;s rich text, you can do things like turn a selection of text <strong>bold</strong>, or add a semantically rendered block quote in the middle of the page, like this:</p><p style="text-align:center;">Try it out for yourself!</p>';
-
-  const value = [
-    {
-      type: "paragraph",
-      children: [
-        { text: "This is editable " },
-        { text: "rich", bold: true },
-        { text: " text, " },
-        { text: "much", italic: true },
-        { text: " better than a " },
-        { text: "!" },
-      ],
-    },
-    {
-      type: "paragraph",
-      children: [
-        {
-          text: "Since it's rich text, you can do things like turn a selection of text ",
-        },
-        { text: "bold", bold: true },
-        {
-          text: ", or add a semantically rendered block quote in the middle of the page, like this:",
-        },
-      ],
-    },
-    {
-      type: "paragraph",
-      align: "center",
-      children: [{ text: "Try it out for yourself!" }],
-    },
-  ];
+  const [isHtmlMode, setIsHtmlMode] = useState(false);
+  const [htmlStr, setHtmlStr] = useState("");
+  const [slateValue, setSlateValue] = useState([]);
 
   const serialize = (node) => {
+    console.log("serialize", node);
     if (Text.isText(node)) {
       let string = escapeHtml(node.text);
 
@@ -115,15 +83,15 @@ export default function ModalTextEditor(props) {
   };
 
   // 將 HTML DOM 節點映射為 Slate 格式
-  const deserializeNode = (node) => {
-    console.log("node", node);
+  const deserialize = (node) => {
+    console.log("deserialize", node);
     if (node.type === "text") {
       return { text: node.data };
     }
 
     const children =
       node.children.length !== 0
-        ? node.children.map(deserializeNode)
+        ? node.children.map(deserialize)
         : [{ text: "" }];
 
     const align = node.attribs?.style?.includes("text-align:center;")
@@ -143,7 +111,7 @@ export default function ModalTextEditor(props) {
 
     switch (node.name) {
       case "p":
-        return { type: "paragraph", align, indent, children };
+        return { type: "paragraph", children, align, indent };
       case "strong":
         return { ...children[0], bold: true };
       case "i":
@@ -180,18 +148,51 @@ export default function ModalTextEditor(props) {
       case "li":
         return { type: "list-item", children };
       default:
-        return children;
+        return { type: "paragraph", children, align, indent };
     }
   };
 
-  // 解析 HTML 字串並轉換為 Slate 格式
-  const slateValue = parseDocument(htmlString).children.map(deserializeNode);
-
   const getValue = (value) => {
-    setTextEditorValue(value);
+    setSlateValue(value);
   };
 
-  console.log("htmlString", htmlString);
+  const handleSwitchMode = () => {
+    if (isHtmlMode) {
+      setSlateValue(
+        htmlStr === ""
+          ? [{ type: "paragraph", children: [{ text: "" }] }]
+          : parseDocument(htmlStr).children.map(deserialize)
+      );
+    } else {
+      let txt = "";
+      slateValue.forEach((ele) => (txt += serialize(ele)));
+      setHtmlStr(txt);
+    }
+    setIsHtmlMode((state) => !state);
+  };
+
+  const handleSave = () => {
+    if (isHtmlMode) {
+      form.setFieldValue("itemDetail", htmlStr);
+    } else {
+      let txt = "";
+      slateValue.forEach((ele) => (txt += serialize(ele)));
+      form.setFieldValue("itemDetail", txt);
+    }
+    onCancel();
+  };
+
+  useEffect(() => {
+    if (open) {
+      const str = form.getFieldValue("itemDetail") ?? "<p></p>";
+      setHtmlStr(str);
+      console.log("str", str);
+      setSlateValue(parseDocument(str).children.map(deserialize));
+    } else {
+      setIsHtmlMode(false);
+    }
+  }, [open]);
+
   console.log("slateValue", slateValue);
 
   return (
@@ -205,21 +206,25 @@ export default function ModalTextEditor(props) {
       footer={null}
     >
       <Flex vertical gap={16}>
-        <div>
-          <Button
-            type="primary"
-            onClick={() => {
-              let txt = "";
-              textEditorValue.forEach((ele) => (txt += serialize(ele)));
-              form.setFieldValue("itemDetail", txt);
-              onCancel();
-            }}
-          >
+        <Flex justify="space-between">
+          <Button type="secondary" onClick={handleSwitchMode}>
+            {isHtmlMode ? "切換排版模式" : "切換原始碼模式"}
+          </Button>
+
+          <Button type="primary" onClick={handleSave}>
             儲存
           </Button>
-        </div>
+        </Flex>
 
-        <TextEditor outerValue={slateValue} getValue={getValue} />
+        {isHtmlMode ? (
+          <TextArea
+            style={{ height: 500 }}
+            value={htmlStr}
+            onChange={(e) => setHtmlStr(e.target.value)}
+          />
+        ) : (
+          <TextEditor outerValue={slateValue} getValue={getValue} />
+        )}
       </Flex>
     </Modal>
   );
