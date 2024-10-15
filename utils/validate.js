@@ -30,19 +30,25 @@ export const isValidTaxId = (taxId) => {
 // 總和計算：將加權乘積累加起來。
 // 檢查碼計算：用總和的值對 10 取餘數 (sum % 10)。若餘數為 0，檢查碼為 0；否則檢查碼為 (10 - 餘數)。
 export const isValidEAN13 = (str) => {
-  const generateEAN13CheckDigit = (code) => {
-    const sum = code
-      .split("")
-      .map((num, idx) => parseInt(num) * (idx % 2 === 0 ? 1 : 3))
-      .reduce((acc, val) => acc + val, 0);
+  const EAN13_LENGTH = 13;
 
-    return (10 - (sum % 10)) % 10;
+  // 檢查是否為 13 位數字
+  if (str.length !== EAN13_LENGTH || !/^\d+$/.test(str)) return false;
+
+  // 計算 EAN13 檢查碼
+  const generateEAN13CheckDigit = (code) => {
+    return (
+      code
+        .split("")
+        .reduce(
+          (sum, num, idx) => sum + parseInt(num) * (idx % 2 === 0 ? 1 : 3),
+          0
+        ) % 10
+    );
   };
 
-  if (!/^\d{13}$/.test(str)) return false;
+  const first12Digits = str.slice(0, 12); // 前 12 位
+  const expectedCheckDigit = (10 - generateEAN13CheckDigit(first12Digits)) % 10;
 
-  const first12Digits = str.slice(0, 12); // 前十二碼
-  const lastDigit = generateEAN13CheckDigit(first12Digits); // 產出第十三碼
-
-  return String(lastDigit) === str.slice(-1);
+  return expectedCheckDigit === parseInt(str[12]);
 };
