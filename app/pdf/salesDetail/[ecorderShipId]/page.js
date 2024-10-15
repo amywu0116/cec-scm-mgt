@@ -18,6 +18,7 @@ import Table from "./Table";
 
 import api from "@/api";
 import { numWithCommas } from "@/utils/formatted";
+import { isValidEAN13 } from "@/utils/validate";
 
 const Container = styled.div`
   width: 100vw;
@@ -207,8 +208,7 @@ export default function MyDocument(props) {
           return <Text>-</Text>;
         }
 
-        const isEAN13 = /^\d{13}$/.test(text);
-        if (isEAN13) {
+        if (isValidEAN13(text)) {
           const canvas = document.createElement("canvas");
           JsBarcode(canvas, text, { format: "EAN13" });
           const barcode = canvas.toDataURL();
