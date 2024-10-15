@@ -311,8 +311,11 @@ const ColorButton = ({
 
 const RemoveFormatButton = () => {
   const editor = useSlateStatic();
+  const marks = Editor.marks(editor);
+  console.log("marks", marks);
   return (
     <Button
+      active={marks && Object.keys(marks).length > 0}
       onMouseDown={(e) => {
         e.preventDefault();
         removeFormatting(editor);
@@ -428,6 +431,13 @@ export default function TextEditor(props) {
     }
   };
 
+  const handleCloseColorPicker = (key) => {
+    setShowColorPicker((state) => ({
+      ...state,
+      [key]: false,
+    }));
+  };
+
   useEffect(() => {
     setValue(outerValue);
   }, [outerValue]);
@@ -462,12 +472,7 @@ export default function TextEditor(props) {
             color={textColor}
             open={showColorPicker.textColor}
             onOpen={handleOpenTextColorPicker}
-            onClose={() => {
-              setShowColorPicker((state) => ({
-                ...state,
-                textColor: false,
-              }));
-            }}
+            onClose={() => handleCloseColorPicker("textColor")}
             onChangeComplete={handleCompleteTextColor}
           />
           <ColorButton
@@ -476,12 +481,7 @@ export default function TextEditor(props) {
             color={textBgColor}
             open={showColorPicker.textBgColor}
             onOpen={handleOpenTextBgColorPicker}
-            onClose={() => {
-              setShowColorPicker((state) => ({
-                ...state,
-                textBgColor: false,
-              }));
-            }}
+            onClose={() => handleCloseColorPicker("textBgColor")}
             onChangeComplete={handleCompleteTextBgColor}
           />
 
