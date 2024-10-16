@@ -17,7 +17,7 @@ export default function ModalTextEditor(props) {
   const [slateValue, setSlateValue] = useState([]);
 
   // 檢查是否包含 HTML 標籤
-  const wrapWithParagraph = (str) => {
+  const wrapWithParagraph = (str = "") => {
     const hasHTML = /<\/?[a-z][\s\S]*>/i.test(str);
     return hasHTML ? str : `<p>${str}</p>`;
   };
