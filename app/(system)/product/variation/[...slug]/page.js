@@ -296,10 +296,10 @@ export default function Page() {
                   <Col span={8}>
                     <Form.Item
                       name="mainItemName"
-                      label="主要商品"
+                      label="主商品名稱"
                       rules={[{ required: true, message: "必填" }]}
                     >
-                      <Input placeholder="請輸入主要商品" />
+                      <Input placeholder="請輸入主商品名稱" />
                     </Form.Item>
                   </Col>
                 </Row>
