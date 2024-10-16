@@ -16,6 +16,12 @@ export default function ModalTextEditor(props) {
   const [htmlStr, setHtmlStr] = useState("");
   const [slateValue, setSlateValue] = useState([]);
 
+  // 檢查是否包含 HTML 標籤
+  const wrapWithParagraph = (str) => {
+    const hasHTML = /<\/?[a-z][\s\S]*>/i.test(str);
+    return hasHTML ? str : `<p>${str}</p>`;
+  };
+
   const serialize = (node) => {
     if (Text.isText(node)) {
       let string = escapeHtml(node.text);
@@ -184,7 +190,8 @@ export default function ModalTextEditor(props) {
 
   useEffect(() => {
     if (open) {
-      const str = form.getFieldValue("itemDetail") ?? "<p></p>";
+      let str = form.getFieldValue("itemDetail");
+      str = wrapWithParagraph(str);
       setHtmlStr(str);
       setSlateValue(parseDocument(str).children.map(deserialize));
     } else {
