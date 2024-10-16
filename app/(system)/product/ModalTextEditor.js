@@ -125,7 +125,7 @@ export default function ModalTextEditor(props) {
         return { type: "heading-two", children, align, indent };
       case "h3":
         return { type: "heading-three", children, align, indent };
-      case "span":
+      case "span": {
         // 嚴格匹配屬性名稱
         const backgroundColorMatch = node.attribs?.style?.match(
           /\bbackground-color:\s*(#[0-9a-fA-F]{6});?/i
@@ -140,6 +140,7 @@ export default function ModalTextEditor(props) {
         const textColor = colorMatch ? colorMatch[1] : null;
 
         return { ...children[0], textColor, textBgColor };
+      }
       case "ol":
         return { type: "numbered-list", children };
       case "ul":

@@ -23,6 +23,7 @@ export const Button = React.forwardRef(
     />
   )
 );
+Button.displayName = "Button";
 
 export const EditorValue = React.forwardRef(
   ({ className, value, ...props }, ref) => {
@@ -50,7 +51,7 @@ export const EditorValue = React.forwardRef(
             background: #f8f8f8;
           `}
         >
-          Slate's value as text
+          {`Slate's value as text`}
         </div>
         <div
           className={css`
@@ -69,6 +70,7 @@ export const EditorValue = React.forwardRef(
     );
   }
 );
+EditorValue.displayName = "EditorValue";
 
 export const Icon = React.forwardRef(({ className, ...props }, ref) => (
   <span
@@ -84,6 +86,7 @@ export const Icon = React.forwardRef(({ className, ...props }, ref) => (
     )}
   />
 ));
+Icon.displayName = "Icon";
 
 export const Instruction = React.forwardRef(({ className, ...props }, ref) => (
   <div
@@ -101,6 +104,7 @@ export const Instruction = React.forwardRef(({ className, ...props }, ref) => (
     )}
   />
 ));
+Instruction.displayName = "Instruction";
 
 export const Menu = React.forwardRef(({ className, ...props }, ref) => (
   <div
@@ -121,12 +125,14 @@ export const Menu = React.forwardRef(({ className, ...props }, ref) => (
     )}
   />
 ));
+Menu.displayName = "Menu";
 
 export const Portal = ({ children }) => {
   return typeof document === "object"
     ? ReactDOM.createPortal(children, document.body)
     : null;
 };
+Portal.displayName = "Portal";
 
 export const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
   <Menu
@@ -144,3 +150,4 @@ export const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
     )}
   />
 ));
+Toolbar.displayName = "Toolbar";
