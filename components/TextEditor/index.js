@@ -1,4 +1,5 @@
 "use client";
+import { Tooltip } from "antd";
 import isHotkey from "is-hotkey";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SketchPicker } from "react-color";
@@ -9,16 +10,10 @@ import {
   Transforms,
 } from "slate";
 import { HistoryEditor, withHistory } from "slate-history";
-import {
-  Editable,
-  Slate,
-  useSlate,
-  useSlateStatic,
-  withReact,
-} from "slate-react";
+import { Editable, Slate, useSlate, withReact } from "slate-react";
+import styled from "styled-components";
 
 import { Button, Icon, Toolbar } from "./components.js";
-import styled from "styled-components";
 
 const Container = styled.div`
   width: 100%;
@@ -152,20 +147,41 @@ const toggleMark = (editor, format) => {
 
 const MarkButton = ({ format, icon }) => {
   const editor = useSlate();
+
+  let tooltipTitle = "";
+  switch (format) {
+    case "bold":
+      tooltipTitle = "粗體";
+      break;
+    case "italic":
+      tooltipTitle = "斜體";
+      break;
+    case "underline":
+      tooltipTitle = "底線";
+      break;
+    case "strikethrough":
+      tooltipTitle = "刪除線";
+      break;
+    default:
+      break;
+  }
+
   return (
-    <Button
-      active={isMarkActive(editor, format)}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        toggleMark(editor, format);
-      }}
-    >
-      <Icon>{icon}</Icon>
-    </Button>
+    <Tooltip placement="bottom" title={tooltipTitle}>
+      <Button
+        active={isMarkActive(editor, format)}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          toggleMark(editor, format);
+        }}
+      >
+        <Icon>{icon}</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
-const isBlockActive = (editor, format, blockType = "type") => {
+const isBlockActive = (editor, format) => {
   const { selection } = editor;
   if (!selection) return false;
 
@@ -176,7 +192,7 @@ const isBlockActive = (editor, format, blockType = "type") => {
         return (
           !Editor.isEditor(n) &&
           SlateElement.isElement(n) &&
-          n[blockType] === format
+          n["type"] === format
         );
       },
     })
@@ -186,11 +202,7 @@ const isBlockActive = (editor, format, blockType = "type") => {
 };
 
 const toggleBlock = (editor, format) => {
-  const isActive = isBlockActive(
-    editor,
-    format,
-    TEXT_ALIGN_TYPES.includes(format) ? "align" : "type"
-  );
+  const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
 
   Transforms.unwrapNodes(editor, {
@@ -223,6 +235,33 @@ const toggleBlock = (editor, format) => {
 
 const BlockButton = ({ format, icon }) => {
   const editor = useSlate();
+
+  let tooltipTitle = "";
+  switch (format) {
+    case "heading-one":
+      tooltipTitle = "標題一";
+      break;
+    case "heading-two":
+      tooltipTitle = "標題二";
+      break;
+    case "heading-three":
+      tooltipTitle = "標題三";
+      break;
+    case "numbered-list":
+      tooltipTitle = "編號清單";
+      break;
+    case "bulleted-list":
+      tooltipTitle = "項目符號清單";
+      break;
+    case "increase-indent":
+      tooltipTitle = "增加縮排";
+      break;
+    case "decrease-indent":
+      tooltipTitle = "減沙縮排";
+      break;
+    default:
+      break;
+  }
 
   const increaseIndent = (editor) => {
     const { selection } = editor;
@@ -257,30 +296,47 @@ const BlockButton = ({ format, icon }) => {
   };
 
   return (
-    <Button
-      active={isBlockActive(
-        editor,
-        format,
-        TEXT_ALIGN_TYPES.includes(format) ? "align" : "type"
-      )}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        if (format === "increase-indent") {
-          increaseIndent(editor);
-        } else if (format === "decrease-indent") {
-          decreaseIndent(editor);
-        } else {
-          toggleBlock(editor, format);
-        }
-      }}
-    >
-      <Icon>{icon}</Icon>
-    </Button>
+    <Tooltip placement="bottom" title={tooltipTitle}>
+      <Button
+        active={isBlockActive(
+          editor,
+          format,
+          TEXT_ALIGN_TYPES.includes(format) ? "align" : "type"
+        )}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          if (format === "increase-indent") {
+            increaseIndent(editor);
+          } else if (format === "decrease-indent") {
+            decreaseIndent(editor);
+          } else {
+            toggleBlock(editor, format);
+          }
+        }}
+      >
+        <Icon>{icon}</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
 const AlignButton = ({ format, icon }) => {
   const editor = useSlate();
+
+  let tooltipTitle = "";
+  switch (format) {
+    case "left":
+      tooltipTitle = "靠左對齊";
+      break;
+    case "center":
+      tooltipTitle = "置中對齊";
+      break;
+    case "right":
+      tooltipTitle = "靠右對齊";
+      break;
+    default:
+      break;
+  }
 
   const isActive = () => {
     const { selection } = editor;
@@ -316,24 +372,20 @@ const AlignButton = ({ format, icon }) => {
       const block = { type: format, children: [] };
       Transforms.wrapNodes(editor, block);
     }
-
-    // if (!isActive()) {
-    //   Editor.removeMark(editor, format);
-    // } else {
-    //   Editor.addMark(editor, format, true);
-    // }
   };
 
   return (
-    <Button
-      active={isActive()}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        toggle();
-      }}
-    >
-      <Icon>{icon}</Icon>
-    </Button>
+    <Tooltip placement="bottom" title={tooltipTitle}>
+      <Button
+        active={isActive()}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          toggle();
+        }}
+      >
+        <Icon>{icon}</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
@@ -348,16 +400,31 @@ const ColorButton = ({
 }) => {
   const editor = useSlate();
   const isActive = isMarkActive(editor, format);
+
+  let tooltipTitle = "";
+  switch (format) {
+    case "textColor":
+      tooltipTitle = "文字顏色";
+      break;
+    case "textBgColor":
+      tooltipTitle = "醒目顯示顏色";
+      break;
+    default:
+      break;
+  }
+
   return (
-    <Button active={isActive} onMouseDown={onOpen}>
-      <Icon>{icon}</Icon>
-      {open && (
-        <div style={{ position: "absolute", zIndex: 9999 }}>
-          <div style={{ position: "fixed", inset: 0 }} onClick={onClose} />
-          <SketchPicker color={color} onChangeComplete={onChangeComplete} />
-        </div>
-      )}
-    </Button>
+    <Tooltip placement="bottom" title={tooltipTitle}>
+      <Button active={isActive} onMouseDown={onOpen}>
+        <Icon>{icon}</Icon>
+        {open && (
+          <div style={{ position: "absolute", zIndex: 9999 }}>
+            <div style={{ position: "fixed", inset: 0 }} onClick={onClose} />
+            <SketchPicker color={color} onChangeComplete={onChangeComplete} />
+          </div>
+        )}
+      </Button>
+    </Tooltip>
   );
 };
 
@@ -405,15 +472,17 @@ const RemoveFormatButton = () => {
   };
 
   return (
-    <Button
-      active={isActive()}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        removeFormatting(editor);
-      }}
-    >
-      <Icon>format_clear</Icon>
-    </Button>
+    <Tooltip placement="bottom" title="清除格式">
+      <Button
+        active={isActive()}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          removeFormatting(editor);
+        }}
+      >
+        <Icon>format_clear</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
@@ -425,15 +494,17 @@ const UndoButton = () => {
   const editor = useSlate();
   const canUndo = editor.history.undos.length > 0;
   return (
-    <Button
-      active={canUndo}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        undo(editor);
-      }}
-    >
-      <Icon>undo</Icon>
-    </Button>
+    <Tooltip placement="bottom" title="復原">
+      <Button
+        active={canUndo}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          undo(editor);
+        }}
+      >
+        <Icon>undo</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
@@ -445,15 +516,17 @@ const RedoButton = () => {
   const editor = useSlate();
   const canRedo = editor.history.redos.length > 0;
   return (
-    <Button
-      active={canRedo}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        redo(editor);
-      }}
-    >
-      <Icon>redo</Icon>
-    </Button>
+    <Tooltip placement="bottom" title="取消復原">
+      <Button
+        active={canRedo}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          redo(editor);
+        }}
+      >
+        <Icon>redo</Icon>
+      </Button>
+    </Tooltip>
   );
 };
 
