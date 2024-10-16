@@ -73,6 +73,12 @@ const TransferBtn = styled.div`
     `}
 `;
 
+const TransferListTitle = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(86, 101, 155, 1);
+`;
+
 export default function Page() {
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -89,8 +95,40 @@ export default function Page() {
 
   const columns = [
     {
+      title: "圖片",
+      dataIndex: "productImgUrl",
+      align: "center",
+      render: (text) => {
+        if (!text) return "-";
+        return (
+          <Image
+            width={40}
+            height={40}
+            src={text}
+            alt=""
+            preview={false}
+          />
+        );
+      },
+    },
+    {
       title: "商城商品編號",
       dataIndex: "productnumber",
+      align: "center",
+    },
+    {
+      title: "多規類型",
+      dataIndex: "variationType",
+      render: (text) => {
+        const list = [];
+        if (text.variationType1Name)
+          list.push(text.variationType1Name, "-" ,text.variationType1Value);
+        if (text.variationType2Name) {
+          list.push(<br />);
+          list.push(text.variationType2Name, "-", text.variationType2Value);
+        }
+        return list;
+      },
     },
     {
       title: "商品名稱",
@@ -115,15 +153,27 @@ export default function Page() {
     api
       .get(`v1/scm/variation/${id}`)
       .then((res) => {
-        form.setFieldsValue({
-          mainProductId: res.data.mainProductId,
-          mainItemName: res.data.itemName,
-          variationAttributeId1: res.data.variationAttributeId1,
-          variationAttributeId2: res.data.variationAttributeId2,
+        const list = res.data.info.map((row) => {
+          form.setFieldsValue({
+            mainProductId: res.data.mainProductId,
+            mainItemName: res.data.itemName,
+            variationAttributeId1: res.data.variationAttributeId1,
+            variationAttributeId2: res.data.variationAttributeId2,
+          });
+          return{
+            productnumber: row.productnumber,
+            itemName: row.itemName,
+            productImgUrl: row.productImgUrl,
+            variationType:{
+              variationType1Name: row.variationType1Name,
+              variationType1Value: row.variationType1Value,
+              variationType2Name: row.variationType2Name,
+              variationType2Value: row.variationType2Value,
+            },
+          }
         });
-
         if (res.data.info.length > 0) {
-          setProductTargetList(res.data.info);
+          setProductTargetList(list);
         }
       })
       .catch((err) => message.error(err.message))
@@ -199,7 +249,14 @@ export default function Page() {
       .then((res) => {
         const list = res.data.rows.map((row) => {
           return {
+            productImgUrl: row.productImgUrl,
             itemName: row.itemName,
+            variationType:{
+              variationType1Name: row.variationType1Name,
+              variationType1Value: row.variationType1Value,
+              variationType2Name: row.variationType2Name,
+              variationType2Value: row.variationType2Value,
+            },
             productnumber: row.productnumber,
           };
         });
@@ -388,14 +445,20 @@ export default function Page() {
 
               <Spin spinning={loading.search}>
                 <TransferWrapper>
-                  <Transfer
-                    title="選擇要加入的商品"
-                    columns={columns}
-                    dataSource={productSourceList}
-                    selectedKey={selectedKey}
-                    selectedList={selectedSourceList}
-                    setSelectedList={setSelectedSourceList}
-                  />
+                  <Flex vertical>
+                    <TransferListTitle>{'選擇要加入的商品'}</TransferListTitle>
+                    <Transfer
+                      columns={columns}
+                      dataSource={productSourceList}
+                      rowKey={selectedKey}
+                      rowSelection={{
+                        selectedSourceListKeys: selectedSourceList.map((row) => row.productnumber),
+                        onChange: (selectedSourceListKeys) => {
+                          setSelectedSourceList(selectedSourceListKeys);
+                        },
+                      }}
+                    />
+                  </Flex>
 
                   <TransferBtnGroup>
                     <TransferBtn
@@ -414,14 +477,20 @@ export default function Page() {
                     </TransferBtn>
                   </TransferBtnGroup>
 
-                  <Transfer
-                    title="已選取樣式商品"
-                    columns={columns}
-                    dataSource={productTargetList}
-                    selectedKey={selectedKey}
-                    selectedList={selectedTargetList}
-                    setSelectedList={setSelectedTargetList}
-                  />
+                  <Flex vertical>
+                    <TransferListTitle>{'已選取樣式商品'}</TransferListTitle>
+                    <Transfer
+                      columns={columns}
+                      dataSource={productTargetList}
+                      rowKey={selectedKey}
+                      rowSelection={{
+                        selectedSourceListKeys: selectedTargetList.map((row) => row.productnumber),
+                        onChange: (selectedSourceListKeys) => {
+                          setSelectedTargetList(selectedSourceListKeys);
+                        },
+                      }}
+                    />
+                  </Flex>
                 </TransferWrapper>
               </Spin>
 
