@@ -209,6 +209,7 @@ export default function Page() {
         router.push(routes.product.promotion);
       })
       .catch((err) => {
+        // 商品或分類跟其他促銷重疊
         if (err.code === "409") {
           setErrMsg(err.message);
           setOpenModal((state) => ({ ...state, confirm: true }));
