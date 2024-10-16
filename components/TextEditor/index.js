@@ -49,15 +49,6 @@ const toggleTextBgColor = (editor, color) => {
   Editor.addMark(editor, "textBgColor", color);
 };
 
-const removeFormatting = (editor) => {
-  const marks = Editor.marks(editor);
-  if (marks) {
-    Object.keys(marks).forEach((mark) => {
-      Editor.removeMark(editor, mark);
-    });
-  }
-};
-
 const Element = (props) => {
   const { attributes, children, element } = props;
   const style = { textAlign: element.align };
@@ -181,10 +172,13 @@ const isBlockActive = (editor, format, blockType = "type") => {
   const [match] = Array.from(
     Editor.nodes(editor, {
       at: Editor.unhangRange(editor, selection),
-      match: (n) =>
-        !Editor.isEditor(n) &&
-        SlateElement.isElement(n) &&
-        n[blockType] === format,
+      match: (n) => {
+        return (
+          !Editor.isEditor(n) &&
+          SlateElement.isElement(n) &&
+          n[blockType] === format
+        );
+      },
     })
   );
 
@@ -285,6 +279,64 @@ const BlockButton = ({ format, icon }) => {
   );
 };
 
+const AlignButton = ({ format, icon }) => {
+  const editor = useSlate();
+
+  const isActive = () => {
+    const { selection } = editor;
+    if (!selection) return false;
+    const [match] = Array.from(
+      Editor.nodes(editor, {
+        at: Editor.unhangRange(editor, selection),
+        match: (n) =>
+          !Editor.isEditor(n) &&
+          SlateElement.isElement(n) &&
+          n["align"] === format,
+      })
+    );
+    return !!match;
+  };
+
+  const toggle = () => {
+    Transforms.unwrapNodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        !TEXT_ALIGN_TYPES.includes(format),
+      split: true,
+    });
+
+    const newProperties = {
+      align: isActive() ? undefined : format,
+    };
+
+    Transforms.setNodes(editor, newProperties);
+
+    if (!isActive()) {
+      const block = { type: format, children: [] };
+      Transforms.wrapNodes(editor, block);
+    }
+
+    // if (!isActive()) {
+    //   Editor.removeMark(editor, format);
+    // } else {
+    //   Editor.addMark(editor, format, true);
+    // }
+  };
+
+  return (
+    <Button
+      active={isActive()}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        toggle();
+      }}
+    >
+      <Icon>{icon}</Icon>
+    </Button>
+  );
+};
+
 const ColorButton = ({
   format,
   icon,
@@ -310,12 +362,51 @@ const ColorButton = ({
 };
 
 const RemoveFormatButton = () => {
-  const editor = useSlateStatic();
-  const marks = Editor.marks(editor);
-  console.log("marks", marks);
+  const editor = useSlate();
+
+  const isActive = () => {
+    const { selection } = editor;
+    if (!selection) return false;
+
+    const marks = Editor.marks(editor);
+    const isMarkActive = marks && Object.keys(marks).length > 0;
+
+    const [match] = Array.from(
+      Editor.nodes(editor, {
+        at: Editor.unhangRange(editor, selection),
+        match: (n) => {
+          return (
+            !Editor.isEditor(n) &&
+            SlateElement.isElement(n) &&
+            (n["align"] || n["indent"])
+          );
+        },
+      })
+    );
+    const isBlockActive = !!match;
+
+    return isMarkActive || isBlockActive;
+  };
+
+  const removeFormatting = () => {
+    const marks = Editor.marks(editor);
+    if (marks) {
+      Object.keys(marks).forEach((mark) => {
+        Editor.removeMark(editor, mark); // 移除所有 inline 樣式
+      });
+    }
+
+    // 移除區塊屬性 align 和 indent
+    Transforms.setNodes(
+      editor,
+      { align: undefined, indent: undefined },
+      { match: (n) => SlateElement.isElement(n) }
+    );
+  };
+
   return (
     <Button
-      active={marks && Object.keys(marks).length > 0}
+      active={isActive()}
       onMouseDown={(e) => {
         e.preventDefault();
         removeFormatting(editor);
@@ -442,8 +533,6 @@ export default function TextEditor(props) {
     setValue(outerValue);
   }, [outerValue]);
 
-  console.log("value", value);
-
   return (
     <Container>
       <Slate
@@ -451,7 +540,6 @@ export default function TextEditor(props) {
         initialValue={outerValue}
         value={value}
         onChange={(newValue) => {
-          console.log("newValue", newValue);
           setValue(newValue);
           getValue(newValue);
         }}
@@ -485,9 +573,9 @@ export default function TextEditor(props) {
             onChangeComplete={handleCompleteTextBgColor}
           />
 
-          <BlockButton format="left" icon="format_align_left" />
-          <BlockButton format="center" icon="format_align_center" />
-          <BlockButton format="right" icon="format_align_right" />
+          <AlignButton format="left" icon="format_align_left" />
+          <AlignButton format="center" icon="format_align_center" />
+          <AlignButton format="right" icon="format_align_right" />
 
           <BlockButton format="numbered-list" icon="format_list_numbered" />
           <BlockButton format="bulleted-list" icon="format_list_bulleted" />

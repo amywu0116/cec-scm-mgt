@@ -17,7 +17,6 @@ export default function ModalTextEditor(props) {
   const [slateValue, setSlateValue] = useState([]);
 
   const serialize = (node) => {
-    console.log("serialize", node);
     if (Text.isText(node)) {
       let string = escapeHtml(node.text);
 
@@ -186,14 +185,11 @@ export default function ModalTextEditor(props) {
     if (open) {
       const str = form.getFieldValue("itemDetail") ?? "<p></p>";
       setHtmlStr(str);
-      console.log("str", str);
       setSlateValue(parseDocument(str).children.map(deserialize));
     } else {
       setIsHtmlMode(false);
     }
   }, [open]);
-
-  console.log("slateValue", slateValue);
 
   return (
     <Modal
