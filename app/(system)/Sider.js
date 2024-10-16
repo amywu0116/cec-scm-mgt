@@ -191,11 +191,11 @@ export default function Sider() {
           label: <Link href={routes.product.promotion}>商品促銷</Link>,
           icon: getOptionIcon(routes.product.promotion),
         },
-        // {
-        //   key: "",
-        //   label: <Link href="">樣式商品</Link>,
-        //   icon: getOptionIcon(),
-        // },
+        {
+          key: routes.product.variation,
+          label: <Link href={routes.product.variation}>樣式商品</Link>,
+          icon: getOptionIcon(routes.product.variation),
+        },
       ],
     },
     {
