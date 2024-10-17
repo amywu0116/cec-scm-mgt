@@ -589,7 +589,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
-                      disabled={info.isVariation}
+                      disabled={info.isVariation || info.mainProductId}
                       onChange={() => {
                         form.setFieldValue("variationType1Value", undefined);
                       }}
@@ -610,7 +610,11 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType1Code || info.isVariation}
+                      disabled={
+                        !variationType1Code ||
+                        info.isVariation ||
+                        info.mainProductId
+                      }
                     />
                   </Form.Item>
                 </Flex>
@@ -633,7 +637,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
-                      disabled={info.isVariation}
+                      disabled={info.isVariation || info.mainProductId}
                       onChange={() => {
                         form.setFieldValue("variationType2Value", undefined);
                       }}
@@ -654,7 +658,11 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType2Code || info.isVariation}
+                      disabled={
+                        !variationType2Code ||
+                        info.isVariation ||
+                        info.mainProductId
+                      }
                     />
                   </Form.Item>
                 </Flex>
