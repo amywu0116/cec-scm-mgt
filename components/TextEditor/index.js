@@ -320,6 +320,102 @@ const BlockButton = ({ format, icon }) => {
   );
 };
 
+const IndentButton = ({ format, icon }) => {
+  const editor = useSlate();
+
+  let tooltipTitle = "";
+  switch (format) {
+    case "increase-indent":
+      tooltipTitle = "增加縮排";
+      break;
+    case "decrease-indent":
+      tooltipTitle = "減沙縮排";
+      break;
+    default:
+      break;
+  }
+
+  const isActive = () => {
+    const { selection } = editor;
+    if (!selection) return false;
+
+    const [match] = Array.from(
+      Editor.nodes(editor, {
+        at: Editor.unhangRange(editor, selection),
+        match: (n) => {
+          console.log("n", n);
+          return (
+            !Editor.isEditor(n) &&
+            SlateElement.isElement(n) &&
+            n["type"] === "paragraph" &&
+            ((format === "decrease-indent" && n["indent"] > 0) ||
+              format === "increase-indent")
+          );
+        },
+      })
+    );
+
+    return !!match;
+  };
+
+  const increaseIndent = () => {
+    const { selection } = editor;
+    if (!selection) return;
+
+    const [match] = Array.from(
+      Editor.nodes(editor, {
+        at: Editor.unhangRange(editor, selection),
+        match: (n) => {
+          console.log("n", n);
+          return (
+            !Editor.isEditor(n) &&
+            SlateElement.isElement(n) &&
+            n["type"] !== "numbered-indent"
+          );
+        },
+      })
+    );
+
+    if (match) {
+      const [node] = match;
+      const indentLevel = node.indent || 0;
+      Transforms.setNodes(editor, { indent: indentLevel + 1 });
+    }
+  };
+
+  const decreaseIndent = () => {
+    const { selection } = editor;
+    if (!selection) return;
+
+    const [match] = Editor.nodes(editor, {
+      match: (n) => SlateElement.isElement(n),
+    });
+
+    if (match) {
+      const [node] = match;
+      const indentLevel = node.indent || 0;
+      if (indentLevel > 0) {
+        Transforms.setNodes(editor, { indent: indentLevel - 1 });
+      }
+    }
+  };
+
+  return (
+    <Tooltip placement="bottom" title={tooltipTitle}>
+      <Button
+        active={isActive()}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          if (format === "increase-indent") increaseIndent();
+          if (format === "decrease-indent") decreaseIndent();
+        }}
+      >
+        <Icon>{icon}</Icon>
+      </Button>
+    </Tooltip>
+  );
+};
+
 const AlignButton = ({ format, icon }) => {
   const editor = useSlate();
 
@@ -653,8 +749,14 @@ export default function TextEditor(props) {
           <BlockButton format="numbered-list" icon="format_list_numbered" />
           <BlockButton format="bulleted-list" icon="format_list_bulleted" />
 
-          <BlockButton format="increase-indent" icon="format_indent_increase" />
-          <BlockButton format="decrease-indent" icon="format_indent_decrease" />
+          <IndentButton
+            format="increase-indent"
+            icon="format_indent_increase"
+          />
+          <IndentButton
+            format="decrease-indent"
+            icon="format_indent_decrease"
+          />
 
           <RemoveFormatButton />
 
