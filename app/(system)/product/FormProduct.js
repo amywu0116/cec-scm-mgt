@@ -43,7 +43,6 @@ export default function FormProduct(props) {
     onFinish,
   } = props;
   const params = useParams();
-  console.log("params", params);
 
   const isApply = type === "apply";
   const isProduct = type === "product";
@@ -173,6 +172,16 @@ export default function FormProduct(props) {
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <Title>分類設定</Title>
+
+          {info.mainProductId && (
+            <Row gutter={32}>
+              <Col span={12}>
+                <Form.Item name="mainProductId" label="樣式商品主商品編號">
+                  <div style={{ lineHeight: "42px" }}>{info.mainProductId}</div>
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
 
           <Row gutter={32}>
             <Col span={12}>
@@ -568,6 +577,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
+                      disabled={info.isVariation || info.mainProductId}
                       onChange={() => {
                         form.setFieldValue("variationType1Value", undefined);
                       }}
@@ -588,7 +598,11 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType1Code}
+                      disabled={
+                        !variationType1Code ||
+                        info.isVariation ||
+                        info.mainProductId
+                      }
                     />
                   </Form.Item>
                 </Flex>
@@ -611,6 +625,7 @@ export default function FormProduct(props) {
                         label: v.name,
                         value: v.value,
                       }))}
+                      disabled={info.isVariation || info.mainProductId}
                       onChange={() => {
                         form.setFieldValue("variationType2Value", undefined);
                       }}
@@ -631,7 +646,11 @@ export default function FormProduct(props) {
                   >
                     <Input
                       placeholder="請輸入多規類型的值"
-                      disabled={!variationType2Code}
+                      disabled={
+                        !variationType2Code ||
+                        info.isVariation ||
+                        info.mainProductId
+                      }
                     />
                   </Form.Item>
                 </Flex>

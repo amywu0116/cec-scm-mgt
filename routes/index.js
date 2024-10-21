@@ -20,6 +20,9 @@ export const routes = {
     stock: `/product/stock`,
     imageMaintenanceProduct: (id) => `/product/image-maintenance/product/${id}`,
     imageMaintenanceApply: (id) => `/product/image-maintenance/apply/${id}`,
+    variation: `/product/variation`,
+    variationAdd: `/product/variation/add`,
+    variationEdit: (id) => `/product/variation/edit/${id}`,
   },
   order: {
     list: `/order/list`,
