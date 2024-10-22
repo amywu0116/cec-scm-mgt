@@ -6,6 +6,7 @@ export const routes = {
   announcement: {
     message: `/announcement/message`,
     inquiry: `/announcement/inquiry`,
+    msgRecord: `/announcement/msgRecord`,
   },
   product: {
     list: `/product/list`,

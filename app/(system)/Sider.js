@@ -162,6 +162,11 @@ export default function Sider() {
           label: <Link href={routes.announcement.inquiry}>顧客訂單諮詢</Link>,
           icon: getOptionIcon(routes.announcement.inquiry),
         },
+        {
+          key: routes.announcement.msgRecord,
+          label: <Link href={routes.announcement.msgRecord}>訊息推送資訊</Link>,
+          icon: getOptionIcon(routes.announcement.msgRecord),
+        },
       ],
     },
     {
